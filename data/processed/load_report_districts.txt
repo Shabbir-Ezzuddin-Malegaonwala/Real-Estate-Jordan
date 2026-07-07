@@ -1,0 +1,8 @@
+Jordan RE — GeoJSON load report
+table         : districts
+source        : data\processed\neighborhoods.geojson
+generated     : 2026-07-07T10:01:26
+------------------------------------------------------------
+features read : 5
+inserted      : 0
+skipped (dup) : 5

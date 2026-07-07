@@ -1,0 +1,4 @@
+CBJ: parsed 1377 rows from cbj_real_estate.xls (base 2012=100; annual 2005+ and quarterly 2013+).
+DoS: 540 rows across years 2019-2024 (authorities incl. Greater Amman Municipality; via HTTP owa endpoint, HTTPS refused from outside Jordan).
+DLS: primary dls.gov.jo UNREACHABLE (connection timeout, HTTP+HTTPS). Structured monthly breakdown (governorate/type/nationality) NOT obtainable here. MANUAL STEP: access DLS from a Jordan IP / VPN and download the latest monthly PDF.
+DLS: wrote 10 news-derived national aggregate rows (confidence L).

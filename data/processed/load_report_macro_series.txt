@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : macro_series
+source csv    : data\processed\macro_dls_transactions.csv
+generated     : 2026-07-07T10:19:20
+------------------------------------------------------------
+rows read     : 10
+inserted      : 10
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0

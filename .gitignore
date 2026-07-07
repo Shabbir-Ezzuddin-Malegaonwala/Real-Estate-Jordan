@@ -1,0 +1,39 @@
+# ── Dependencies & build output ──────────────────────────────
+app/web/node_modules/
+app/web/dist/
+app/web/.vite/
+**/node_modules/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ── Large / incoming research data (tracked out of git) ───────
+# data/research-data holds the raw research downloads (multi-GB) and the
+# friend's data zip. These are ingested into the DB, not version-controlled.
+data/research-data/
+*.crdownload
+*.part
+
+# ── Intermediate / backup artifacts ──────────────────────────
+*.preenrich.bak
+*.bak
+data/raw/osm/*.json.cache
+
+# ── Secrets & local config ───────────────────────────────────
+.env
+.env.*
+**/.env
+.claude/settings.local.json
+
+# ── Tooling temp ─────────────────────────────────────────────
+.playwright-mcp/
+/tmp/
+
+# ── Personal media (manager voice notes — not for shared repo) ─
+*.ogg
+
+# ── OS junk ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

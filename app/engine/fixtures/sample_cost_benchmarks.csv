@@ -1,0 +1,5 @@
+spec_class,cost_jd_per_m2_low,cost_jd_per_m2_high,year,evidence_category,language,source_name,source_url,capture_date,collected_by,confidence,notes
+basic,300,380,2026,derived,en,Synthetic Fixture (cost benchmark),https://example.invalid/cost-benchmarks,2026-07-07,engine-fixture-generator,M,"SYNTHETIC — plausible Amman build cost, not sourced"
+standard,380,480,2026,derived,en,Synthetic Fixture (cost benchmark),https://example.invalid/cost-benchmarks,2026-07-07,engine-fixture-generator,M,"SYNTHETIC — plausible Amman build cost, not sourced"
+high,480,620,2026,derived,en,Synthetic Fixture (cost benchmark),https://example.invalid/cost-benchmarks,2026-07-07,engine-fixture-generator,M,"SYNTHETIC — plausible Amman build cost, not sourced"
+luxury,620,820,2026,derived,en,Synthetic Fixture (cost benchmark),https://example.invalid/cost-benchmarks,2026-07-07,engine-fixture-generator,M,"SYNTHETIC — plausible Amman build cost, not sourced"

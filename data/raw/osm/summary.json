@@ -1,0 +1,55 @@
+{
+  "capture_date": "2026-07-07",
+  "poi_total": 984,
+  "poi_by_category": {
+    "school": 224,
+    "transport": 20,
+    "mosque": 407,
+    "hospital": 108,
+    "mall": 53,
+    "park": 141,
+    "university": 31
+  },
+  "poi_by_neighborhood": {
+    "Shmeisani": 64,
+    "other": 790,
+    "Abdoun": 37,
+    "Khalda": 40,
+    "Sweifieh": 41,
+    "Dabouq": 12
+  },
+  "roads_total": 2558,
+  "roads_by_class": {
+    "trunk": 660,
+    "primary": 673,
+    "secondary": 1160,
+    "motorway": 65
+  },
+  "neighborhoods": [
+    {
+      "neighborhood": "Abdoun",
+      "source": "approximate_circle",
+      "approximate": true
+    },
+    {
+      "neighborhood": "Dabouq",
+      "source": "approximate_circle",
+      "approximate": true
+    },
+    {
+      "neighborhood": "Sweifieh",
+      "source": "approximate_circle",
+      "approximate": true
+    },
+    {
+      "neighborhood": "Khalda",
+      "source": "approximate_circle",
+      "approximate": true
+    },
+    {
+      "neighborhood": "Shmeisani",
+      "source": "approximate_circle",
+      "approximate": true
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: #0a0d12;
+    color: #d6deea;
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tabular figures everywhere numbers matter — the terminal signature. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Restrained scrollbars for the docked panel. */
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: #1f2937;
+    border-radius: 4px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb:hover {
+    background: #2b3546;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #e6a94b;
+    outline-offset: 1px;
+  }
+}
+
+@layer components {
+  .label-eyebrow {
+    @apply text-2xs uppercase tracking-[0.14em] text-ink-mute font-medium;
+  }
+  .hairline {
+    @apply border-line;
+  }
+  .card {
+    @apply bg-panel border border-line rounded-[3px];
+  }
+  .input {
+    @apply w-full rounded-[3px] border border-line bg-raised px-2 py-[5px] text-[12px] text-ink outline-none;
+  }
+  .input:focus {
+    @apply border-cyan-dim;
+  }
+  select.input {
+    color-scheme: dark;
+  }
+}
+
+/* MapLibre popup + control theming to match the terminal. */
+.maplibregl-popup-content {
+  background: #121824 !important;
+  color: #d6deea !important;
+  border: 1px solid #1f2937 !important;
+  border-radius: 3px !important;
+  padding: 8px 10px !important;
+  font-family: "IBM Plex Sans", sans-serif !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55) !important;
+}
+.maplibregl-popup-tip {
+  border-top-color: #121824 !important;
+  border-bottom-color: #121824 !important;
+}
+.maplibregl-ctrl-group {
+  background: #121824 !important;
+  border: 1px solid #1f2937 !important;
+}
+.maplibregl-ctrl-group button {
+  background: transparent !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid #1f2937 !important;
+}
+.maplibregl-ctrl button .maplibregl-ctrl-icon {
+  filter: invert(0.85);
+}
+.maplibregl-ctrl-attrib {
+  background: rgba(10, 13, 18, 0.7) !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: #6b7688 !important;
+}

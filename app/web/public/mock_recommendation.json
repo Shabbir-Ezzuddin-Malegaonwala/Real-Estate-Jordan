@@ -1,0 +1,1598 @@
+{
+  "generated_at": "2026-07-07T06:05:21.350Z",
+  "engine_version": "mock-0.1 (shape-compatible with Decision Engine RecommendationResult)",
+  "disclaimer": "Illustrative figures for interface demonstration. Price bands are placeholders pending the Decision Engine; the data shape is the production contract. Neighborhood polygons are approximate circles.",
+  "currency": "JOD",
+  "unit": "JD/m²",
+  "results": {
+    "Abdoun": {
+      "neighborhood": "Abdoun",
+      "name_ar": "عبدون",
+      "tier": "Prime diplomatic / luxury",
+      "property_type": "apartment",
+      "as_of": "2026-07-06",
+      "currency": "JOD",
+      "unit": "JD/m²",
+      "base_value_jd_m2": 1010,
+      "min_safe_jd_m2": 955,
+      "recommended_jd_m2": 1110,
+      "premium_jd_m2": 1330,
+      "confidence": {
+        "level": "High",
+        "score": 82,
+        "range_low": 955,
+        "range_high": 1330,
+        "drivers": [
+          "6 evidenced adjustments",
+          "5 comparables",
+          "low dispersion",
+          "recent captures (≤30d)"
+        ]
+      },
+      "evidence_objects": [
+        {
+          "factor": "Panoramic / open view",
+          "adjustment": "+9.0%",
+          "adjustment_pct": 0.09,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "paired listing comparison (n=16)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Matched units with unobstructed valley/city view list 9% above equivalent inward-facing units in the same building band.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "High floor (7+)",
+          "adjustment": "+4.5%",
+          "adjustment_pct": 0.045,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "paired comparison (n=22)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Upper-floor premium isolated by holding view, area and finish constant.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Covered parking (2 bays)",
+          "adjustment": "+3.0%",
+          "adjustment_pct": 0.03,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "attribute regression (n=61)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Two covered bays is the Abdoun norm; absence is penalised more than presence is rewarded.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Luxury finish",
+          "adjustment": "+6.0%",
+          "adjustment_pct": 0.06,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "finish-class paired comparison (n=12)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Luxury vs standard finish gap for otherwise-matched Abdoun units.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Building age > 12 yr",
+          "adjustment": "−5.0%",
+          "adjustment_pct": -0.05,
+          "direction": "decrease",
+          "confidence": "Medium",
+          "method": "age-depreciation curve (n=40)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Depreciation applied to older stock relative to <5yr comparables.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Ask-to-transaction calibration",
+          "adjustment": "−7.0%",
+          "adjustment_pct": -0.07,
+          "direction": "decrease",
+          "confidence": "High",
+          "method": "documented discount factor (client PDF, 5–15%)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Dept. of Lands & Survey — Monthly Trading",
+              "url": "https://www.dls.gov.jo/",
+              "capture_date": "2026-06-30"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Listings are asking prices; calibrated to expected transaction level using the mid of the documented gap.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Abdoun Corridor upgrade",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Medium",
+          "method": "GAM master-plan corridor",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Greater Amman Municipality — Master Plan",
+              "url": "https://www.amman.jo/",
+              "capture_date": "2026-05-20"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Streetscape and mixed-use frontage upgrade along the Abdoun corridor supports premium positioning; effect is appreciation, not applied to today's band.",
+          "expected_year": 2027,
+          "impact_area": "Abdoun"
+        },
+        {
+          "factor": "New international school (announced)",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Medium",
+          "method": "news, cited",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Roya News",
+              "url": "https://en.royanews.tv/",
+              "capture_date": "2026-06-18"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Announced campus strengthens family-buyer demand over a 12–24 month horizon.",
+          "expected_year": 2027,
+          "impact_area": "Abdoun / Deir Ghbar"
+        }
+      ],
+      "comparables": [
+        {
+          "id": "abdoun-cmp-1",
+          "portal": "OpenSooq",
+          "neighborhood": "Abdoun",
+          "price_jd": 207480,
+          "area_m2": 228,
+          "price_per_m2": 910,
+          "bedrooms": 3,
+          "floor_level": 4,
+          "view": "panoramic",
+          "building_age_years": 15,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.37,
+          "similarity": 0.89,
+          "lat": 31.93687,
+          "lng": 35.89499
+        },
+        {
+          "id": "abdoun-cmp-3",
+          "portal": "OpenSooq",
+          "neighborhood": "Abdoun",
+          "price_jd": 240555,
+          "area_m2": 237,
+          "price_per_m2": 1015,
+          "bedrooms": 4,
+          "floor_level": 3,
+          "view": "none",
+          "building_age_years": 2,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.31,
+          "similarity": 0.86,
+          "lat": 31.94709,
+          "lng": 35.895
+        },
+        {
+          "id": "abdoun-cmp-2",
+          "portal": "Bayut",
+          "neighborhood": "Abdoun",
+          "price_jd": 130815,
+          "area_m2": 153,
+          "price_per_m2": 855,
+          "bedrooms": 3,
+          "floor_level": 8,
+          "view": "garden",
+          "building_age_years": 2,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.33,
+          "similarity": 0.8,
+          "lat": 31.94971,
+          "lng": 35.88924
+        },
+        {
+          "id": "abdoun-cmp-5",
+          "portal": "OpenSooq",
+          "neighborhood": "Abdoun",
+          "price_jd": 255440,
+          "area_m2": 248,
+          "price_per_m2": 1030,
+          "bedrooms": 2,
+          "floor_level": 7,
+          "view": "city",
+          "building_age_years": 9,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.97,
+          "similarity": 0.8,
+          "lat": 31.94264,
+          "lng": 35.88566
+        },
+        {
+          "id": "abdoun-cmp-4",
+          "portal": "Bayut",
+          "neighborhood": "Abdoun",
+          "price_jd": 209125,
+          "area_m2": 175,
+          "price_per_m2": 1195,
+          "bedrooms": 2,
+          "floor_level": 9,
+          "view": "city",
+          "building_age_years": 2,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.49,
+          "similarity": 0.78,
+          "lat": 31.96207,
+          "lng": 35.89649
+        }
+      ],
+      "risk_factors": [
+        {
+          "title": "Thin luxury liquidity",
+          "severity": "medium",
+          "detail": "Absorption at the top of the band is slow; premium pricing depends on 1–2 comparable sales rather than a deep pool."
+        },
+        {
+          "title": "Ask-price dispersion",
+          "severity": "low",
+          "detail": "Wide spread between aspirational and realistic listings; confidence relies on the transaction calibration holding."
+        }
+      ],
+      "narrative": "Abdoun sits at the top of the Amman apartment market. The evidenced grid places the justified launch band at a premium to the neighbourhood median, driven by view, finish and floor, and disciplined by the ask-to-transaction calibration. Future-signal corridor and amenity upgrades support a raise-later posture rather than a reduction.",
+      "centroid": [
+        35.89266,
+        31.94905
+      ]
+    },
+    "Dabouq": {
+      "neighborhood": "Dabouq",
+      "name_ar": "دابوق",
+      "tier": "Villa / low-density premium",
+      "property_type": "apartment",
+      "as_of": "2026-07-06",
+      "currency": "JOD",
+      "unit": "JD/m²",
+      "base_value_jd_m2": 880,
+      "min_safe_jd_m2": 780,
+      "recommended_jd_m2": 915,
+      "premium_jd_m2": 1115,
+      "confidence": {
+        "level": "Medium",
+        "score": 71,
+        "range_low": 780,
+        "range_high": 1115,
+        "drivers": [
+          "5 evidenced adjustments",
+          "5 comparables",
+          "moderate dispersion",
+          "recent captures (≤30d)"
+        ]
+      },
+      "evidence_objects": [
+        {
+          "factor": "Low-density / villa setting",
+          "adjustment": "+7.0%",
+          "adjustment_pct": 0.07,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "segment comparison (n=9)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Premium for plot size and privacy relative to apartment-dense comparables.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Open mountain view",
+          "adjustment": "+6.0%",
+          "adjustment_pct": 0.06,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "paired comparison (n=8)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "West-facing open-view units carry a measurable premium.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "New build (<3 yr)",
+          "adjustment": "+4.0%",
+          "adjustment_pct": 0.04,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "age curve (n=18)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Newer delivery reduces depreciation drag.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Distance to core services",
+          "adjustment": "−4.0%",
+          "adjustment_pct": -0.04,
+          "direction": "decrease",
+          "confidence": "Medium",
+          "method": "POI accessibility (haversine)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Fewer within-radius amenities than inner submarkets; mild discount.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Ask-to-transaction calibration",
+          "adjustment": "−8.0%",
+          "adjustment_pct": -0.08,
+          "direction": "decrease",
+          "confidence": "High",
+          "method": "documented discount factor (client PDF)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Dept. of Lands & Survey — Monthly Trading",
+              "url": "https://www.dls.gov.jo/",
+              "capture_date": "2026-06-30"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Larger ask-gap observed for higher-ticket villa listings.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Airport road widening",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "High",
+          "method": "gov announcement, cited",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Jordan Times",
+              "url": "https://www.jordantimes.com/",
+              "capture_date": "2026-05-30"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Improved arterial access shortens effective commute; appreciation driver for outer west submarkets.",
+          "expected_year": 2027,
+          "impact_area": "West Amman"
+        },
+        {
+          "factor": "Planned retail node",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Low",
+          "method": "master-plan, dated",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Greater Amman Municipality — Master Plan",
+              "url": "https://www.amman.jo/",
+              "capture_date": "2026-05-20"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Proposed neighbourhood retail centre would close the amenity gap noted in the current-state discount.",
+          "expected_year": 2028,
+          "impact_area": "Dabouq"
+        }
+      ],
+      "comparables": [
+        {
+          "id": "dabouq-cmp-1",
+          "portal": "Bayut",
+          "neighborhood": "Dabouq",
+          "price_jd": 157215,
+          "area_m2": 141,
+          "price_per_m2": 1115,
+          "bedrooms": 2,
+          "floor_level": 8,
+          "view": "panoramic",
+          "building_age_years": 16,
+          "seller_type": "agent",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.81,
+          "similarity": 0.86,
+          "lat": 31.9939,
+          "lng": 35.81686
+        },
+        {
+          "id": "dabouq-cmp-5",
+          "portal": "Bayut",
+          "neighborhood": "Dabouq",
+          "price_jd": 218400,
+          "area_m2": 240,
+          "price_per_m2": 910,
+          "bedrooms": 3,
+          "floor_level": 2,
+          "view": "panoramic",
+          "building_age_years": 7,
+          "seller_type": "agent",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.03,
+          "similarity": 0.74,
+          "lat": 31.98052,
+          "lng": 35.8172
+        },
+        {
+          "id": "dabouq-cmp-4",
+          "portal": "OpenSooq",
+          "neighborhood": "Dabouq",
+          "price_jd": 123510,
+          "area_m2": 138,
+          "price_per_m2": 895,
+          "bedrooms": 3,
+          "floor_level": 4,
+          "view": "none",
+          "building_age_years": 4,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.65,
+          "similarity": 0.71,
+          "lat": 31.98366,
+          "lng": 35.82794
+        },
+        {
+          "id": "dabouq-cmp-2",
+          "portal": "Bayut",
+          "neighborhood": "Dabouq",
+          "price_jd": 148000,
+          "area_m2": 185,
+          "price_per_m2": 800,
+          "bedrooms": 4,
+          "floor_level": 7,
+          "view": "none",
+          "building_age_years": 13,
+          "seller_type": "agent",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.55,
+          "similarity": 0.61,
+          "lat": 31.98913,
+          "lng": 35.80553
+        },
+        {
+          "id": "dabouq-cmp-3",
+          "portal": "OpenSooq",
+          "neighborhood": "Dabouq",
+          "price_jd": 195360,
+          "area_m2": 222,
+          "price_per_m2": 880,
+          "bedrooms": 4,
+          "floor_level": 2,
+          "view": "mountain",
+          "building_age_years": 5,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.8,
+          "similarity": 0.61,
+          "lat": 31.99988,
+          "lng": 35.79788
+        }
+      ],
+      "risk_factors": [
+        {
+          "title": "Small comparable pool",
+          "severity": "high",
+          "detail": "Villa-class transactions are sparse; the band leans on a handful of listings and carries wider uncertainty."
+        },
+        {
+          "title": "Amenity dependency",
+          "severity": "medium",
+          "detail": "Value is sensitive to the future retail/services node materialising on schedule."
+        }
+      ],
+      "narrative": "Dabouq is a low-density villa submarket where premium is a function of plot, privacy and view rather than density. Comparable liquidity is thin, so confidence is medium and the band is wider. Future arterial and retail signals underpin an appreciation story for a patient launch.",
+      "centroid": [
+        35.8113,
+        31.98833
+      ]
+    },
+    "Sweifieh": {
+      "neighborhood": "Sweifieh",
+      "name_ar": "الصويفية",
+      "tier": "Commercial-adjacent mid-high",
+      "property_type": "apartment",
+      "as_of": "2026-07-06",
+      "currency": "JOD",
+      "unit": "JD/m²",
+      "base_value_jd_m2": 820,
+      "min_safe_jd_m2": 735,
+      "recommended_jd_m2": 835,
+      "premium_jd_m2": 975,
+      "confidence": {
+        "level": "High",
+        "score": 79,
+        "range_low": 735,
+        "range_high": 975,
+        "drivers": [
+          "5 evidenced adjustments",
+          "5 comparables",
+          "low dispersion",
+          "recent captures (≤30d)"
+        ]
+      },
+      "evidence_objects": [
+        {
+          "factor": "Walkable retail proximity",
+          "adjustment": "+5.0%",
+          "adjustment_pct": 0.05,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "POI density (walkability proxy)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "High within-radius retail/F&B density supports a walkability premium.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "City view",
+          "adjustment": "+3.5%",
+          "adjustment_pct": 0.035,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "paired comparison (n=11)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "City-facing units above the podium line.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Covered parking",
+          "adjustment": "+3.0%",
+          "adjustment_pct": 0.03,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "attribute regression (n=54)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Parking scarcity in the commercial core raises the premium for covered bays.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Street noise / commercial frontage",
+          "adjustment": "−3.5%",
+          "adjustment_pct": -0.035,
+          "direction": "decrease",
+          "confidence": "Medium",
+          "method": "paired comparison (n=10)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Units on active commercial frontage discount vs set-back residential.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Ask-to-transaction calibration",
+          "adjustment": "−6.0%",
+          "adjustment_pct": -0.06,
+          "direction": "decrease",
+          "confidence": "High",
+          "method": "documented discount factor (client PDF)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Dept. of Lands & Survey — Monthly Trading",
+              "url": "https://www.dls.gov.jo/",
+              "capture_date": "2026-06-30"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Tighter ask-gap in a liquid, transaction-rich submarket.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "BRT feeder extension (study)",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Low",
+          "method": "news, cited",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Ammon News",
+              "url": "https://www.ammonnews.net/",
+              "capture_date": "2026-06-02"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Feasibility-stage transit feeder; low certainty but material if delivered.",
+          "expected_year": 2028,
+          "impact_area": "South Amman"
+        },
+        {
+          "factor": "Pedestrianisation pilot",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Medium",
+          "method": "GAM programme",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Greater Amman Municipality — Master Plan",
+              "url": "https://www.amman.jo/",
+              "capture_date": "2026-05-20"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Retail-street pedestrianisation would reinforce the walkability premium.",
+          "expected_year": 2027,
+          "impact_area": "Sweifieh"
+        }
+      ],
+      "comparables": [
+        {
+          "id": "sweifieh-cmp-4",
+          "portal": "OpenSooq",
+          "neighborhood": "Sweifieh",
+          "price_jd": 133500,
+          "area_m2": 178,
+          "price_per_m2": 750,
+          "bedrooms": 4,
+          "floor_level": 7,
+          "view": "none",
+          "building_age_years": 12,
+          "seller_type": "agent",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.33,
+          "similarity": 0.96,
+          "lat": 31.961,
+          "lng": 35.86593
+        },
+        {
+          "id": "sweifieh-cmp-5",
+          "portal": "Bayut",
+          "neighborhood": "Sweifieh",
+          "price_jd": 242500,
+          "area_m2": 250,
+          "price_per_m2": 970,
+          "bedrooms": 4,
+          "floor_level": 3,
+          "view": "city",
+          "building_age_years": 12,
+          "seller_type": "agent",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.42,
+          "similarity": 0.91,
+          "lat": 31.95771,
+          "lng": 35.86822
+        },
+        {
+          "id": "sweifieh-cmp-3",
+          "portal": "OpenSooq",
+          "neighborhood": "Sweifieh",
+          "price_jd": 163660,
+          "area_m2": 196,
+          "price_per_m2": 835,
+          "bedrooms": 4,
+          "floor_level": 6,
+          "view": "garden",
+          "building_age_years": 6,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.94,
+          "similarity": 0.84,
+          "lat": 31.96284,
+          "lng": 35.87251
+        },
+        {
+          "id": "sweifieh-cmp-1",
+          "portal": "OpenSooq",
+          "neighborhood": "Sweifieh",
+          "price_jd": 177600,
+          "area_m2": 192,
+          "price_per_m2": 925,
+          "bedrooms": 4,
+          "floor_level": 5,
+          "view": "garden",
+          "building_age_years": 10,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.29,
+          "similarity": 0.7,
+          "lat": 31.95775,
+          "lng": 35.87754
+        },
+        {
+          "id": "sweifieh-cmp-2",
+          "portal": "Bayut",
+          "neighborhood": "Sweifieh",
+          "price_jd": 173840,
+          "area_m2": 212,
+          "price_per_m2": 820,
+          "bedrooms": 4,
+          "floor_level": 7,
+          "view": "none",
+          "building_age_years": 8,
+          "seller_type": "agent",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.43,
+          "similarity": 0.7,
+          "lat": 31.96822,
+          "lng": 35.8538
+        }
+      ],
+      "risk_factors": [
+        {
+          "title": "Mixed-use noise",
+          "severity": "medium",
+          "detail": "Commercial frontage cuts both ways — footfall lifts retail value but discounts residential quiet."
+        },
+        {
+          "title": "Supply pipeline",
+          "severity": "low",
+          "detail": "Steady permit issuance in the corridor could compress premiums if absorption lags."
+        }
+      ],
+      "narrative": "Sweifieh trades on walkability and liquidity. A transaction-rich pool gives high confidence and a tighter band. The evidenced grid rewards retail proximity and parking while discounting active-frontage noise. Transit and pedestrianisation signals support a hold-and-raise stance.",
+      "centroid": [
+        35.86388,
+        31.95859
+      ]
+    },
+    "Khalda": {
+      "neighborhood": "Khalda",
+      "name_ar": "خلدا",
+      "tier": "Family residential mid",
+      "property_type": "apartment",
+      "as_of": "2026-07-06",
+      "currency": "JOD",
+      "unit": "JD/m²",
+      "base_value_jd_m2": 720,
+      "min_safe_jd_m2": 630,
+      "recommended_jd_m2": 715,
+      "premium_jd_m2": 830,
+      "confidence": {
+        "level": "High",
+        "score": 80,
+        "range_low": 630,
+        "range_high": 830,
+        "drivers": [
+          "5 evidenced adjustments",
+          "7 comparables",
+          "low dispersion",
+          "recent captures (≤30d)"
+        ]
+      },
+      "evidence_objects": [
+        {
+          "factor": "School / mosque proximity",
+          "adjustment": "+4.5%",
+          "adjustment_pct": 0.045,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "POI accessibility (haversine)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Dense family-amenity cluster supports a family-buyer premium.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Mid floor (3–6)",
+          "adjustment": "+2.0%",
+          "adjustment_pct": 0.02,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "paired comparison (n=19)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Modest floor premium; ceiling lower than in prime submarkets.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Semi-furnished",
+          "adjustment": "+2.5%",
+          "adjustment_pct": 0.025,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "furnishing paired comparison (n=14)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Semi-furnished units clear faster and list slightly higher.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Building age 8–12 yr",
+          "adjustment": "−3.0%",
+          "adjustment_pct": -0.03,
+          "direction": "decrease",
+          "confidence": "Medium",
+          "method": "age curve (n=33)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Moderate depreciation for mid-age stock.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Ask-to-transaction calibration",
+          "adjustment": "−6.0%",
+          "adjustment_pct": -0.06,
+          "direction": "decrease",
+          "confidence": "High",
+          "method": "documented discount factor (client PDF)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Dept. of Lands & Survey — Monthly Trading",
+              "url": "https://www.dls.gov.jo/",
+              "capture_date": "2026-06-30"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Standard mid-market ask-gap applied.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Ring-road interchange upgrade",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Medium",
+          "method": "gov announcement, cited",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Jordan Times",
+              "url": "https://www.jordantimes.com/",
+              "capture_date": "2026-04-22"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Interchange upgrade improves connectivity for the north-west residential belt.",
+          "expected_year": 2027,
+          "impact_area": "NW Amman"
+        },
+        {
+          "factor": "New community park (planned)",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Low",
+          "method": "master-plan, dated",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Greater Amman Municipality — Master Plan",
+              "url": "https://www.amman.jo/",
+              "capture_date": "2026-05-20"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Planned green space would lift the amenity score of adjacent blocks.",
+          "expected_year": 2028,
+          "impact_area": "Khalda"
+        }
+      ],
+      "comparables": [
+        {
+          "id": "khalda-cmp-2",
+          "portal": "OpenSooq",
+          "neighborhood": "Khalda",
+          "price_jd": 93150,
+          "area_m2": 135,
+          "price_per_m2": 690,
+          "bedrooms": 3,
+          "floor_level": 5,
+          "view": "garden",
+          "building_age_years": 5,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.92,
+          "similarity": 0.95,
+          "lat": 31.99565,
+          "lng": 35.85234
+        },
+        {
+          "id": "khalda-cmp-1",
+          "portal": "Bayut",
+          "neighborhood": "Khalda",
+          "price_jd": 114000,
+          "area_m2": 190,
+          "price_per_m2": 600,
+          "bedrooms": 3,
+          "floor_level": 7,
+          "view": "none",
+          "building_age_years": 14,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.18,
+          "similarity": 0.82,
+          "lat": 31.98097,
+          "lng": 35.85078
+        },
+        {
+          "id": "khalda-cmp-6",
+          "portal": "OpenSooq",
+          "neighborhood": "Khalda",
+          "price_jd": 175120,
+          "area_m2": 199,
+          "price_per_m2": 880,
+          "bedrooms": 2,
+          "floor_level": 4,
+          "view": "city",
+          "building_age_years": 5,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.53,
+          "similarity": 0.77,
+          "lat": 32.00406,
+          "lng": 35.84626
+        },
+        {
+          "id": "khalda-cmp-4",
+          "portal": "OpenSooq",
+          "neighborhood": "Khalda",
+          "price_jd": 148780,
+          "area_m2": 172,
+          "price_per_m2": 865,
+          "bedrooms": 4,
+          "floor_level": 1,
+          "view": "garden",
+          "building_age_years": 7,
+          "seller_type": "private",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.31,
+          "similarity": 0.73,
+          "lat": 32.00213,
+          "lng": 35.84524
+        },
+        {
+          "id": "khalda-cmp-7",
+          "portal": "Bayut",
+          "neighborhood": "Khalda",
+          "price_jd": 172420,
+          "area_m2": 233,
+          "price_per_m2": 740,
+          "bedrooms": 2,
+          "floor_level": 3,
+          "view": "garden",
+          "building_age_years": 6,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.73,
+          "similarity": 0.71,
+          "lat": 31.99072,
+          "lng": 35.85259
+        },
+        {
+          "id": "khalda-cmp-5",
+          "portal": "Bayut",
+          "neighborhood": "Khalda",
+          "price_jd": 115045,
+          "area_m2": 173,
+          "price_per_m2": 665,
+          "bedrooms": 4,
+          "floor_level": 4,
+          "view": "mountain",
+          "building_age_years": 3,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.04,
+          "similarity": 0.66,
+          "lat": 31.98494,
+          "lng": 35.83582
+        },
+        {
+          "id": "khalda-cmp-3",
+          "portal": "Bayut",
+          "neighborhood": "Khalda",
+          "price_jd": 187200,
+          "area_m2": 208,
+          "price_per_m2": 900,
+          "bedrooms": 2,
+          "floor_level": 4,
+          "view": "none",
+          "building_age_years": 5,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.27,
+          "similarity": 0.6,
+          "lat": 31.99276,
+          "lng": 35.84471
+        }
+      ],
+      "risk_factors": [
+        {
+          "title": "Elastic mid-market supply",
+          "severity": "medium",
+          "detail": "Family mid-market has the deepest pipeline; over-pricing risks slow absorption against ample alternatives."
+        }
+      ],
+      "narrative": "Khalda is a deep, liquid family submarket. Value is driven by amenity access and unit practicality rather than luxury attributes. High comparable density gives strong confidence and a tight band; the main discipline is not over-reaching against elastic supply.",
+      "centroid": [
+        35.84485,
+        31.99033
+      ]
+    },
+    "Shmeisani": {
+      "neighborhood": "Shmeisani",
+      "name_ar": "الشميساني",
+      "tier": "Business-district mid-high",
+      "property_type": "apartment",
+      "as_of": "2026-07-06",
+      "currency": "JOD",
+      "unit": "JD/m²",
+      "base_value_jd_m2": 760,
+      "min_safe_jd_m2": 660,
+      "recommended_jd_m2": 750,
+      "premium_jd_m2": 885,
+      "confidence": {
+        "level": "Medium",
+        "score": 74,
+        "range_low": 660,
+        "range_high": 885,
+        "drivers": [
+          "5 evidenced adjustments",
+          "6 comparables",
+          "moderate dispersion",
+          "recent captures (≤30d)"
+        ]
+      },
+      "evidence_objects": [
+        {
+          "factor": "Business-district centrality",
+          "adjustment": "+5.0%",
+          "adjustment_pct": 0.05,
+          "direction": "increase",
+          "confidence": "High",
+          "method": "accessibility (road hierarchy)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Proximity to the CBD and offices supports a rental-led premium.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Rental-yield support",
+          "adjustment": "+3.0%",
+          "adjustment_pct": 0.03,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "yield = annual rent/m² ÷ sale/m² (n=27)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Above-median gross yield underpins investor demand and the sale premium.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "City view (upper floors)",
+          "adjustment": "+3.0%",
+          "adjustment_pct": 0.03,
+          "direction": "increase",
+          "confidence": "Medium",
+          "method": "paired comparison (n=9)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Upper-floor city view over the district.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Older core stock",
+          "adjustment": "−5.5%",
+          "adjustment_pct": -0.055,
+          "direction": "decrease",
+          "confidence": "Medium",
+          "method": "age curve (n=29)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Bayut",
+              "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+              "capture_date": "2026-07-05"
+            },
+            {
+              "name": "OpenSooq",
+              "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+              "capture_date": "2026-07-05"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "A share of the core is ageing; depreciation applied vs newer infill.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Ask-to-transaction calibration",
+          "adjustment": "−6.0%",
+          "adjustment_pct": -0.06,
+          "direction": "decrease",
+          "confidence": "High",
+          "method": "documented discount factor (client PDF)",
+          "datasets": [
+            "listings"
+          ],
+          "sources": [
+            {
+              "name": "Dept. of Lands & Survey — Monthly Trading",
+              "url": "https://www.dls.gov.jo/",
+              "capture_date": "2026-06-30"
+            }
+          ],
+          "category": "current_state",
+          "explanation": "Standard ask-gap; slightly tighter for investor-grade units.",
+          "expected_year": null,
+          "impact_area": null
+        },
+        {
+          "factor": "Office-to-residential conversions",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "Medium",
+          "method": "market news, cited",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Ammon News",
+              "url": "https://www.ammonnews.net/",
+              "capture_date": "2026-06-11"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Adaptive reuse trend tightens residential supply in the core.",
+          "expected_year": 2027,
+          "impact_area": "Shmeisani"
+        },
+        {
+          "factor": "CBJ index uptrend",
+          "adjustment": "±0.0%",
+          "adjustment_pct": 0,
+          "direction": "neutral",
+          "confidence": "High",
+          "method": "official time series",
+          "datasets": [
+            "evidence_items"
+          ],
+          "sources": [
+            {
+              "name": "Central Bank of Jordan — Real Estate Price Index",
+              "url": "https://www.cbj.gov.jo/Pages/viewpage.aspx?pageID=139",
+              "capture_date": "2026-06-30"
+            }
+          ],
+          "category": "future_signal",
+          "explanation": "Time-adjustment factor from the CBJ Real Estate Price Index trends positive for Amman apartments.",
+          "expected_year": 2026,
+          "impact_area": "Amman"
+        }
+      ],
+      "comparables": [
+        {
+          "id": "shmeisani-cmp-1",
+          "portal": "OpenSooq",
+          "neighborhood": "Shmeisani",
+          "price_jd": 138510,
+          "area_m2": 171,
+          "price_per_m2": 810,
+          "bedrooms": 3,
+          "floor_level": 8,
+          "view": "panoramic",
+          "building_age_years": 15,
+          "seller_type": "agent",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.43,
+          "similarity": 0.89,
+          "lat": 31.97074,
+          "lng": 35.89982
+        },
+        {
+          "id": "shmeisani-cmp-4",
+          "portal": "Bayut",
+          "neighborhood": "Shmeisani",
+          "price_jd": 138320,
+          "area_m2": 152,
+          "price_per_m2": 910,
+          "bedrooms": 3,
+          "floor_level": 1,
+          "view": "city",
+          "building_age_years": 7,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.72,
+          "similarity": 0.87,
+          "lat": 31.97143,
+          "lng": 35.87881
+        },
+        {
+          "id": "shmeisani-cmp-2",
+          "portal": "OpenSooq",
+          "neighborhood": "Shmeisani",
+          "price_jd": 181450,
+          "area_m2": 190,
+          "price_per_m2": 955,
+          "bedrooms": 2,
+          "floor_level": 8,
+          "view": "garden",
+          "building_age_years": 4,
+          "seller_type": "agent",
+          "url": "https://jo.opensooq.com/en/real-estate-for-sale/apartments-for-sale",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.91,
+          "similarity": 0.85,
+          "lat": 31.96771,
+          "lng": 35.90348
+        },
+        {
+          "id": "shmeisani-cmp-5",
+          "portal": "Bayut",
+          "neighborhood": "Shmeisani",
+          "price_jd": 119340,
+          "area_m2": 156,
+          "price_per_m2": 765,
+          "bedrooms": 2,
+          "floor_level": 1,
+          "view": "mountain",
+          "building_age_years": 4,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.3,
+          "similarity": 0.76,
+          "lat": 31.97596,
+          "lng": 35.89513
+        },
+        {
+          "id": "shmeisani-cmp-6",
+          "portal": "Bayut",
+          "neighborhood": "Shmeisani",
+          "price_jd": 133250,
+          "area_m2": 205,
+          "price_per_m2": 650,
+          "bedrooms": 3,
+          "floor_level": 9,
+          "view": "mountain",
+          "building_age_years": 2,
+          "seller_type": "private",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 0.9,
+          "similarity": 0.76,
+          "lat": 31.98144,
+          "lng": 35.89405
+        },
+        {
+          "id": "shmeisani-cmp-3",
+          "portal": "Bayut",
+          "neighborhood": "Shmeisani",
+          "price_jd": 138475,
+          "area_m2": 191,
+          "price_per_m2": 725,
+          "bedrooms": 3,
+          "floor_level": 2,
+          "view": "city",
+          "building_age_years": 13,
+          "seller_type": "agent",
+          "url": "https://www.bayut.jo/en/amman/apartments-for-sale/",
+          "capture_date": "2026-07-05",
+          "distance_km": 1.71,
+          "similarity": 0.75,
+          "lat": 31.97919,
+          "lng": 35.91385
+        }
+      ],
+      "risk_factors": [
+        {
+          "title": "Ageing core",
+          "severity": "medium",
+          "detail": "Mixed building vintages widen dispersion; the band assumes a mid-vintage subject."
+        },
+        {
+          "title": "Office-cycle sensitivity",
+          "severity": "low",
+          "detail": "Demand is partly tied to the commercial office cycle."
+        }
+      ],
+      "narrative": "Shmeisani is a business-district submarket where yield and centrality drive value against an ageing core. Confidence is medium given vintage dispersion. Conversion pressure and a positive official index trend support the appreciation narrative behind a firm launch band.",
+      "centroid": [
+        35.89688,
+        31.9737
+      ]
+    }
+  }
+}

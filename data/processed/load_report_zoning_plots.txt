@@ -1,0 +1,12 @@
+Jordan RE — GeoJSON load report
+table         : zoning_plots
+source        : data\processed\zoning.geojson
+generated     : 2026-07-07T10:01:52
+------------------------------------------------------------
+features read : 2246
+inserted      : 2244
+skipped (dup) : 0
+------------------------------------------------------------
+issues:
+  feature 1119: unsupported/missing geometry
+  feature 1432: unsupported/missing geometry
