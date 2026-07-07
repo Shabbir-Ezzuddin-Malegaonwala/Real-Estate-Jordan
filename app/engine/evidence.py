@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Optional
 
 from .adjustment import PremiumSet, _CATEGORICAL, _CONTINUOUS
-from .data import EvidenceItem, Project
+from .data import EvidenceItem, NeighborhoodGeoContext, Project
 from .models import EvidenceObject, Subject
 from .stats import median, pct
 from . import config
@@ -256,6 +256,52 @@ def market_composition_evidence(comps: list) -> Optional[EvidenceObject]:
         explanation=f"Of the comparables driving this estimate, {mix} — {texture}. "
                     "Provided as market texture; it does not move the price.",
     )
+
+
+def geocontext_evidence(geo: Optional[NeighborhoodGeoContext]) -> Optional[EvidenceObject]:
+    """Non-priced CONTEXT chip — terrain / density / night-light texture of the submarket.
+
+    MASTER-PLAN: elevation, population density and night-light do NOT correlate with price;
+    this is an affluence/density/activity proxy only, mirroring the market-composition chip.
+    Omitted (never fabricated) when the submarket has no geocontext row.
+    """
+    if geo is None:
+        return None
+    figures = []
+    if geo.median_elevation_m is not None:
+        rank = f", rank {geo.elevation_rank}/5" if geo.elevation_rank is not None else ""
+        figures.append(f"median ground ~{geo.median_elevation_m:.0f} m{rank}")
+    if geo.median_population_density is not None:
+        figures.append(f"population density ~{geo.median_population_density:,.0f}/km²")
+    if geo.median_nightlight is not None:
+        figures.append(f"night-time light index ~{geo.median_nightlight:.0f}")
+    figures.append(f"dominant aspect {geo.dominant_aspect}")
+    context = geo.context.strip()
+    if context and not context.endswith("."):
+        context += "."
+    return EvidenceObject(
+        factor="Neighborhood spatial context",
+        adjustment="context — not a price adjustment",
+        confidence="High",
+        method="median terrain, density and night-light of the submarket (open-raster sampling)",
+        datasets=["neighborhood_geocontext"],
+        sources=_geo_source_chips(geo),
+        category="current_state",
+        explanation=f"{geo.neighborhood} — {context} " + "; ".join(figures) +
+                    ". Context only; does not move the price.",
+    )
+
+
+def _geo_source_chips(geo: NeighborhoodGeoContext) -> list[dict]:
+    names = [n.strip() for n in geo.source_name.split("/") if n.strip()]
+    urls = [u.strip() for u in geo.source_url.split("|") if u.strip()]
+    cap = geo.capture_date or "unknown"
+    if names and len(names) == len(urls):
+        chips = [{"name": n, "url": u, "capture_date": cap} for n, u in zip(names, urls)]
+    else:
+        chips = [{"name": geo.source_name, "url": u, "capture_date": cap} for u in urls] or \
+                [{"name": geo.source_name, "url": geo.source_url, "capture_date": cap}]
+    return _dedupe_sources(chips)
 
 
 def _dedupe_sources(sources: list[dict]) -> list[dict]:

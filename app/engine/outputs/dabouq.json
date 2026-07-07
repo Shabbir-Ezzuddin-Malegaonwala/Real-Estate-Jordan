@@ -281,6 +281,34 @@
       "explanation": "Of the comparables driving this estimate, 50% agent-listed, 50% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
     },
     {
+      "factor": "Neighborhood spatial context",
+      "adjustment": "context — not a price adjustment",
+      "confidence": "High",
+      "method": "median terrain, density and night-light of the submarket (open-raster sampling)",
+      "datasets": [
+        "neighborhood_geocontext"
+      ],
+      "sources": [
+        {
+          "name": "Copernicus DEM",
+          "url": "https://copernicus-dem-30m.s3.amazonaws.com",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "GHS-POP",
+          "url": "https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "VIIRS",
+          "url": "https://doi.org/10.7910/DVN/YGIVCD",
+          "capture_date": "2026-07-07"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Dabouq — Low-density upscale villa suburb on high ground; least built-up and dimmest at night. median ground ~959 m, rank 2/5; population density ~2,815/km²; night-time light index ~29; dominant aspect NE. Context only; does not move the price."
+    },
+    {
       "factor": "Future signal: Amman inner-city BRT Lines 1 & 2 operational",
       "adjustment": "positioning (no point premium)",
       "confidence": "M",

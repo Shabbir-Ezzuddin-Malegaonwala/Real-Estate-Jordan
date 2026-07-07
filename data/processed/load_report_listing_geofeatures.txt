@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : listing_geofeatures
+source csv    : data\raw\friend\listing_geofeatures_clean.csv
+generated     : 2026-07-07T22:25:25
+------------------------------------------------------------
+rows read     : 23617
+inserted      : 23617
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0

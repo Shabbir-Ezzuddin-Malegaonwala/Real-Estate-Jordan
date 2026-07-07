@@ -273,7 +273,51 @@ CREATE TABLE IF NOT EXISTS cost_benchmarks (
 CREATE INDEX IF NOT EXISTS idx_cost_spec_class ON cost_benchmarks (spec_class);
 
 -- ===========================================================================
--- E. ENGINE OUTPUTS (written by the Decision Engine, never collected)
+-- E. GEO / TERRAIN CONTEXT (friend-sourced; NON-PRICED neighborhood context)
+-- ===========================================================================
+-- MASTER-PLAN decision: elevation/population/night-light do NOT correlate with price
+-- (analysis showed ~0, sign-unstable). These tables are QUERYABLE CONTEXT ONLY — an
+-- affluence/density/activity proxy, never a price lever. Columns match the friend CSVs
+-- (data/raw/friend/*.csv) exactly; provenance cites Copernicus DEM / GHS-POP / VIIRS.
+
+-- listing_geofeatures — per-listing terrain + density + night-light sample (open rasters).
+CREATE TABLE IF NOT EXISTS listing_geofeatures (
+    listing_id           TEXT PRIMARY KEY,
+    elevation_m          REAL,
+    slope_deg            REAL,
+    aspect_deg           REAL,
+    aspect_cardinal      TEXT,
+    population_density   REAL,
+    nightlight_intensity REAL,
+    source_name          TEXT NOT NULL,
+    source_url           TEXT NOT NULL,
+    capture_date         TEXT NOT NULL,
+    collected_by         TEXT,
+    confidence           TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes                TEXT,
+    created_at           TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- neighborhood_geocontext — one median-summary row per target submarket + a human context
+-- string. Feeds the non-priced "Neighborhood spatial context" evidence chip.
+CREATE TABLE IF NOT EXISTS neighborhood_geocontext (
+    neighborhood              TEXT PRIMARY KEY,
+    median_elevation_m        REAL,
+    elevation_rank            INTEGER,
+    median_population_density REAL,
+    median_nightlight         REAL,
+    dominant_aspect           TEXT,
+    context                   TEXT,
+    source_name               TEXT NOT NULL,
+    source_url                TEXT NOT NULL,
+    capture_date              TEXT NOT NULL,
+    collected_by              TEXT,
+    confidence                TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    created_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ===========================================================================
+-- F. ENGINE OUTPUTS (written by the Decision Engine, never collected)
 -- ===========================================================================
 
 -- derived_premiums — the Adjustment Engine writes every attribute premium here.

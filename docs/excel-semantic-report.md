@@ -77,7 +77,27 @@ added a matching caveat rule in Section 2.
 
 ---
 
+## Update — geo tables added (2026-07-07)
+
+Two new context-only tables were added to the DB and folded into both deliverables:
+
+- **`listing_geofeatures`** (23,617 rows): per-listing elevation/slope/aspect/population_density/nightlight
+  (Copernicus DEM / GHS-POP / VIIRS, nearest-cell join). 9,372 rows fall in the 5 covered submarkets.
+- **`neighborhood_geocontext`** (5 rows): per-covered-submarket elevation/density/nightlight/aspect + context.
+
+**Domain rule enforced (honest):** geo is CONTEXT ONLY. Elevation does NOT correlate with price
+(~0); no elevation/height/view premium. population_density and nightlight are affluence/activity
+proxies (Jordan has no neighborhood-income source), not price drivers. This is stated in the Text2SQL
+business rules, the workbook Overview (caveat 7), and Data_Quality.
+
+- xlsx now **18 sheets** (2.77 MB): added **Geo_Context** (5 rows) and **Listing_GeoFeatures_Covered**
+  (9,372 covered rows in full, with neighborhood prepended). Overview + Data_Quality updated. All 16
+  prior sheets reproduced unchanged; Recommendations carries the refreshed engine bands.
+- text2sql doc now **13 DDL chunks / 42 rule bullets / 24 Q-SQL pairs**; the 3 new geo examples
+  (densest/most-active submarket, avg Khalda elevation, elevation-vs-price join) all tested.
+
 ## Verification summary
-- xlsx: opens, 16/16 sheets populated, styled, all 24,471 listings represented. ✓
-- text2sql doc: 3 sections present and regex-parseable (11 DDL / 34 rules / 21 Q-SQL); 21/21 SQL pass. ✓
+- xlsx: opens, 18/18 sheets populated, styled, all 24,471 listings represented + geo context. ✓
+- text2sql doc: 3 sections regex-parseable (13 DDL / 42 rules / 24 Q-SQL); **24/24 SQL pass**. ✓
+- Geo layers documented as context-only, no price effect. ✓
 - No fabricated data; empty engine tables (`derived_premiums`, `recommendations`) disclosed, not hidden. ✓

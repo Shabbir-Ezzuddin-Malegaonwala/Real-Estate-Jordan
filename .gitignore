@@ -46,3 +46,6 @@ data/raw/osm/*.json.cache
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# geofeatures raw CSVs (data is in the committed DB)
+data/raw/friend/listing_geofeatures*.csv

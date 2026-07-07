@@ -160,6 +160,9 @@ def _collect_evidence(subject, bundle, comps, premiums, bench, cost_floor,
     mix = evidence.market_composition_evidence(comps)
     if mix:
         objs.append(mix)
+    geo = evidence.geocontext_evidence(bundle.geocontext_for(subject.neighborhood))
+    if geo:
+        objs.append(geo)
     objs.extend(future_objs)
     return objs
 

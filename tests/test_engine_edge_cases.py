@@ -26,8 +26,8 @@ import unittest
 from datetime import date
 
 from app.engine.comparable_analysis import collapse_near_duplicates
-from app.engine.data import (CostBenchmark, DataBundle, EvidenceItem, PriceIndex,
-                             Project)
+from app.engine.data import (CostBenchmark, DataBundle, EvidenceItem,
+                             NeighborhoodGeoContext, PriceIndex, Project)
 from app.engine.fixtures import load_sample_bundle
 from app.engine.models import Listing, Subject
 from app.engine.pipeline import recommend
@@ -453,6 +453,60 @@ class NearDuplicateCollapse(unittest.TestCase):
                  / r_clean.recommended_price_jd_m2)
         self.assertLess(drift, 0.06,
                         f"cross-posted duplicates moved the recommendation {drift*100:.1f}%")
+
+
+# ---------------------------------------------------------------------------
+# neighborhood spatial-context chip (non-priced; must never move the band)
+# ---------------------------------------------------------------------------
+
+class NeighborhoodGeoContextChip(unittest.TestCase):
+    def _geo(self, neighborhood="Abdoun") -> NeighborhoodGeoContext:
+        return NeighborhoodGeoContext(
+            neighborhood=neighborhood, median_elevation_m=913.5, elevation_rank=4,
+            median_population_density=25032.2, median_nightlight=80.57, dominant_aspect="NE",
+            context="Dense, high-activity premium submarket on mid-elevation ground.",
+            source_name="Copernicus DEM / GHS-POP / VIIRS",
+            source_url="https://copernicus-dem-30m.s3.amazonaws.com | "
+                       "https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php | "
+                       "https://doi.org/10.7910/DVN/YGIVCD",
+            capture_date="2026-07-07", confidence="M")
+
+    def _bundle(self, geo: list) -> DataBundle:
+        b = bundle_of(pool_around(10, base_ppm2=1000.0))
+        b.geocontext = geo
+        return b
+
+    def test_chip_present_current_state_and_non_numeric(self):
+        r = recommend(subj(neighborhood="Abdoun"), self._bundle([self._geo("Abdoun")]), AS_OF)
+        chips = [e for e in r.evidence_objects if e["factor"] == "Neighborhood spatial context"]
+        self.assertEqual(len(chips), 1)
+        e = chips[0]
+        self.assertEqual(e["category"], "current_state")
+        self.assertNotRegex(e["adjustment"], r"\d")   # a label, never a number
+        self.assertIn("does not move the price", e["explanation"])
+        self.assertTrue(e["sources"] and all(s["url"].startswith("http") for s in e["sources"]))
+
+    def test_chip_omitted_without_fabrication(self):
+        r = recommend(subj(neighborhood="Abdoun"), self._bundle([]), AS_OF)
+        self.assertFalse(any(e["factor"] == "Neighborhood spatial context"
+                             for e in r.evidence_objects))
+        # uncovered subject stays uncovered even when a different submarket has a row
+        r2 = recommend(subj(neighborhood="Abdoun"), self._bundle([self._geo("Khalda")]), AS_OF)
+        self.assertFalse(any(e["factor"] == "Neighborhood spatial context"
+                             for e in r2.evidence_objects))
+
+    def test_chip_does_not_change_price_band_or_confidence(self):
+        with_geo = recommend(subj(neighborhood="Abdoun"),
+                             self._bundle([self._geo("Abdoun")]), AS_OF)
+        without = recommend(subj(neighborhood="Abdoun"), self._bundle([]), AS_OF)
+        self.assertTrue(any(e["factor"] == "Neighborhood spatial context"
+                            for e in with_geo.evidence_objects))
+        self.assertEqual(
+            (with_geo.min_safe_price_jd_m2, with_geo.recommended_price_jd_m2,
+             with_geo.premium_price_jd_m2),
+            (without.min_safe_price_jd_m2, without.recommended_price_jd_m2,
+             without.premium_price_jd_m2))
+        self.assertEqual(with_geo.confidence_numeric, without.confidence_numeric)
 
 
 # ---------------------------------------------------------------------------

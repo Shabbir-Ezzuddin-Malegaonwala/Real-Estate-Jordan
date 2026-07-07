@@ -80,6 +80,27 @@ class EvidenceItem:
 
 
 @dataclass
+class NeighborhoodGeoContext:
+    """Median terrain/density/night-light summary for one submarket (friend-sourced).
+
+    NON-PRICED context: elevation does not correlate with price (MASTER-PLAN decision).
+    Used only to build the "Neighborhood spatial context" evidence chip.
+    """
+
+    neighborhood: str
+    median_elevation_m: Optional[float]
+    elevation_rank: Optional[int]
+    median_population_density: Optional[float]
+    median_nightlight: Optional[float]
+    dominant_aspect: str
+    context: str
+    source_name: str
+    source_url: str
+    capture_date: Optional[str]
+    confidence: str
+
+
+@dataclass
 class Project:
     project_id: str
     name: str
@@ -102,7 +123,12 @@ class DataBundle:
     evidence_items: list[EvidenceItem] = field(default_factory=list)
     projects: list[Project] = field(default_factory=list)
     price_index: PriceIndex = field(default_factory=PriceIndex)
+    geocontext: list[NeighborhoodGeoContext] = field(default_factory=list)
     as_of: date = field(default_factory=date.today)
+
+    def geocontext_for(self, neighborhood: str) -> Optional[NeighborhoodGeoContext]:
+        n = (neighborhood or "").strip().lower()
+        return next((g for g in self.geocontext if g.neighborhood.strip().lower() == n), None)
 
     def sales(self) -> list[Listing]:
         return [l for l in self.listings if l.listing_type == "sale" and l.price_per_m2]
@@ -203,6 +229,8 @@ def load_bundle_from_sqlite(db_path: str, as_of: Optional[date] = None) -> DataB
             evidence_items=[_evidence_from(dict(r)) for r in _table(conn, "evidence_items")],
             projects=[_project_from(dict(r)) for r in _table(conn, "projects")],
             price_index=_index_from_sqlite(conn),
+            geocontext=[_geocontext_from(dict(r))
+                        for r in _table(conn, "neighborhood_geocontext")],
             as_of=as_of or date.today(),
         )
         return bundle
@@ -262,6 +290,21 @@ def _project_from(r: dict) -> "Project":
         launch_price_jd_m2=_num(r.get("launch_price_jd_m2")), lat=_num(r.get("lat")),
         lng=_num(r.get("lng")), source_name=r.get("source_name", "unknown"),
         source_url=r.get("source_url", "unknown"), capture_date=(r.get("capture_date") or None),
+        confidence=(r.get("confidence") or "unknown"))
+
+
+def _geocontext_from(r: dict) -> "NeighborhoodGeoContext":
+    return NeighborhoodGeoContext(
+        neighborhood=(r.get("neighborhood") or "").strip(),
+        median_elevation_m=_num(r.get("median_elevation_m")),
+        elevation_rank=_int(r.get("elevation_rank")),
+        median_population_density=_num(r.get("median_population_density")),
+        median_nightlight=_num(r.get("median_nightlight")),
+        dominant_aspect=(r.get("dominant_aspect") or "unknown").strip(),
+        context=(r.get("context") or "").strip(),
+        source_name=r.get("source_name", "unknown"),
+        source_url=r.get("source_url", "unknown"),
+        capture_date=(r.get("capture_date") or None),
         confidence=(r.get("confidence") or "unknown"))
 
 

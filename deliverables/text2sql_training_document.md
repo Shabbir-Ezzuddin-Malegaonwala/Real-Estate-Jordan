@@ -1,6 +1,6 @@
 # Jordan Real Estate Intelligence — Text2SQL Semantic-Layer Training Document
 
-_Generated 2026-07-07 from `db/jordan_re.sqlite`. This document follows the platform's strict 3-section training-document format (DDL / Business & Semantic Rules / Example Queries) so it can be ingested directly by the vectorization service, chunked, and indexed into Weaviate for natural-language querying. Every example query below was executed against the live database and returned without error (21/21 passing)._
+_Generated 2026-07-07 from `db/jordan_re.sqlite`. This document follows the platform's strict 3-section training-document format (DDL / Business & Semantic Rules / Example Queries) so it can be ingested directly by the vectorization service, chunked, and indexed into Weaviate for natural-language querying. Every example query below was executed against the live database and returned without error (24/24 passing)._
 
 ## 1. DDL Schema of the Database
 
@@ -209,6 +209,39 @@ CREATE TABLE cost_benchmarks (
     created_at         TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE listing_geofeatures (
+    listing_id           TEXT PRIMARY KEY,
+    elevation_m          REAL,
+    slope_deg            REAL,
+    aspect_deg           REAL,
+    aspect_cardinal      TEXT,
+    population_density   REAL,
+    nightlight_intensity REAL,
+    source_name          TEXT NOT NULL,
+    source_url           TEXT NOT NULL,
+    capture_date         TEXT NOT NULL,
+    collected_by         TEXT,
+    confidence           TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes                TEXT,
+    created_at           TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE neighborhood_geocontext (
+    neighborhood              TEXT PRIMARY KEY,
+    median_elevation_m        REAL,
+    elevation_rank            INTEGER,
+    median_population_density REAL,
+    median_nightlight         REAL,
+    dominant_aspect           TEXT,
+    context                   TEXT,
+    source_name               TEXT NOT NULL,
+    source_url                TEXT NOT NULL,
+    capture_date              TEXT NOT NULL,
+    collected_by              TEXT,
+    confidence                TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    created_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE derived_premiums (
     premium_id      INTEGER PRIMARY KEY AUTOINCREMENT,
     factor          TEXT NOT NULL,
@@ -259,6 +292,10 @@ CREATE TABLE recommendations (
 - macro_series.period is TEXT with MIXED formats: plain year ('2005'), quarter ('2021-Q3'), month ('2025-08'), and year-to-date ('2025-YTD-08'). Do NOT cast period to a number; filter it with string equality or LIKE, and sort lexically (which is chronological for same-format values).
 - cost_benchmarks gives indicative construction cost per m² by finishing class (spec_class = basic | standard | high | luxury | unknown); it is a cost-approach FLOOR, not a per-project quote. Ranges are cost_jd_per_m2_low .. cost_jd_per_m2_high. IMPORTANT for this snapshot: most rows carry spec_class='unknown' and the basic/standard rows have NULL costs — to get usable figures filter on cost_jd_per_m2_low IS NOT NULL rather than filtering by spec_class.
 - derived_premiums and recommendations are ENGINE-OUTPUT tables. In the current snapshot they are EMPTY (0 rows) — the decision engine sample run has not been persisted. Queries against them are valid but will return no rows until the engine writes to them.
+- GEO CONTEXT IS CONTEXT ONLY — IT DOES NOT DRIVE PRICE. listing_geofeatures (elevation_m, slope_deg, aspect_deg/aspect_cardinal, population_density, nightlight_intensity) and neighborhood_geocontext are descriptive terrain/activity layers. Elevation does NOT correlate with price in this market (measured correlation is approximately zero); there is NO elevation premium and NO view/height price effect implied by elevation. Never answer a question in a way that implies higher ground, elevation, slope or aspect makes a property more expensive.
+- population_density and nightlight_intensity are AFFLUENCE / ACTIVITY PROXIES only (Jordan has no published neighborhood-income series, so these stand in as rough signals of how built-up and commercially active an area is). Higher nightlight = more night-time economic activity; higher population_density = more built-up. They are NOT income figures and NOT price drivers — treat them as descriptive context.
+- neighborhood_geocontext holds one row per covered submarket: median_elevation_m, elevation_rank (1 = highest ground of the five), median_population_density, median_nightlight, dominant_aspect, and a free-text context sentence. Use it for 'which submarket is highest / densest / most active' context questions, not for pricing.
+- listing_geofeatures was joined to geocoded listings by nearest DEM/GHS-POP/VIIRS cell, so it covers 23,617 of the 24,471 listings (some listings lack coordinates). Join it to listings by listing_id; expect a few listings with no geofeature row.
 - Column typing: in THIS database price_jd, area_m2, price_per_m2, macro_series.value, far, max_height_m, cost_jd_per_m2_* are stored as REAL and floor_level/bedrooms/bathrooms/expected_year as INTEGER — they are already numeric, so arithmetic works directly. (If you ever query a CSV-imported copy where these arrive as TEXT, wrap them in CAST(col AS REAL) before comparing or aggregating.)
 - SQLite has no MEDIAN function. Compute a median with the ordered-subquery idiom: SELECT AVG(x) FROM (SELECT x FROM t WHERE <filter> AND x IS NOT NULL ORDER BY x LIMIT 2 - (SELECT COUNT(*) FROM t WHERE <filter> AND x IS NOT NULL) % 2 OFFSET (SELECT (COUNT(*)-1)/2 FROM t WHERE <filter> AND x IS NOT NULL)). Median is preferred over AVG for asking prices because portal outliers skew the mean.
 - Geospatial: districts and zoning_plots store polygons as GeoJSON text in geometry_geojson, plus centroid_lat/centroid_lng for cheap point math. listings/poi/projects carry lat & lng directly. There is no spatial index; use centroid columns and bounding-box/haversine math for proximity.
@@ -271,6 +308,8 @@ CREATE TABLE recommendations (
 - Table 'evidence_items' = future-signal news items (infrastructure / policy / market_news) that may move prices.
 - Table 'neighborhood_profiles' = researched qualitative context per submarket (luxury level, buyer type, reputation).
 - Table 'cost_benchmarks' = construction cost per m² by finishing class (cost-approach floor).
+- Table 'listing_geofeatures' = per-listing terrain & activity context (elevation, slope, aspect, population density, nightlight) joined to listings by listing_id. Context only — not a price driver.
+- Table 'neighborhood_geocontext' = one row per covered submarket summarising elevation, density and night-time-activity context. Context only — not a price driver.
 - Table 'derived_premiums' = engine-derived attribute price premiums (fraction; 0.08 = +8%). Currently empty.
 - Table 'recommendations' = persisted decision-engine pricing output per location. Currently empty.
 - listings.neighborhood → districts.name : join a listing to its district/zoning polygon by neighborhood name (both use the human-readable Amman submarket name, e.g. 'Abdoun').
@@ -279,6 +318,8 @@ CREATE TABLE recommendations (
 - poi.neighborhood → districts.name : locate points of interest within a district.
 - listings.finish_quality → cost_benchmarks.spec_class : map a listing's finish class to its construction-cost band (both use basic|standard|high|luxury).
 - recommendations.neighborhood / derived_premiums.neighborhood → listings.neighborhood : engine outputs are keyed by the same submarket name.
+- listing_geofeatures.listing_id → listings.listing_id : attach terrain/activity context (elevation, density, nightlight) to an individual listing. This is a 1:1 join on the listing primary key.
+- neighborhood_geocontext.neighborhood → districts.name (and → listings.neighborhood) : per-submarket geo-context keyed by the human-readable submarket name.
 - evidence_items.impact_area is FREE TEXT (e.g. 'Abdoun', but also 'West Amman incl. Khalda, Dabouq, Naour' or 'citywide'). It only SOMETIMES equals a district name — match it with LIKE '%<name>%', never an equality join, and expect citywide/corridor rows that touch several submarkets.
 
 ## 3. Example Queries
@@ -483,6 +524,36 @@ FROM (
   LIMIT 2 - (SELECT COUNT(*) FROM listings WHERE neighborhood = 'Dabouq' AND property_type = 'land' AND listing_type = 'sale' AND price_per_m2 IS NOT NULL) % 2
   OFFSET (SELECT (COUNT(*) - 1) / 2 FROM listings WHERE neighborhood = 'Dabouq' AND property_type = 'land' AND listing_type = 'sale' AND price_per_m2 IS NOT NULL)
 )
+```
+
+Q: Which covered submarket is the densest and has the highest night-time activity? (context only, not price)
+```sql
+SELECT neighborhood, median_population_density, median_nightlight, elevation_rank, dominant_aspect
+FROM neighborhood_geocontext
+ORDER BY median_population_density DESC
+```
+
+Q: What is the average ground elevation of listings in Khalda? (terrain context — elevation does not affect price)
+```sql
+SELECT ROUND(AVG(lf.elevation_m), 1) AS avg_elevation_m, COUNT(*) AS n_listings
+FROM listing_geofeatures lf
+JOIN listings l ON l.listing_id = lf.listing_id
+WHERE l.neighborhood = 'Khalda'
+```
+
+Q: Join covered-submarket apartment sale listings to their elevation and show the average asking price per m2 alongside median elevation, to confirm elevation is not a price driver.
+```sql
+SELECT l.neighborhood,
+       ROUND(AVG(l.price_per_m2), 1) AS avg_price_per_m2,
+       ROUND(AVG(lf.elevation_m), 1) AS avg_elevation_m,
+       COUNT(*) AS n
+FROM listings l
+JOIN listing_geofeatures lf ON lf.listing_id = l.listing_id
+WHERE l.neighborhood IN ('Abdoun','Dabouq','Sweifieh','Khalda','Shmeisani')
+  AND l.property_type = 'apartment' AND l.listing_type = 'sale'
+  AND l.price_per_m2 IS NOT NULL
+GROUP BY l.neighborhood
+ORDER BY avg_price_per_m2 DESC
 ```
 
 Q: Give a price-band summary (min, median, max asking price per m2) for apartment sales in each covered submarket.
