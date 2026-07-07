@@ -285,20 +285,29 @@ def _narrative(subject, recommended, min_safe, premium, conf, comps,
     return " ".join(lines)
 
 
-def _empty_result(subject, as_of, notes) -> RecommendationResult:
+def unpriceable(subject, as_of, factor: str, detail: str,
+                narrative: Optional[str] = None, notes=None) -> RecommendationResult:
+    """A well-formed 'cannot price' result: honest zero band, one explanatory risk factor."""
     return RecommendationResult(
         location_id=subject.location_id, neighborhood=subject.neighborhood,
         property_type=subject.property_type, min_safe_price_jd_m2=0.0,
         recommended_price_jd_m2=0.0, premium_price_jd_m2=0.0,
         confidence_label="L", confidence_numeric=0.0,
         confidence_interval_jd_m2=[0.0, 0.0],
+        narrative=narrative or detail,
+        evidence_objects=[], comparables=[],
+        risk_factors=[_risk(factor, "high", detail)],
+        alternative_scenarios=[],
+        method_values={"selection_notes": notes or []},
+        computed_date=as_of.isoformat(),
+    )
+
+
+def _empty_result(subject, as_of, notes) -> RecommendationResult:
+    return unpriceable(
+        subject, as_of, "No comparable listings",
+        "No plausible comparables for this submarket — recommendation not possible.",
         narrative=("No comparable evidence available for "
                    f"{subject.neighborhood} {subject.property_type}; cannot price. "
                    "Collect listings for this submarket first."),
-        evidence_objects=[], comparables=[],
-        risk_factors=[_risk("No comparable listings", "high",
-                            "No plausible comparables for this submarket — recommendation not possible.")],
-        alternative_scenarios=[],
-        method_values={"selection_notes": notes},
-        computed_date=as_of.isoformat(),
-    )
+        notes=notes)

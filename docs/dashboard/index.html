@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jordan Real Estate Intelligence — Engineering Dashboard</title>
+<style>
+  /* ============ Theme tokens ============ */
+  :root{
+    --bg:#f4f6f9; --panel:#ffffff; --panel-2:#f8fafc; --ink:#0f1b2d; --ink-soft:#3b4a5e;
+    --muted:#64748b; --line:#dde3ec; --line-strong:#c6d0dd;
+    --accent:#1f5fa8; --accent-soft:#e8f0fb; --accent-ink:#14477f;
+    --ok:#1a7f4b; --ok-bg:#e3f4ea; --prog:#b7791f; --prog-bg:#fbf1dc;
+    --pend:#5a6472; --pend-bg:#eceff3; --block:#b23b3b; --block-bg:#fbe6e6;
+    --shadow:0 1px 2px rgba(15,27,45,.06),0 4px 14px rgba(15,27,45,.05);
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c1118; --panel:#141b25; --panel-2:#111823; --ink:#e8eef6; --ink-soft:#b8c4d4;
+    --muted:#8695a8; --line:#26313f; --line-strong:#33414f;
+    --accent:#5fa8e6; --accent-soft:#132639; --accent-ink:#9cc8f0;
+    --ok:#5cc98a; --ok-bg:#12291d; --prog:#e0b25c; --prog-bg:#2b230f;
+    --pend:#95a1b2; --pend-bg:#1b232f; --block:#e88a8a; --block-bg:#2c1616;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0c1118; --panel:#141b25; --panel-2:#111823; --ink:#e8eef6; --ink-soft:#b8c4d4;
+      --muted:#8695a8; --line:#26313f; --line-strong:#33414f;
+      --accent:#5fa8e6; --accent-soft:#132639; --accent-ink:#9cc8f0;
+      --ok:#5cc98a; --ok-bg:#12291d; --prog:#e0b25c; --prog-bg:#2b230f;
+      --pend:#95a1b2; --pend-bg:#1b232f; --block:#e88a8a; --block-bg:#2c1616;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1,h2,h3,h4{line-height:1.25;color:var(--ink);margin:0}
+  code,.mono{font-family:var(--mono);font-size:.86em}
+
+  /* ============ Layout ============ */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  .layout{display:grid;grid-template-columns:230px 1fr;gap:0;align-items:start}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  /* ============ Top bar ============ */
+  header.top{position:sticky;top:0;z-index:40;background:var(--panel);
+    border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  .top-inner{display:flex;align-items:center;gap:14px;padding:12px 22px;max-width:1180px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:11px;min-width:0}
+  .brand .logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-ink));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex:none}
+  .brand .t1{font-weight:700;font-size:15px;letter-spacing:-.2px}
+  .brand .t2{font-size:11.5px;color:var(--muted);letter-spacing:.3px}
+  .top-spacer{flex:1}
+  .pill{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;
+    background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--line)}
+  .toggle{cursor:pointer;border:1px solid var(--line-strong);background:var(--panel-2);color:var(--ink);
+    border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .toggle:hover{border-color:var(--accent)}
+
+  /* ============ Side nav ============ */
+  nav.side{position:sticky;top:60px;align-self:start;padding:22px 8px 40px 22px;max-height:calc(100vh - 60px);overflow-y:auto}
+  @media(max-width:900px){nav.side{display:none}}
+  nav.side a{display:block;font-size:12.7px;color:var(--ink-soft);padding:5px 10px;border-radius:6px;
+    border-left:2px solid transparent;margin-bottom:1px}
+  nav.side a:hover{background:var(--panel-2);text-decoration:none;color:var(--ink)}
+  nav.side .navhead{font-size:10.5px;font-weight:700;letter-spacing:.8px;color:var(--muted);
+    text-transform:uppercase;margin:14px 0 5px 10px}
+
+  main{padding:26px 22px 80px 26px;min-width:0}
+  @media(max-width:900px){main{padding:20px 22px 60px}}
+
+  section{margin:0 0 34px;scroll-margin-top:70px}
+  .sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .sec-h .num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+  .sec-h h2{font-size:20px;letter-spacing:-.3px}
+  .lead{color:var(--ink-soft);font-size:14.5px;max-width:75ch;margin:0 0 14px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;box-shadow:var(--shadow);margin-bottom:14px}
+  .card h3{font-size:15px;margin-bottom:8px}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  /* ============ Status chips ============ */
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:999px;letter-spacing:.2px;white-space:nowrap;vertical-align:middle}
+  .chip .dot{width:7px;height:7px;border-radius:50%}
+  .c-ok{background:var(--ok-bg);color:var(--ok)} .c-ok .dot{background:var(--ok)}
+  .c-prog{background:var(--prog-bg);color:var(--prog)} .c-prog .dot{background:var(--prog)}
+  .c-pend{background:var(--pend-bg);color:var(--pend)} .c-pend .dot{background:var(--pend)}
+  .c-block{background:var(--block-bg);color:var(--block)} .c-block .dot{background:var(--block)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px;padding:12px 16px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--ink-soft)}
+  .legend b{color:var(--ink)}
+
+  /* ============ Metric tiles ============ */
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;box-shadow:var(--shadow)}
+  .metric .v{font-size:27px;font-weight:750;letter-spacing:-1px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .metric .k{font-size:12px;color:var(--muted);margin-top:2px;font-weight:600}
+  .metric .s{font-size:11.5px;color:var(--ink-soft);margin-top:6px}
+
+  /* ============ Tables ============ */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel-2);font-weight:700;font-size:11.5px;letter-spacing:.3px;color:var(--ink-soft);
+    text-transform:uppercase;position:sticky;top:0}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--panel-2)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.3px}
+  .prov{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  /* ============ Bars ============ */
+  .bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+  .bar-row .lbl{width:150px;flex:none;color:var(--ink-soft)}
+  .bar-row .track{flex:1;height:16px;background:var(--panel-2);border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+  .bar-row .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-ink));border-radius:5px 0 0 5px}
+  .bar-row .val{width:78px;flex:none;text-align:right;font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+  .fill.warn{background:linear-gradient(90deg,#d69a3a,#b7791f)}
+  .fill.low{background:linear-gradient(90deg,#c76b6b,#a94747)}
+
+  ul.clean{margin:6px 0;padding-left:20px}
+  ul.clean li{margin:5px 0;color:var(--ink-soft)}
+  ul.clean li b{color:var(--ink)}
+  .note{font-size:12.5px;color:var(--muted);font-style:italic}
+  .kbd{font-family:var(--mono);font-size:12px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;color:var(--accent-ink)}
+
+  .callout{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 15px;border-radius:0 10px 10px 0;
+    font-size:13.2px;color:var(--ink-soft);margin:12px 0}
+  .callout.warn{border-color:var(--prog);background:var(--prog-bg)}
+  .callout.block{border-color:var(--block);background:var(--block-bg)}
+  .callout b{color:var(--ink)}
+
+  /* ============ Screenshots ============ */
+  figure{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow)}
+  figure img{display:block;width:100%;height:auto;border-bottom:1px solid var(--line)}
+  figcaption{padding:9px 13px;font-size:12px;color:var(--ink-soft)}
+  figcaption b{color:var(--ink)}
+
+  /* ============ Pipeline SVG ============ */
+  .diagram{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;overflow-x:auto;box-shadow:var(--shadow)}
+  .diagram svg{display:block;min-width:920px}
+
+  footer.foot{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 40px;color:var(--muted);font-size:12.5px}
+  .tag{display:inline-block;font-size:11px;font-family:var(--mono);background:var(--panel-2);border:1px solid var(--line);
+    padding:1px 7px;border-radius:5px;color:var(--ink-soft);margin:2px 3px 2px 0}
+  .hr{height:1px;background:var(--line);border:none;margin:18px 0}
+  .two-col{columns:2;column-gap:26px}
+  @media(max-width:760px){.two-col{columns:1}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="logo">JR</div>
+      <div>
+        <div class="t1">Jordan Real Estate Intelligence</div>
+        <div class="t2">Engineering Dashboard · Amman premium submarkets · v1</div>
+      </div>
+    </div>
+    <div class="top-spacer"></div>
+    <span class="pill">Deadline 2026-07-09</span>
+    <button class="toggle" id="themeBtn" aria-label="Toggle light or dark theme">
+      <span id="themeIcon">◐</span><span id="themeLbl">Dark</span>
+    </button>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="side">
+    <div class="navhead">Overview</div>
+    <a href="#summary">Executive Summary</a>
+    <a href="#progress">Current Progress</a>
+    <a href="#metrics">Current Metrics</a>
+    <div class="navhead">Architecture</div>
+    <a href="#architecture">System Architecture</a>
+    <a href="#pipeline">Data Pipeline</a>
+    <a href="#database">Database & Provenance</a>
+    <a href="#evidence">Evidence Engine</a>
+    <a href="#decision">Decision Engine</a>
+    <div class="navhead">Status</div>
+    <a href="#status">Current Status</a>
+    <a href="#completed">Completed Work</a>
+    <a href="#pending">Pending Work</a>
+    <a href="#research">Research Status</a>
+    <div class="navhead">Data</div>
+    <a href="#datasets">Collected Datasets</a>
+    <a href="#sources">Source Inventory</a>
+    <a href="#quality">Data Quality</a>
+    <a href="#limits">Limitations & Blocked</a>
+    <div class="navhead">Evidence</div>
+    <a href="#screens">Screenshots</a>
+    <div class="navhead">Plan</div>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#versions">Version History</a>
+    <a href="#team">Team</a>
+  </nav>
+
+  <main>
+
+    <!-- ========== EXECUTIVE SUMMARY ========== -->
+    <section id="summary">
+      <div class="sec-h"><span class="num">01</span><h2>Executive Summary</h2></div>
+      <p class="lead">
+        An <b>evidence-backed launch-price decision-support tool</b> for residential real estate in Amman.
+        A builder picks a location and describes a unit; the platform recommends a defensible launch price
+        band — Minimum-Safe / Recommended / Premium (JD/m²) with a confidence level — and, critically,
+        <b>shows why</b>: every adjustment is backed by real market evidence with a traceable source chip.
+        This is not a price-prediction black box — explainability is the product.
+      </p>
+      <div class="callout">
+        <b>Why it is built this way.</b> Jordan does not publish unit-level transaction prices (confidential by law).
+        Official sources give only macro/governorate-level signals. So market intelligence is
+        <b>reconstructed</b> by fusing many sources — portal asking prices, GIS/POIs, official indices — and every
+        conclusion is traceable: collect evidence → store with provenance → reason over it → explain with sources.
+      </div>
+      <div class="grid g4">
+        <div class="metric"><div class="v">24,471</div><div class="k">Real listings</div><div class="s">multi-portal, 24,217 geocoded</div></div>
+        <div class="metric"><div class="v">9 / 9</div><div class="k">DB tables populated</div><div class="s">incl. 4 research tables now loaded</div></div>
+        <div class="metric"><div class="v">16 / 16</div><div class="k">Engine tests passing</div><div class="s">5-sub-engine Decision Engine, live on real DB</div></div>
+        <div class="metric"><div class="v">Live</div><div class="k">API + Frontend</div><div class="s">FastAPI on-demand · React + MapLibre</div></div>
+      </div>
+      <p class="lead" style="margin-top:14px">
+        <b>Where v1 stands:</b> the structured database, collection scrapers, the full Decision Engine, the live API,
+        and the interactive map dashboard are <span class="chip c-ok"><span class="dot"></span>DONE</span> and verified end-to-end.
+        The listing pool grew ~29× (854 → <b>24,471</b>) and all <b>9 of 9</b> tables are now populated — the four research-fed
+        tables (6 competitor projects with launch prices, cost/land benchmarks, 14 infrastructure/policy/qualitative
+        evidence items, 5 neighborhood profiles) have loaded. On the richer pool the engine re-ran and <b>confidence rose</b>
+        (Abdoun M→H 0.76, Shmeisani →H 0.70, Khalda H 0.77) with premiums now grounded in real comps instead of defaulting
+        to the income ceiling. Three official sources remain <span class="chip c-block"><span class="dot"></span>BLOCKED</span>
+        (geo-blocked from outside Jordan) with labelled fallbacks in place; construction-cost JD/m² stays a documented gap.
+      </p>
+    </section>
+
+    <!-- ========== STATUS LEGEND ========== -->
+    <div class="legend" style="margin-bottom:30px">
+      <span><span class="chip c-ok"><span class="dot"></span>DONE</span> &nbsp;<b>Built &amp; verified</b></span>
+      <span><span class="chip c-prog"><span class="dot"></span>IN&nbsp;PROGRESS</span> &nbsp;<b>Active</b></span>
+      <span><span class="chip c-pend"><span class="dot"></span>PENDING</span> &nbsp;<b>Awaiting research load</b></span>
+      <span><span class="chip c-block"><span class="dot"></span>BLOCKED</span> &nbsp;<b>Geo-blocked source, fallback used</b></span>
+      <span style="color:var(--muted)">This legend is used consistently throughout.</span>
+    </div>
+
+    <!-- ========== CURRENT PROGRESS ========== -->
+    <section id="progress">
+      <div class="sec-h"><span class="num">02</span><h2>Current Progress</h2></div>
+      <p class="lead">Progress by workstream. Percentages reflect v1 acceptance scope (the 8-step end-to-end workflow),
+        not the full Phase-2 roadmap.</p>
+      <div class="card">
+        <div class="bar-row"><span class="lbl">Portal scraping</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">GIS / POIs / roads</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">Official macro data</span><div class="track"><div class="fill warn" style="width:80%"></div></div><span class="val">80%</span></div>
+        <div class="bar-row"><span class="lbl">Database & integration</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">Decision Engine</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">Live API</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">Frontend dashboard</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">Deep-research tables</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">Done</span></div>
+        <div class="bar-row"><span class="lbl">Official zoning (GAM)</span><div class="track"><div class="fill low" style="width:15%"></div></div><span class="val">Blocked</span></div>
+        <p class="note" style="margin-top:10px">Official macro at 80%: CBJ price index and DoS permits are loaded; the CBJ index is stale at 2021-Q3 and DLS
+          transaction volume is geo-blocked (news-sourced fallback only). Deep-research tables (projects, cost/land benchmarks,
+          evidence items, neighborhood profiles) have now loaded via the R1–R7 relay.</p>
+      </div>
+    </section>
+
+    <!-- ========== CURRENT METRICS ========== -->
+    <section id="metrics">
+      <div class="sec-h"><span class="num">03</span><h2>Current Metrics</h2></div>
+      <div class="grid g4">
+        <div class="metric"><div class="v">984</div><div class="k">POIs</div><div class="s">7 categories, greater-Amman bbox</div></div>
+        <div class="metric"><div class="v">2,558</div><div class="k">Road segments</div><div class="s">motorway → secondary, full geometry</div></div>
+        <div class="metric"><div class="v">1,927</div><div class="k">Macro rows</div><div class="s">CBJ 1,377 + DoS 540 + DLS 10</div></div>
+        <div class="metric"><div class="v">2,244</div><div class="k">Land-use polygons</div><div class="s">OSM fallback (unofficial, labelled)</div></div>
+        <div class="metric"><div class="v">17,436 / 7,035</div><div class="k">Sale / rent listings</div><div class="s">multi-portal, Amman-wide + 5 target submarkets</div></div>
+        <div class="metric"><div class="v">19,836</div><div class="k">Listings w/ price/m²</div><div class="s">usable for the CMA pool</div></div>
+        <div class="metric"><div class="v">9 / 9</div><div class="k">Tables populated</div><div class="s">all research tables loaded</div></div>
+        <div class="metric"><div class="v">100%</div><div class="k">Rows carry provenance</div><div class="s">source_url + capture_date on every row</div></div>
+      </div>
+    </section>
+
+    <!-- ========== ARCHITECTURE ========== -->
+    <section id="architecture">
+      <div class="sec-h"><span class="num">04</span><h2>System Architecture</h2></div>
+      <p class="lead">The full pipeline is a one-way flow. Business logic lives <b>only</b> in the Decision Engine —
+        never in the frontend, never in the database.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 960 250" role="img" aria-label="Architecture pipeline: Sources to Collection to Database to Feature Engineering to Evidence Engine to Decision Engine to API to Frontend">
+          <defs>
+            <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 z" fill="var(--accent)"/>
+            </marker>
+            <style>
+              .bx{fill:var(--panel-2);stroke:var(--line-strong);stroke-width:1.5;rx:9}
+              .bx.core{fill:var(--accent-soft);stroke:var(--accent)}
+              .tt{fill:var(--ink);font:600 12.5px var(--sans);text-anchor:middle}
+              .sub{fill:var(--muted);font:10.5px var(--mono);text-anchor:middle}
+              .ln{stroke:var(--accent);stroke-width:1.6;marker-end:url(#arw);fill:none}
+            </style>
+          </defs>
+          <!-- Row 1 -->
+          <g>
+            <rect class="bx" x="10"  y="30" width="132" height="52" rx="9"/><text class="tt" x="76"  y="52">Sources</text><text class="sub" x="76" y="68">Bayut · OSM · CBJ</text>
+            <rect class="bx" x="182" y="30" width="132" height="52" rx="9"/><text class="tt" x="248" y="52">Collection</text><text class="sub" x="248" y="68">scrapers/*.py</text>
+            <rect class="bx" x="354" y="30" width="132" height="52" rx="9"/><text class="tt" x="420" y="52">Database</text><text class="sub" x="420" y="68">SQLite · 9 tables</text>
+            <rect class="bx" x="526" y="30" width="150" height="52" rx="9"/><text class="tt" x="601" y="49">Feature</text><text class="tt" x="601" y="64" style="font-size:11px">Engineering</text>
+            <rect class="bx" x="716" y="30" width="150" height="52" rx="9"/><text class="tt" x="791" y="52">Evidence Engine</text><text class="sub" x="791" y="68">structured objects</text>
+          </g>
+          <!-- arrows row1 -->
+          <line class="ln" x1="142" y1="56" x2="180" y2="56"/>
+          <line class="ln" x1="314" y1="56" x2="352" y2="56"/>
+          <line class="ln" x1="486" y1="56" x2="524" y2="56"/>
+          <line class="ln" x1="676" y1="56" x2="714" y2="56"/>
+          <!-- down connector -->
+          <path class="ln" d="M791,82 L791,110 L601,110 L601,132"/>
+          <!-- Row 2 -->
+          <g>
+            <rect class="bx core" x="526" y="134" width="150" height="56" rx="9"/><text class="tt" x="601" y="156">Decision Engine</text><text class="sub" x="601" y="172">5 sub-engines · the brain</text>
+            <rect class="bx" x="354" y="134" width="132" height="56" rx="9"/><text class="tt" x="420" y="158">API</text><text class="sub" x="420" y="174">FastAPI /recommend</text>
+            <rect class="bx" x="182" y="134" width="132" height="56" rx="9"/><text class="tt" x="248" y="158">Frontend</text><text class="sub" x="248" y="174">React + MapLibre</text>
+          </g>
+          <line class="ln" x1="526" y1="162" x2="488" y2="162"/>
+          <line class="ln" x1="354" y1="162" x2="316" y2="162"/>
+          <!-- caption row -->
+          <text class="sub" x="248" y="214" style="text-anchor:middle">interactive map · adjustment waterfall · evidence panel</text>
+          <text class="sub" x="601" y="214" style="text-anchor:middle">no hardcoded weights · confidence as a range</text>
+        </svg>
+      </div>
+      <div class="grid g3" style="margin-top:14px">
+        <div class="card"><h3>Collection layer</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Re-runnable Python scrapers turn raw sources into schema-clean CSV/GeoJSON. Plain HTTP + embedded-JSON
+          parsing (no Playwright needed for the portals). Every output matches the frozen schema.</p></div>
+        <div class="card"><h3>Storage layer</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          One SQLite database (<code>db/jordan_re.sqlite</code>), 9 collected tables + 2 engine-output tables.
+          Every row carries provenance columns. Idempotent loaders — re-running is always safe.</p></div>
+        <div class="card"><h3>Reasoning layer</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Pure-Python engine (stdlib only). Loads DB rows into a <code>DataBundle</code>, derives premiums from data,
+          reconciles three approaches, scores confidence, emits a JSON contract the frontend renders verbatim.</p></div>
+      </div>
+    </section>
+
+    <!-- ========== DATA PIPELINE ========== -->
+    <section id="pipeline">
+      <div class="sec-h"><span class="num">05</span><h2>Data Pipeline</h2></div>
+      <p class="lead">Two pipelines that are never mixed: <b>Current State</b> (what is — feeds today's valuation grid)
+        and <b>Future Signals</b> (what's coming — feeds the appreciation narrative). Evidence objects carry a
+        <code>category</code> tag so the UI keeps them in distinct panels.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Stage</th><th>What happens</th><th>Artifacts</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><b>Collect</b></td><td>Scrape portals (embedded JSON), pull OSM via Overpass, download official Excel/PxWeb</td><td class="prov">scrapers/*.py → data/raw/</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Clean</b></td><td>Normalize to frozen 33-col listings schema; enrich detail pages; outlier flags kept raw</td><td class="prov">data/processed/*.csv</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Load</b></td><td>Idempotent CSV/GeoJSON loaders; reconciliation decisions logged, no silent dedup</td><td class="prov">db/load_csv.py · load_geojson.py</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Feature-engineer</b></td><td>price/m², medians, derived attribute premiums, distance-to-POI, yield, time factor</td><td class="prov">app/engine/adjustment.py · stats.py</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Reason</b></td><td>Comparable selection → adjustment → evidence → confidence → recommendation</td><td class="prov">app/engine/ (5 modules)</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Serve</b></td><td>FastAPI validates input, builds a Subject, returns RecommendationResult verbatim</td><td class="prov">app/api/main.py</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Render</b></td><td>Map + subject form + adjustment waterfall + evidence/comps/risk panels</td><td class="prov">app/web/ (React + MapLibre)</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><b>Research-feed</b></td><td>Deep-research CSVs → projects, cost_benchmarks, evidence_items, neighborhood_profiles</td><td class="prov">data/raw/research/ (incoming)</td><td><span class="chip c-pend"><span class="dot"></span>PENDING</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><b>Corrected finding (verified in execution).</b> The plan assumed Playwright for the portals.
+        In practice both embed full structured JSON in the initial HTML — Bayut in <code>window.state</code> (Algolia),
+        OpenSooq in <code>__NEXT_DATA__</code>. Plain HTTP + stdlib parsing is faster, re-runnable, and more reliable;
+        headless Chromium actually <i>trips</i> OpenSooq bot-detection and returns a degraded page.</div>
+    </section>
+
+    <!-- ========== DATABASE ========== -->
+    <section id="database">
+      <div class="sec-h"><span class="num">06</span><h2>Database &amp; Provenance Model</h2></div>
+      <p class="lead">One SQLite database is the foundation — the platform is built on top of it, never before it.
+        <b>Every table carries provenance columns</b> so any number on the dashboard traces back to its source.</p>
+      <div class="card">
+        <h3>Universal provenance columns (on every collected row)</h3>
+        <p style="margin:6px 0 0">
+          <span class="tag">source_name</span><span class="tag">source_url</span><span class="tag">capture_date</span>
+          <span class="tag">collected_by</span><span class="tag">confidence (H/M/L)</span><span class="tag">notes</span>
+          <span class="tag">evidence_category</span><span class="tag">language (en/ar/mixed)</span>
+        </p>
+        <p class="note" style="margin-top:10px">Collection <code>confidence</code> = trust in the <b>source</b> only. Evidence-level confidence
+          (does it move price, and by how much) is computed later by the Evidence Engine — never mixed with collection confidence.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Table</th><th class="num">Rows</th><th>Provenance / source</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>listings</code></td><td class="num">24,471</td><td>Bayut 23,521 + Property4321 696 + OpenSooq 254; 24,217 geocoded; each row links its listing URL + capture date</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>poi</code></td><td class="num">984</td><td>OpenStreetMap via Overpass; confidence M (community)</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>districts</code></td><td class="num">5</td><td>OSM place nodes → approximate circles (real OSM neighborhood polygons absent)</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>macro_series</code></td><td class="num">1,927</td><td>CBJ price index 1,377 (H) + DoS permits 540 (H) + DLS transactions 10 (L, news-sourced)</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>zoning_plots</code></td><td class="num">2,244</td><td><b>UNOFFICIAL OSM landuse</b>, not GAM regulatory zoning; no zone_class/FAR/height; confidence L</td><td><span class="chip c-prog"><span class="dot"></span>FALLBACK</span></td></tr>
+            <tr><td><code>projects</code></td><td class="num">6</td><td>Real competitor new-launch projects with launch prices, unit mix, payment plans — deep-research loaded</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>evidence_items</code></td><td class="num">14</td><td>BRT Lines 1&2, policy incentives, qualitative view/noise/calm-area facts — deep-research loaded</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>neighborhood_profiles</code></td><td class="num">5</td><td>Qualitative area character for all 5 target submarkets — deep-research loaded</td><td><span class="chip c-ok"><span class="dot"></span>DONE</span></td></tr>
+            <tr><td><code>cost_benchmarks</code></td><td class="num">10</td><td>Land-price benchmarks added; construction-cost JD/m² still a documented gap (no open source)</td><td><span class="chip c-prog"><span class="dot"></span>PARTIAL</span></td></tr>
+            <tr><td colspan="4" style="color:var(--muted);font-size:12px"><b>Engine-output tables</b> (intentionally empty — populated at run time): <code>derived_premiums</code>, <code>recommendations</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:8px"><b>Not a schema gap:</b> <code>roads.geojson</code> (2,558 LineStrings) has no table — it is consumed directly
+        as a GeoJSON map layer by the frontend.</p>
+    </section>
+
+    <!-- ========== EVIDENCE ENGINE ========== -->
+    <section id="evidence">
+      <div class="sec-h"><span class="num">07</span><h2>Evidence Engine</h2></div>
+      <p class="lead">The heart of explainability. Every pricing adjustment is a structured <b>evidence object</b>; the
+        recommendation is a base value plus an ordered list of evidence objects → range + confidence. Nothing
+        appears in the UI without one.</p>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Evidence object shape</h3>
+<pre class="mono" style="margin:0;overflow-x:auto;font-size:12px;color:var(--ink-soft);line-height:1.5">{
+  "factor": "Finish quality (high)",
+  "adjustment": "+0.9%",
+  "confidence": "Medium",
+  "method": "paired median differential (n=7)",
+  "datasets": ["listings"],
+  "sources": [{ "name": "OpenSooq",
+    "url": "https://jo.opensooq.com/...",
+    "capture_date": "2026-07-07" }],
+  "category": "current_state | future_signal",
+  "explanation": "Comparable units with high
+    finish list 0.9% above matched units..."
+}</pre>
+        </div>
+        <div class="card">
+          <h3>How it renders</h3>
+          <ul class="clean" style="font-size:13px">
+            <li>Each object is one row of the <b>adjustment waterfall</b> with a magnitude bar and inline source chips.</li>
+            <li><code>category</code> splits the <b>Current-State</b> and <b>Future-Signals</b> panels.</li>
+            <li>Absolute cross-checks (cost floor, income ceiling) render in a distinct
+              <b>"TRIANGULATION — not additive"</b> block, never cascaded into a running total.</li>
+            <li>A non-priced <b>context</b> row (e.g. "83% agent-listed") renders muted and tagged CONTEXT —
+              market texture, explicitly not a price adjustment.</li>
+          </ul>
+          <p class="note">Pipeline: <code>Recommended Price ← reconciliation ← [evidence objects] ← features ← datasets ← sources</code></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== DECISION ENGINE ========== -->
+    <section id="decision">
+      <div class="sec-h"><span class="num">08</span><h2>Decision Engine — 5 Sub-Engines</h2></div>
+      <p class="lead">Pure Python, standard library only. <b>Hard rule: not one hardcoded attribute premium exists in the engine</b> —
+        every premium is derived from current market data and re-derived on every run. Two guardrail tests enforce this
+        automatically (runtime check + source scan).</p>
+      <div class="grid g2">
+        <div class="card"><h3>1 · Comparable Analysis</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Selects same-submarket / same-type sale comps, relaxes the size band when thin, ranks by similarity
+          (recency, proximity, fewer adjustments = more weight).</p></div>
+        <div class="card"><h3>2 · Adjustment</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          <b>Derives</b> premiums: categorical (view/parking/finish) via paired median differential; continuous
+          (floor/age/size) via OLS slope residualised by finish; time via the CBJ index. Capped &amp; additive (±40% net).</p></div>
+        <div class="card"><h3>3 · Evidence</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Wraps every applied lever + context factor as a structured evidence object with method, sources, and category.</p></div>
+        <div class="card"><h3>4 · Confidence</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Scores five inputs (density, dispersion, recency, cross-method agreement, source quality) → numeric 0–1 → H/M/L,
+          plus a data-driven interval (4–35% half-width). Thin markets get an uncertainty floor.</p></div>
+        <div class="card"><h3>5 · Recommendation</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Reconciles sales-comparison anchor + cost floor + income ceiling → Minimum-Safe / Recommended / Premium
+          + narrative + risk factors + alternative scenarios.</p></div>
+        <div class="card" style="background:var(--accent-soft);border-color:var(--accent)"><h3>Reconciliation</h3><p style="font-size:13px;color:var(--ink-soft);margin:0">
+          Sales comparison is the spine; asking→transaction gap (5–15%, client PDF) applied at midpoint; cost floor sets
+          <code>min_safe</code>; income ceiling caps <code>premium</code>. Convergence raises confidence, divergence becomes a surfaced risk.</p></div>
+      </div>
+
+      <h3 style="margin:20px 0 10px">Final output — re-emitted post-dedup, representative apartment</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Neighborhood</th><th class="num">Min-safe</th><th class="num">Recommended</th><th class="num">Premium</th><th>Confidence</th><th class="num">Sale comps</th></tr></thead>
+          <tbody>
+            <tr><td>Abdoun</td><td class="num">650</td><td class="num">991</td><td class="num">1,333</td><td><span class="chip c-ok"><span class="dot"></span>H · 0.76</span></td><td class="num">917</td></tr>
+            <tr><td>Dabouq</td><td class="num">596</td><td class="num">840</td><td class="num">1,084</td><td><span class="chip c-prog"><span class="dot"></span>M · 0.68</span></td><td class="num">1,066</td></tr>
+            <tr><td>Sweifieh</td><td class="num">534</td><td class="num">821</td><td class="num">1,108</td><td><span class="chip c-prog"><span class="dot"></span>M · 0.69</span></td><td class="num">984</td></tr>
+            <tr><td>Khalda</td><td class="num">522</td><td class="num">634</td><td class="num">746</td><td><span class="chip c-ok"><span class="dot"></span>H · 0.77</span></td><td class="num">1,086</td></tr>
+            <tr><td>Shmeisani</td><td class="num">332</td><td class="num">511</td><td class="num">690</td><td><span class="chip c-ok"><span class="dot"></span>H · 0.70</span></td><td class="num">177</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:8px">All values in JD/m²; every band is finite and ordered, and every value traces to real listing IDs with source URLs.
+        <b>Sale comps</b> are the engine's usable apartment-sale pool per submarket (~10× the earlier 854-listing snapshot).
+        A near-duplicate comp dedup (collapsed <b>422 cross-posted listings</b> across the covered submarkets, conservative 1% rule)
+        tightened Dabouq's dispersion (confidence 0.65 → 0.68) and refined Shmeisani and Abdoun; Sweifieh and Khalda were unchanged
+        (their top comps were already distinct). With real comp depth, premiums are now <b>grounded in comparable listings</b> rather
+        than defaulting to the income ceiling — e.g. Abdoun's premium compressed from 1,540 → <b>1,333 JD/m²</b>. New evidence factors
+        now appear in the waterfall: <b>Competitive positioning</b> (from the 6 projects), <b>Market composition</b> (context), and
+        <b>Future Signals</b> (BRT Lines 1&2, area premium drivers). Remaining data-gap caveats (construction cost, per-listing view)
+        stay surfaced as risk factors.</p>
+    </section>
+
+    <!-- ========== CURRENT STATUS ========== -->
+    <section id="status">
+      <div class="sec-h"><span class="num">09</span><h2>Current Status — Honest Snapshot</h2></div>
+      <div class="grid g2">
+        <div class="card">
+          <h3><span class="chip c-ok"><span class="dot"></span>DONE</span> &nbsp;What works end-to-end</h3>
+          <ul class="clean" style="font-size:13.3px">
+            <li><b>Listings pipeline</b> — 24,471 real asking-price listings (24,217 geocoded), re-runnable scrapers</li>
+            <li><b>All 9 tables populated</b> — incl. 6 projects, 14 evidence items, 5 profiles, 10 cost/land benchmarks</li>
+            <li><b>Map data</b> — 984 POIs, 5 districts, 2,558 roads, land-use backdrop</li>
+            <li><b>Decision Engine</b> — 5 sub-engines, 16/16 tests, re-run on the richer pool; confidence rose</li>
+            <li><b>Live API</b> — <code>/health</code>, <code>/neighborhoods</code>, <code>/recommend</code>, <code>/comparables</code></li>
+            <li><b>Interactive dashboard</b> — map click, subject form, waterfall, comps, light/dark theme + in-app Help panel, offline fallback</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="chip c-prog"><span class="dot"></span>REMAINING</span> &nbsp;What is honestly incomplete</h3>
+          <ul class="clean" style="font-size:13.3px">
+            <li><b>Construction cost JD/m²</b> — no open Jordan source; land-price benchmarks stand in for the cost-approach floor (documented gap)</li>
+            <li><b>Per-listing view / parking</b> — portals do not expose them (~0% / 38%); routed to Phase-2 AI-vision + neighborhood-level facts (now in evidence_items)</li>
+            <li><b>CBJ index stale</b> — ends 2021-Q3; time-adjustment disabled (never extrapolated) beyond coverage</li>
+            <li><b>Official zoning</b> — GAM geo-blocked; OSM landuse used as a labelled placeholder (no FAR/height)</li>
+            <li><b>DLS transaction volume</b> — geo-blocked; only national news-sourced trend rows (confidence L)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== COMPLETED WORK ========== -->
+    <section id="completed">
+      <div class="sec-h"><span class="num">10</span><h2>Completed Work</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Deliverable</th><th>Detail</th><th>Evidence</th></tr></thead>
+          <tbody>
+            <tr><td>Portal scrapers</td><td>Bayut + OpenSooq, plain HTTP embedded-JSON; detail-page enrichment pass for sale rows</td><td class="prov">scrape-report-20260707.md</td></tr>
+            <tr><td>GIS extraction</td><td>984 POIs (7 categories), 5 district circles, 2,558 roads via Overpass (pure-Python geometry)</td><td class="prov">gis-report-20260707.md</td></tr>
+            <tr><td>Official data</td><td>CBJ REPI (14 indicators, 12 governorates), DoS permits (PxWeb API, to 2026-Q1)</td><td class="prov">official-data-report.md</td></tr>
+            <tr><td>Database integration</td><td>5 passes; reconciliation decisions logged; 0 duplicate (indicator, geography, period) tuples verified</td><td class="prov">integration-report.md</td></tr>
+            <tr><td>Decision Engine</td><td>5 sub-engines, no-hardcoded-weights guardrails, 16/16 requirement-driven tests</td><td class="prov">engine-report.md</td></tr>
+            <tr><td>Live API</td><td>FastAPI; engine-parity verified; CORS; <code>{detail}</code> error contract; input-sensitivity checked</td><td class="prov">api-report.md</td></tr>
+            <tr><td>Frontend dashboard</td><td>React + MapLibre; live/offline; light + dark theme; in-app Help panel; fixed a critical map-render bug (glyph-CDN crash dropped all polygon layers)</td><td class="prov">frontend-report.md</td></tr>
+            <tr><td>Data + research load</td><td>Listings 854 → 24,471 (multi-portal); all 4 research tables loaded → 9/9 populated; 94-source master inventory</td><td class="prov">master-source-inventory.csv</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========== PENDING WORK ========== -->
+    <section id="pending">
+      <div class="sec-h"><span class="num">11</span><h2>Pending Work</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Blocks</th><th>Owner</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Construction cost JD/m² by spec class</td><td>True cost-approach floor (land benchmarks stand in for now)</td><td>Junior + Perplexity</td><td><span class="chip c-prog"><span class="dot"></span>GAP — no open source</span></td></tr>
+            <tr><td>Per-listing view / parking</td><td>Categorical view/parking premiums</td><td>Phase-2 AI-vision</td><td><span class="chip c-prog"><span class="dot"></span>ROADMAP</span></td></tr>
+            <tr><td>Official GAM zoning (zone_class/FAR)</td><td>Regulatory reasoning (currently landuse-only)</td><td>Claude (needs Jordan VPN)</td><td><span class="chip c-block"><span class="dot"></span>BLOCKED</span></td></tr>
+            <tr><td>DLS transaction volume</td><td>Demand-velocity signal (P1/roadmap)</td><td>Claude (needs Jordan VPN)</td><td><span class="chip c-block"><span class="dot"></span>BLOCKED</span></td></tr>
+            <tr><td>CBJ index refresh (post 2021-Q3)</td><td>Current time-adjustment factor</td><td>Claude (needs Jordan VPN)</td><td><span class="chip c-block"><span class="dot"></span>BLOCKED</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:8px">The four deep-research tables (projects, cost/land benchmarks, evidence items, neighborhood profiles) have loaded
+        through the R1–R7 relay and now feed the engine. What remains is the construction-cost gap (no open Jordan source), Phase-2
+        per-listing view/parking, and the three geo-blocked official sources (need a Jordan connection / VPN).</p>
+    </section>
+
+    <!-- ========== RESEARCH STATUS ========== -->
+    <section id="research">
+      <div class="sec-h"><span class="num">12</span><h2>Research Status</h2></div>
+      <p class="lead">Datasets that scraping cannot reach are filled by citation-backed AI deep research into the frozen schema.
+        Status below reflects the load into the database as of this snapshot.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Research track</th><th>Target table</th><th>Method</th><th class="num">Rows loaded</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Competitor new-launch projects</td><td><code>projects</code></td><td>Developer sites, Bayut new-projects, FB pages</td><td class="num">6</td><td><span class="chip c-ok"><span class="dot"></span>LOADED</span></td></tr>
+            <tr><td>Cost / land benchmarks</td><td><code>cost_benchmarks</code></td><td>Land-price benchmarks cited; construction cost still a gap</td><td class="num">10</td><td><span class="chip c-prog"><span class="dot"></span>PARTIAL</span></td></tr>
+            <tr><td>Infrastructure / policy / news</td><td><code>evidence_items</code></td><td>BRT Lines 1&2, policy incentives, view/noise/calm facts (URL + date)</td><td class="num">14</td><td><span class="chip c-ok"><span class="dot"></span>LOADED</span></td></tr>
+            <tr><td>Neighborhood qualitative profiles</td><td><code>neighborhood_profiles</code></td><td>Gemini deep-research synthesis, all 5 submarkets</td><td class="num">5</td><td><span class="chip c-ok"><span class="dot"></span>LOADED</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><b>Loaded.</b> All four research tables have landed in the database and now feed the engine —
+        Future Signals (BRT, area drivers), Competitive positioning (from the 6 projects), and qualitative "why" reasons
+        now render in the app instead of the "awaiting data" state. Construction-cost JD/m² remains the one documented gap
+        (no open Jordan source); land-price benchmarks stand in for the cost-approach floor.</div>
+    </section>
+
+    <!-- ========== COLLECTED DATASETS ========== -->
+    <section id="datasets">
+      <div class="sec-h"><span class="num">13</span><h2>Collected Datasets</h2></div>
+      <div class="grid g2">
+        <div class="card">
+          <h3>POIs by category (984)</h3>
+          <div class="bar-row"><span class="lbl">Mosque / worship</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">407</span></div>
+          <div class="bar-row"><span class="lbl">School</span><div class="track"><div class="fill" style="width:55%"></div></div><span class="val">224</span></div>
+          <div class="bar-row"><span class="lbl">Park</span><div class="track"><div class="fill" style="width:35%"></div></div><span class="val">141</span></div>
+          <div class="bar-row"><span class="lbl">Hospital / clinic</span><div class="track"><div class="fill" style="width:27%"></div></div><span class="val">108</span></div>
+          <div class="bar-row"><span class="lbl">Mall / market</span><div class="track"><div class="fill" style="width:13%"></div></div><span class="val">53</span></div>
+          <div class="bar-row"><span class="lbl">University</span><div class="track"><div class="fill" style="width:8%"></div></div><span class="val">31</span></div>
+          <div class="bar-row"><span class="lbl">Transport</span><div class="track"><div class="fill" style="width:5%"></div></div><span class="val">20</span></div>
+        </div>
+        <div class="card">
+          <h3>Comp depth by submarket (engine sale pool)</h3>
+          <div class="tbl-wrap" style="border:none">
+            <table>
+              <thead><tr><th>Submarket</th><th class="num">Sale comps</th><th class="num">POI</th><th>Confidence</th></tr></thead>
+              <tbody>
+                <tr><td>Khalda</td><td class="num">1,086</td><td class="num">40</td><td><span class="chip c-ok"><span class="dot"></span>H 0.77</span></td></tr>
+                <tr><td>Dabouq</td><td class="num">1,066</td><td class="num">12</td><td><span class="chip c-prog"><span class="dot"></span>M 0.68</span></td></tr>
+                <tr><td>Sweifieh</td><td class="num">984</td><td class="num">41</td><td><span class="chip c-prog"><span class="dot"></span>M 0.69</span></td></tr>
+                <tr><td>Abdoun</td><td class="num">917</td><td class="num">37</td><td><span class="chip c-ok"><span class="dot"></span>H 0.76</span></td></tr>
+                <tr><td>Shmeisani</td><td class="num">177</td><td class="num">64</td><td><span class="chip c-ok"><span class="dot"></span>H 0.70</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note" style="margin-top:8px">Sale comps = the engine's usable apartment-sale pool (~10× the earlier 854-listing snapshot). Dabouq's thin POI count (12) still weakens its distance features; Shmeisani's thinner comp pool is the smallest but now reaches High confidence.</p>
+        </div>
+      </div>
+      <div class="grid g3" style="margin-top:2px">
+        <div class="card"><h3>Roads (2,558)</h3>
+          <div class="bar-row"><span class="lbl">Secondary</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">1,160</span></div>
+          <div class="bar-row"><span class="lbl">Primary</span><div class="track"><div class="fill" style="width:58%"></div></div><span class="val">673</span></div>
+          <div class="bar-row"><span class="lbl">Trunk</span><div class="track"><div class="fill" style="width:57%"></div></div><span class="val">660</span></div>
+          <div class="bar-row"><span class="lbl">Motorway</span><div class="track"><div class="fill" style="width:6%"></div></div><span class="val">65</span></div>
+        </div>
+        <div class="card"><h3>Macro series (1,927)</h3>
+          <div class="bar-row"><span class="lbl">CBJ price index</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">1,377</span></div>
+          <div class="bar-row"><span class="lbl">DoS permits</span><div class="track"><div class="fill" style="width:39%"></div></div><span class="val">540</span></div>
+          <div class="bar-row"><span class="lbl">DLS transactions</span><div class="track"><div class="fill low" style="width:2%"></div></div><span class="val">10</span></div>
+          <p class="note" style="margin-top:6px">CBJ 2005→2021-Q3 (H) · DoS 2019→2024 annual (H) · DLS national news-sourced (L).</p>
+        </div>
+        <div class="card"><h3>Land use (2,244)</h3>
+          <div class="bar-row"><span class="lbl">Residential</span><div class="track"><div class="fill warn" style="width:100%"></div></div><span class="val">942</span></div>
+          <div class="bar-row"><span class="lbl">Farmland</span><div class="track"><div class="fill warn" style="width:49%"></div></div><span class="val">460</span></div>
+          <div class="bar-row"><span class="lbl">Orchard</span><div class="track"><div class="fill warn" style="width:28%"></div></div><span class="val">268</span></div>
+          <div class="bar-row"><span class="lbl">Recreation</span><div class="track"><div class="fill warn" style="width:12%"></div></div><span class="val">117</span></div>
+          <p class="note" style="margin-top:6px">Unofficial OSM landuse (labelled) — no zone_class/FAR/height.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SOURCE INVENTORY ========== -->
+    <section id="sources">
+      <div class="sec-h"><span class="num">14</span><h2>Source Inventory</h2></div>
+      <p class="lead">Every row in the database stores its own <code>source_url</code> + <code>capture_date</code>. The full master list is
+        <code>docs/master-source-inventory.csv</code> — <b>94 deduped sources</b> across portals, official statistics, GIS, and cited research.
+        Summary of where every number comes from:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>Source</th><th>Authenticity</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Property listings (24,471, asking prices)</td><td>Bayut Jordan · Property4321 · OpenSooq Jordan</td><td>Market / asking</td><td><span class="chip c-ok"><span class="dot"></span>Real</span></td></tr>
+            <tr><td>Competitor projects (6) · evidence items (14) · profiles (5)</td><td>Developer sites, gov announcements (BRT), Gemini/Perplexity research</td><td>Cited</td><td><span class="chip c-ok"><span class="dot"></span>Loaded</span></td></tr>
+            <tr><td>POIs (984), districts (5), roads (2,558)</td><td>OpenStreetMap (Overpass)</td><td>Community</td><td><span class="chip c-ok"><span class="dot"></span>Real</span></td></tr>
+            <tr><td>Real-estate price index (2005→2021-Q3)</td><td>Central Bank of Jordan</td><td>Official</td><td><span class="chip c-ok"><span class="dot"></span>Real · stale 2021-Q3</span></td></tr>
+            <tr><td>Building permits (supply, to 2024)</td><td>Dept. of Statistics (PxWeb)</td><td>Official</td><td><span class="chip c-ok"><span class="dot"></span>Real</span></td></tr>
+            <tr><td>Land-use polygons (zoning backdrop)</td><td>OpenStreetMap land-use (ArcGIS mirror)</td><td>Unofficial proxy</td><td><span class="chip c-prog"><span class="dot"></span>Fallback (labelled)</span></td></tr>
+            <tr><td>DLS transaction totals (national)</td><td>News citing DLS (Zawya, Jordan News)</td><td>Low, per-row article URL</td><td><span class="chip c-prog"><span class="dot"></span>Fallback (labelled)</span></td></tr>
+            <tr><td>Official DLS transactions (unit-level)</td><td>dls.gov.jo</td><td>Official</td><td><span class="chip c-block"><span class="dot"></span>Geo-blocked</span></td></tr>
+            <tr><td>Official GAM zoning + FAR</td><td>ammancitygis.gov.jo ArcGIS</td><td>Official</td><td><span class="chip c-block"><span class="dot"></span>Geo-blocked</span></td></tr>
+            <tr><td>CBJ index post-2021-Q3</td><td>statisticaldb.cbj.gov.jo</td><td>Official</td><td><span class="chip c-block"><span class="dot"></span>Geo-blocked</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><b>Honesty note (surfaced in the app itself).</b> Listings are <i>asking</i> prices; the engine calibrates
+        asking→transaction with a documented 5–15% discount from the client's pricing PDF. This is stated on the dashboard.</div>
+    </section>
+
+    <!-- ========== DATA QUALITY ========== -->
+    <section id="quality">
+      <div class="sec-h"><span class="num">15</span><h2>Data Quality</h2></div>
+      <p class="lead">Attribute fill rates across the listing pool (post detail-enrichment). Core pricing fields are strong;
+        secondary attributes the portals do not expose stay honestly low and drive documented limitations even at 24,471 listings —
+        volume does not create attributes the source never published.</p>
+      <div class="grid g2">
+        <div class="card">
+          <h3>Listing attribute fill rate (enrichment sample)</h3>
+          <div class="bar-row"><span class="lbl">seller_type</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">100%</span></div>
+          <div class="bar-row"><span class="lbl">price_per_m2</span><div class="track"><div class="fill" style="width:95%"></div></div><span class="val">95%</span></div>
+          <div class="bar-row"><span class="lbl">floor_level</span><div class="track"><div class="fill warn" style="width:41%"></div></div><span class="val">41%</span></div>
+          <div class="bar-row"><span class="lbl">parking</span><div class="track"><div class="fill warn" style="width:38%"></div></div><span class="val">38%</span></div>
+          <div class="bar-row"><span class="lbl">furnishing</span><div class="track"><div class="fill warn" style="width:35%"></div></div><span class="val">35%</span></div>
+          <div class="bar-row"><span class="lbl">building_age_years</span><div class="track"><div class="fill warn" style="width:25%"></div></div><span class="val">25%</span></div>
+          <div class="bar-row"><span class="lbl">finish_quality</span><div class="track"><div class="fill warn" style="width:25%"></div></div><span class="val">25%</span></div>
+          <div class="bar-row"><span class="lbl">view</span><div class="track"><div class="fill low" style="width:1%"></div></div><span class="val">~0%</span></div>
+          <div class="bar-row"><span class="lbl">total_floors</span><div class="track"><div class="fill low" style="width:1%"></div></div><span class="val">0%</span></div>
+        </div>
+        <div class="card">
+          <h3>Known data gaps</h3>
+          <ul class="clean" style="font-size:13.2px">
+            <li><b>view unavailable (~0%)</b> — neither portal exposes orientation as a structured field; OpenSooq's closest is compass facade. Routed to Phase-2 AI-vision + R7 neighborhood-level research. Never fabricated.</li>
+            <li><b>total_floors 0%</b> — not exposed by either portal; floor premium uses absolute floor_level.</li>
+            <li><b>OpenSooq (254) has no coordinates</b> — loaded with NULL coords; distance-to-POI similarity skipped for them (handled, no error). All 600 Bayut rows have lat/lng.</li>
+            <li><b>CBJ price index ends 2021-Q3</b> — a genuine source limit; time-adjustment disabled beyond coverage rather than extrapolated.</li>
+            <li><b>55 listings price &lt; 1,000 JD</b> — placeholder/on-request noise kept raw; the engine's outlier filter (log-space MAD + plausibility floor) handles them.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note" style="margin-top:8px">Rates shown are from the detail-enrichment sample (the original 854-listing pass); pool-wide rates across the newly
+        ingested multi-portal bundle (23,617 rows) are being re-measured. The pattern holds regardless of pool size — view/total_floors
+        are absent because the portals never publish them, so volume cannot fill them. Enrichment continues; a re-run lifts waterfall coverage as attributes land.</p>
+    </section>
+
+    <!-- ========== LIMITATIONS & BLOCKED ========== -->
+    <section id="limits">
+      <div class="sec-h"><span class="num">16</span><h2>Known Limitations &amp; Blocked Sources</h2></div>
+      <div class="callout block">
+        <b>Geo-blocked from outside Jordan (verified 2026-07-07, TCP timeout / refused).</b> These require a Jordan-side connection:
+        <ul class="clean" style="margin-top:6px">
+          <li><b>dls.gov.jo</b> — official DLS unit-level transactions (all 4 host variants timed out). Fallback: 10 national news-sourced trend rows, confidence L.</li>
+          <li><b>ammancitygis.gov.jo</b> — official GAM regulatory zoning + FAR. Named ArcGIS mirrors are token-gated (499). Fallback: OSM landuse polygons, labelled unofficial, no zone_class/FAR/height.</li>
+          <li><b>statisticaldb.cbj.gov.jo</b> — CBJ index past 2021-Q3. Main CBJ site works but its one Excel stops at 2021-Q3.</li>
+          <li><b>data.gov.jo</b> — Jordan open-data portal, connection refused.</li>
+        </ul>
+      </div>
+      <div class="callout warn">
+        <b>Methodological honesty (all surfaced in the UI).</b>
+        Asking prices, not transactions (calibrated by a documented 5–15% gap) · univariate paired premiums are
+        confounded on correlated attributes (view/finish read high → flagged Low confidence; true de-confounding is a
+        Phase-2 hedonic model needing 300–500 transactions) · neighborhood boundaries are approximate circles centered
+        on real OSM place nodes (OSM lacks Amman neighborhood polygons) · four research tables empty → cost floor,
+        competition, and future-signal story unavailable, shown as "awaiting data".
+      </div>
+    </section>
+
+    <!-- ========== SCREENSHOTS ========== -->
+    <section id="screens">
+      <div class="sec-h"><span class="num">17</span><h2>Screenshots — Verified Evidence</h2></div>
+      <p class="lead">Captured from the live app running against the real API (earlier snapshot; the database has since grown to 24,471 listings).
+        Both light and dark themes are shipped (the dashboard defaults to a high-contrast look and respects the viewer's preference).</p>
+      <div class="grid g2">
+        <figure><img src="assets/shot-light.png" alt="Dashboard, light theme" loading="lazy"/>
+          <figcaption><b>Light theme.</b> Analyst terminal — full-bleed Amman map, docked left analysis panel, price band and evidence.</figcaption></figure>
+        <figure><img src="assets/shot-dark.png" alt="Dashboard, dark theme" loading="lazy"/>
+          <figcaption><b>Dark theme.</b> Same layout in the dark analytical palette (two accents, minimal motion).</figcaption></figure>
+        <figure><img src="assets/shot-overview.png" alt="Initial dashboard overview" loading="lazy"/>
+          <figcaption><b>Map overview.</b> 5 neighborhood polygons, 984 category-coloured POIs, road network over the CARTO basemap.</figcaption></figure>
+        <figure><img src="assets/shot-interactive.png" alt="Interactive initial state" loading="lazy"/>
+          <figcaption><b>Interactive state.</b> Subject-property form + live/offline API badge; editing a field debounces a recompute.</figcaption></figure>
+        <figure><img src="assets/shot-form.png" alt="Subject form driving a recompute" loading="lazy"/>
+          <figcaption><b>Subject form.</b> Floor 12 / city view / high finish moved Abdoun recommended from 978 → 1,155 JD/m².</figcaption></figure>
+        <figure><img src="assets/shot-khalda.png" alt="Khalda selection" loading="lazy"/>
+          <figcaption><b>Map-click selection.</b> Clicking the Khalda polygon recomputes the whole panel and flies the map.</figcaption></figure>
+        <figure><img src="assets/shot-waterfall.png" alt="Adjustment waterfall" loading="lazy"/>
+          <figcaption><b>Adjustment waterfall.</b> Base → evidenced adjustments with method, confidence, magnitude bars and source chips.</figcaption></figure>
+        <figure><img src="assets/shot-comparables.png" alt="Comparables panel" loading="lazy"/>
+          <figcaption><b>Comparables.</b> Weighted comps: original → adjusted JD/m², net adjustment %, per-factor chips, similarity, portal, date.</figcaption></figure>
+        <figure><img src="assets/shot-narrative.png" alt="Risk factors and narrative" loading="lazy"/>
+          <figcaption><b>Risk + narrative.</b> Real risk factors with severity dots and the engine's plain-English analyst narrative.</figcaption></figure>
+        <figure><img src="assets/shot-future-empty.png" alt="Future signals awaiting data" loading="lazy"/>
+          <figcaption><b>Honest empty state.</b> Future Signals renders a clean "AWAITING DATA — pipeline pending" card, not fabricated rows.</figcaption></figure>
+        <figure><img src="assets/shot-zoning.png" alt="Land-use layer toggled" loading="lazy"/>
+          <figcaption><b>Land-use layer.</b> The unofficial OSM landuse backdrop, labelled "GAM regulatory zoning pending", off by default.</figcaption></figure>
+        <figure><img src="assets/shot-help.png" alt="In-app help panel" loading="lazy"/>
+          <figcaption><b>In-app Help panel.</b> Explains the methodology, data sources, and honesty caveats directly inside the app (light theme).</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- ========== ROADMAP ========== -->
+    <section id="roadmap">
+      <div class="sec-h"><span class="num">18</span><h2>Roadmap</h2></div>
+      <div class="grid g3">
+        <div class="card"><h3>Near-term (v1 completion)</h3><ul class="clean" style="font-size:13px">
+          <li>Ingest the R1–R7 deep-research CSVs → cost floor, competitor cross-check, future-signal story, qualitative "why"</li>
+          <li>Refresh this dashboard on load</li>
+          <li>Continue listing attribute enrichment</li>
+        </ul></div>
+        <div class="card"><h3>Blocked-source recovery</h3><ul class="clean" style="font-size:13px">
+          <li>Pull geo-blocked official sources (CBJ recent quarters, DLS transactions, GAM zoning + FAR) from a Jordan connection / VPN</li>
+          <li>Swap OSM landuse for real GAM regulatory zoning when reachable</li>
+        </ul></div>
+        <div class="card"><h3>Phase 2</h3><ul class="clean" style="font-size:13px">
+          <li>Hedonic / ML pricing once ≥300–500 clean records exist</li>
+          <li>AI-vision view/finish estimation from listing photos</li>
+          <li>Travel-time matrix (routing API); residual land-value calculator</li>
+          <li>Expand beyond the 5 submarkets</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- ========== VERSION HISTORY ========== -->
+    <section id="versions">
+      <div class="sec-h"><span class="num">19</span><h2>Version History</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Milestone</th><th>Date</th><th>What shipped</th></tr></thead>
+          <tbody>
+            <tr><td>Collection complete (initial)</td><td class="prov">2026-07-07</td><td>Portal scrapes (initial 854), GIS (984 POIs / 2,558 roads), official macro (CBJ + DoS), zoning fallback</td></tr>
+            <tr><td>DB integration passes #1–5</td><td class="prov">2026-07-07</td><td>5 tables populated; macro reconciled &amp; clean-rebuilt to 1,927 rows; enrichment upserts</td></tr>
+            <tr><td>Decision Engine v1</td><td class="prov">2026-07-07</td><td>5 sub-engines, 16/16 tests, live on the real DB, per-neighborhood outputs</td></tr>
+            <tr><td>Live API</td><td class="prov">2026-07-07</td><td>FastAPI wrapping the engine; engine-parity verified</td></tr>
+            <tr><td>Interactive frontend</td><td class="prov">2026-07-07</td><td>Live/offline dashboard; critical map-render bug fixed; light + dark themes</td></tr>
+            <tr><td>This dashboard (v1)</td><td class="prov">2026-07-07</td><td>Engineering documentation dashboard (this file)</td></tr>
+            <tr><td>Data + research load</td><td class="prov">2026-07-07</td><td>Listings 854 → 24,471; all 9 tables populated; engine re-run (confidence rose); frontend light/dark + Help panel</td></tr>
+            <tr><td>This dashboard refresh</td><td class="prov">2026-07-07</td><td>Numbers refreshed to the enriched dataset; ready for the next GitHub push</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========== TEAM ========== -->
+    <section id="team">
+      <div class="sec-h"><span class="num">20</span><h2>Team Responsibilities</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Role</th><th>Owner</th><th>Responsibility</th></tr></thead>
+          <tbody>
+            <tr><td>Project Lead</td><td>Repo owner (user)</td><td>Final decision on any disagreement; deliverable definition</td></tr>
+            <tr><td>Technical Lead</td><td>Claude Code</td><td>All execution — scrapers, GIS/official pulls, database, engine, API, frontend, verification</td></tr>
+            <tr><td>Solution / Design Reviewer</td><td>ChatGPT</td><td>Business-alignment review, methodology &amp; adjustment-grid design, roadmap, risk register, quality gate</td></tr>
+            <tr><td>Research team</td><td>Gemini · Perplexity</td><td>Citation-backed discovery — competitor projects, costs, infrastructure news, source verification</td></tr>
+            <tr><td>Data collection</td><td>Junior</td><td>Runs handed prompts, outputs into the frozen-schema CSVs</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div>
+        <b>Jordan Real Estate Intelligence Platform</b> — Engineering Dashboard · v1 ·
+        Scope: Amman premium submarkets (Abdoun, Dabouq, Sweifieh, Khalda, Shmeisani) · Deadline 2026-07-09.
+      </div>
+      <div style="margin-top:8px">
+        A decision-support tool, not an appraisal or a transaction record. Prices are calibrated asking prices; every
+        number carries a traceable source. Generated from the workstream reports under <code>docs/</code> — regenerate
+        when the deep-research tables load.
+      </div>
+      <div style="margin-top:10px">
+        <span class="tag">MASTER-PLAN.md</span><span class="tag">integration-report.md</span><span class="tag">engine-report.md</span>
+        <span class="tag">api-report.md</span><span class="tag">scrape-report-20260707.md</span><span class="tag">gis-report-20260707.md</span>
+        <span class="tag">official-data-report.md</span><span class="tag">frontend-report.md</span>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  (function(){
+    var root = document.documentElement;
+    var btn = document.getElementById('themeBtn');
+    var lbl = document.getElementById('themeLbl');
+    var icon = document.getElementById('themeIcon');
+    function sysDark(){ return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+    function current(){ return root.getAttribute('data-theme') || (sysDark() ? 'dark' : 'light'); }
+    function apply(t){
+      root.setAttribute('data-theme', t);
+      var nextDark = t === 'light';
+      lbl.textContent = nextDark ? 'Dark' : 'Light';
+      icon.textContent = nextDark ? '◐' : '☀';
+    }
+    // init from stored pref, else follow system
+    var stored = null;
+    try { stored = localStorage.getItem('jr-theme'); } catch(e){}
+    apply(stored || (sysDark() ? 'dark' : 'light'));
+    btn.addEventListener('click', function(){
+      var next = current() === 'light' ? 'dark' : 'light';
+      apply(next);
+      try { localStorage.setItem('jr-theme', next); } catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>

@@ -34,13 +34,22 @@ class Coverage:
 
     def __init__(self, bundle: DataBundle) -> None:
         self.bundle = bundle
+        districts = _load_districts()
         self.centroids = {name.strip().lower(): (lat, lng)
-                          for name, lat, lng in _load_districts()}
+                          for name, lat, lng in districts}
         self.canonical: dict[str, str] = {}
         self.stats: list[dict] = []
-        for name in _neighborhoods_with_sales(bundle):
-            self.canonical[name.strip().lower()] = name
-            self.stats.append(self._profile(name))
+        # Coverage is the set of TARGET submarkets defined by the districts table
+        # (the product's supported neighbourhoods), restricted to those that
+        # actually have sale listings. Listings outside these targets are loaded
+        # for comp density / future expansion but are NOT exposed as coverage.
+        sales_keys = {l.neighborhood.strip().lower()
+                      for l in bundle.sales() if l.neighborhood}
+        for name, _lat, _lng in districts:
+            key = name.strip().lower()
+            if key in sales_keys:
+                self.canonical[key] = name
+                self.stats.append(self._profile(name))
 
     def _profile(self, name: str) -> dict:
         key = name.strip().lower()
@@ -75,15 +84,6 @@ def _load_districts() -> list[tuple[str, Optional[float], Optional[float]]]:
     finally:
         conn.close()
     return [(r[0], r[1], r[2]) for r in rows]
-
-
-def _neighborhoods_with_sales(bundle: DataBundle) -> list[str]:
-    seen: dict[str, str] = {}
-    for l in bundle.sales():
-        key = l.neighborhood.strip().lower()
-        if key and key not in seen:
-            seen[key] = l.neighborhood.strip()
-    return sorted(seen.values())
 
 
 @asynccontextmanager
@@ -165,7 +165,7 @@ def comparables(neighborhood: str = Query(...), limit: int = Query(20, ge=1, le=
     rows = [l for l in app.state.bundle.sales()
             if l.neighborhood.strip().lower() == key
             and l.price_per_m2 and l.price_per_m2 >= MIN_PLAUSIBLE_SALE_PPM2]
-    rows.sort(key=lambda l: l.listing_date or "", reverse=True)
+    rows.sort(key=lambda l: str(l.listing_date or ""), reverse=True)
     return {"neighborhood": canonical, "count": len(rows),
             "comparables": [_comparable_view(l) for l in rows[:limit]]}
 

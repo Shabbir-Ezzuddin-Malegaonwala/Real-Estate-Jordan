@@ -2,21 +2,21 @@
   "location_id": "demo-dabouq",
   "neighborhood": "Dabouq",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 624.5,
-  "recommended_price_jd_m2": 887.7,
-  "premium_price_jd_m2": 1150.9,
+  "min_safe_price_jd_m2": 596.4,
+  "recommended_price_jd_m2": 840.2,
+  "premium_price_jd_m2": 1084.1,
   "confidence": {
-    "label": "H",
-    "numeric": 0.741,
+    "label": "M",
+    "numeric": 0.679,
     "interval_jd_m2": [
-      624.5,
-      1150.9
+      596.4,
+      1084.1
     ]
   },
   "evidence_objects": [
     {
       "factor": "Floor level",
-      "adjustment": "-1.2% per unit",
+      "adjustment": "-1.0% per unit",
       "confidence": "Medium",
       "method": "OLS slope of price/m² vs floor_level (n=48)",
       "datasets": [
@@ -25,27 +25,7 @@
       "sources": [
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
           "capture_date": "2026-07-07"
         },
         {
@@ -55,17 +35,37 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282444326",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283035926",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282731706",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/281066838",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282446612",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282866534",
+          "url": "https://jo.opensooq.com/en/search/283442102",
           "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of floor level moves price/m² by -1.2% (finish-controlled regression); subject value = 3."
+      "explanation": "Each unit of floor level moves price/m² by -1.0% (finish-controlled regression); subject value = 3."
     },
     {
       "factor": "Building age",
@@ -78,27 +78,7 @@
       "sources": [
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
           "capture_date": "2026-07-07"
         },
         {
@@ -108,12 +88,32 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282444326",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283035926",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282731706",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/281066838",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282446612",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282866534",
+          "url": "https://jo.opensooq.com/en/search/283442102",
           "capture_date": "2026-07-07"
         }
       ],
@@ -122,36 +122,16 @@
     },
     {
       "factor": "Size (per m²)",
-      "adjustment": "-0.1% per unit",
+      "adjustment": "-0.0% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs area_m2 (n=99)",
+      "method": "OLS slope of price/m² vs area_m2 (n=300)",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
           "capture_date": "2026-07-07"
         },
         {
@@ -161,17 +141,37 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282444326",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283035926",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282731706",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/281066838",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282446612",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282866534",
+          "url": "https://jo.opensooq.com/en/search/283442102",
           "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of size (per m²) moves price/m² by -0.1% (finish-controlled regression); subject value = 175."
+      "explanation": "Each unit of size (per m²) moves price/m² by -0.0% (finish-controlled regression); subject value = 175."
     },
     {
       "factor": "Ask-to-transaction calibration",
@@ -193,9 +193,9 @@
     },
     {
       "factor": "Income approach ceiling",
-      "adjustment": "770 JD/m²",
+      "adjustment": "560 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (77.9%, citywide rents vs sales)",
+      "method": "income approach: annual rent ÷ derived market yield (107.1%, citywide rents vs sales)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -207,40 +207,38 @@
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (77.9%). Above ≈ 770 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (107.1%). Above ≈ 560 JD/m² the unit stops clearing to investors."
+    },
+    {
+      "factor": "Competitive positioning",
+      "adjustment": "1100 JD/m² median rival launch",
+      "confidence": "Medium",
+      "method": "competitor launch prices within submarket (n=1)",
+      "datasets": [
+        "projects"
+      ],
+      "sources": [
+        {
+          "name": "Edraj Real Estate",
+          "url": "https://www.edraj.com/sale/luxurious-395-sqm-flats-sale-dabouq",
+          "capture_date": "2026-07-07"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "1 competing project(s) launch near 1100 JD/m² in Dabouq; the recommendation is positioned against this band."
     },
     {
       "factor": "Market composition (context)",
       "adjustment": "context — not a price adjustment",
       "confidence": "High",
-      "method": "seller-type share of the 11 comps",
+      "method": "seller-type share of the 10 comps",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
           "capture_date": "2026-07-07"
         },
         {
@@ -250,78 +248,97 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282444326",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283035926",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282731706",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/281066838",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282446612",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282866534",
+          "url": "https://jo.opensooq.com/en/search/283442102",
           "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Of the comparables driving this estimate, 55% agent-listed, 45% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
+      "explanation": "Of the comparables driving this estimate, 50% agent-listed, 50% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
+    },
+    {
+      "factor": "Future signal: Amman inner-city BRT Lines 1 & 2 operational",
+      "adjustment": "positioning (no point premium)",
+      "confidence": "M",
+      "method": "future-signal weighting (proximity × timeline certainty × source trust)",
+      "datasets": [
+        "evidence_items"
+      ],
+      "sources": [
+        {
+          "name": "Greater Amman Municipality (Bus Express)",
+          "url": "http://www.ammanbrt.jo/?l=en",
+          "capture_date": "2026-07-07"
+        }
+      ],
+      "category": "future_signal",
+      "explanation": "Two dedicated-lane BRT lines ~32 km: Line 2 (17 km) Sweileh-Jordan Museum, Line 1 (15 km) Al Mahatta-Sweileh. Infrastructure works largely completed by 2024.. Stated effect: no price impact stated by source (interpretation by engine). Supports holding the launch at the top of the observed range."
+    },
+    {
+      "factor": "Future signal: Dabouq premium drivers: green villa zoning, royal proximity, calm",
+      "adjustment": "positioning (no point premium)",
+      "confidence": "L",
+      "method": "future-signal weighting (proximity × timeline certainty × source trust)",
+      "datasets": [
+        "evidence_items"
+      ],
+      "sources": [
+        {
+          "name": "Homes Jordan (All About Dabouq)",
+          "url": "https://www.homes-jordan.com/en/blogs/detail/all-about-dabouq-amman-jordan",
+          "capture_date": "2026-07-07"
+        }
+      ],
+      "category": "future_signal",
+      "explanation": "Dabouq is an elite low-density villa enclave near royal residences; strict green/villa zoning (often 39% construction cap) enforces calm, privacy and panoramic views.. Stated effect: no price impact stated by source (interpretation by engine). Supports holding the launch at the top of the observed range."
     }
   ],
   "comparables": [
-    {
-      "listing_id": "opensooq-282444326",
-      "neighborhood": "Dabouq",
-      "area_m2": 225.0,
-      "original_ppm2": 977.8,
-      "time_adjusted_ppm2": 977.8,
-      "adjusted_ppm2": 973.5,
-      "gross_adjustment": 0.0044,
-      "reconciliation_weight": 4.7357,
-      "similarity": 0.574,
-      "listing_date": "2026-06-11",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+3.1%",
-          "method": "derived OLS slope",
-          "detail": "comp=225.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282444326",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 977.8,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
     {
       "listing_id": "opensooq-283368668",
       "neighborhood": "Dabouq",
       "area_m2": 230.0,
       "original_ppm2": 904.3,
       "time_adjusted_ppm2": 904.3,
-      "adjusted_ppm2": 913.8,
-      "gross_adjustment": 0.0105,
-      "reconciliation_weight": 4.7101,
+      "adjusted_ppm2": 899.3,
+      "gross_adjustment": 0.0056,
+      "reconciliation_weight": 4.8214,
       "similarity": 0.573,
       "listing_date": "2026-06-30",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-2.4%",
+          "adjustment": "-2.0%",
           "method": "derived OLS slope",
           "detail": "comp=1 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+3.4%",
+          "adjustment": "+1.5%",
           "method": "derived OLS slope",
           "detail": "comp=230.0 -> subject=175"
         }
@@ -339,37 +356,67 @@
       ]
     },
     {
-      "listing_id": "opensooq-282731706",
+      "listing_id": "opensooq-283156470",
       "neighborhood": "Dabouq",
-      "area_m2": 204.0,
-      "original_ppm2": 1102.9,
-      "time_adjusted_ppm2": 1102.9,
-      "adjusted_ppm2": 1083.8,
-      "gross_adjustment": 0.0174,
-      "reconciliation_weight": 4.4869,
-      "similarity": 0.627,
-      "listing_date": "2026-06-17",
+      "area_m2": 250.0,
+      "original_ppm2": 508.0,
+      "time_adjusted_ppm2": 508.0,
+      "adjusted_ppm2": 518.1,
+      "gross_adjustment": 0.0199,
+      "reconciliation_weight": 4.4848,
+      "similarity": 0.67,
+      "listing_date": "2026-06-26",
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+2.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=250.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283156470",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "price_per_m2": 508.0,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq-282444326",
+      "neighborhood": "Dabouq",
+      "area_m2": 225.0,
+      "original_ppm2": 977.8,
+      "time_adjusted_ppm2": 977.8,
+      "adjusted_ppm2": 961.1,
+      "gross_adjustment": 0.0171,
+      "reconciliation_weight": 4.459,
+      "similarity": 0.574,
+      "listing_date": "2026-06-11",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-3.5%",
+          "adjustment": "-3.0%",
           "method": "derived OLS slope",
           "detail": "comp=0 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.8%",
+          "adjustment": "+1.3%",
           "method": "derived OLS slope",
-          "detail": "comp=204.0 -> subject=175"
+          "detail": "comp=225.0 -> subject=175"
         }
       ],
       "source": {
         "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282731706",
+        "url": "https://jo.opensooq.com/en/search/282444326",
         "capture_date": "2026-07-07"
       },
-      "seller_type": "private",
-      "price_per_m2": 1102.9,
+      "seller_type": "agent",
+      "price_per_m2": 977.8,
       "adjustments_applied": [
         "Floor level",
         "Size (per m²)"
@@ -381,21 +428,21 @@
       "area_m2": 200.0,
       "original_ppm2": 1150.0,
       "time_adjusted_ppm2": 1150.0,
-      "adjusted_ppm2": 1127.2,
-      "gross_adjustment": 0.0198,
-      "reconciliation_weight": 4.4701,
+      "adjusted_ppm2": 1122.7,
+      "gross_adjustment": 0.0237,
+      "reconciliation_weight": 4.3927,
       "similarity": 0.639,
       "listing_date": "2026-06-23",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-3.5%",
+          "adjustment": "-3.0%",
           "method": "derived OLS slope",
           "detail": "comp=0 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.5%",
+          "adjustment": "+0.7%",
           "method": "derived OLS slope",
           "detail": "comp=200.0 -> subject=175"
         }
@@ -413,26 +460,63 @@
       ]
     },
     {
-      "listing_id": "opensooq-281066838",
+      "listing_id": "opensooq-282731706",
       "neighborhood": "Dabouq",
-      "area_m2": 199.0,
-      "original_ppm2": 1231.2,
-      "time_adjusted_ppm2": 1231.2,
-      "adjusted_ppm2": 1206.0,
-      "gross_adjustment": 0.0205,
-      "reconciliation_weight": 4.228,
-      "similarity": 0.619,
-      "listing_date": "2026-05-12",
+      "area_m2": 204.0,
+      "original_ppm2": 1102.9,
+      "time_adjusted_ppm2": 1102.9,
+      "adjusted_ppm2": 1078.0,
+      "gross_adjustment": 0.0227,
+      "reconciliation_weight": 4.3804,
+      "similarity": 0.627,
+      "listing_date": "2026-06-17",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-3.5%",
+          "adjustment": "-3.0%",
           "method": "derived OLS slope",
           "detail": "comp=0 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.5%",
+          "adjustment": "+0.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=204.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282731706",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "price_per_m2": 1102.9,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq-281066838",
+      "neighborhood": "Dabouq",
+      "area_m2": 199.0,
+      "original_ppm2": 1231.2,
+      "time_adjusted_ppm2": 1231.2,
+      "adjusted_ppm2": 1201.6,
+      "gross_adjustment": 0.024,
+      "reconciliation_weight": 4.1615,
+      "similarity": 0.619,
+      "listing_date": "2026-05-12",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-3.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=0 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.6%",
           "method": "derived OLS slope",
           "detail": "comp=199.0 -> subject=175"
         }
@@ -450,62 +534,32 @@
       ]
     },
     {
-      "listing_id": "opensooq-283156470",
-      "neighborhood": "Dabouq",
-      "area_m2": 250.0,
-      "original_ppm2": 508.0,
-      "time_adjusted_ppm2": 508.0,
-      "adjusted_ppm2": 531.6,
-      "gross_adjustment": 0.0464,
-      "reconciliation_weight": 4.0038,
-      "similarity": 0.67,
-      "listing_date": "2026-06-26",
-      "adjustments": [
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+4.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=250.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283156470",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 508.0,
-      "adjustments_applied": [
-        "Size (per m²)"
-      ]
-    },
-    {
       "listing_id": "opensooq-282446612",
       "neighborhood": "Dabouq",
       "area_m2": 200.0,
       "original_ppm2": 810.0,
       "time_adjusted_ppm2": 810.0,
-      "adjusted_ppm2": 844.1,
-      "gross_adjustment": 0.0421,
-      "reconciliation_weight": 3.998,
+      "adjusted_ppm2": 842.1,
+      "gross_adjustment": 0.0396,
+      "reconciliation_weight": 4.0401,
       "similarity": 0.633,
       "listing_date": "2026-06-11",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-3.5%",
+          "adjustment": "-3.0%",
           "method": "derived OLS slope",
           "detail": "comp=0 -> subject=3"
         },
         {
           "factor": "Building age",
-          "adjustment": "+6.2%",
+          "adjustment": "+6.3%",
           "method": "derived OLS slope",
           "detail": "comp=3 -> subject=0"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.5%",
+          "adjustment": "+0.7%",
           "method": "derived OLS slope",
           "detail": "comp=200.0 -> subject=175"
         }
@@ -524,101 +578,20 @@
       ]
     },
     {
-      "listing_id": "opensooq-282866534",
-      "neighborhood": "Dabouq",
-      "area_m2": 230.0,
-      "original_ppm2": 1304.3,
-      "time_adjusted_ppm2": 1304.3,
-      "adjusted_ppm2": 1383.5,
-      "gross_adjustment": 0.0606,
-      "reconciliation_weight": 3.7561,
-      "similarity": 0.567,
-      "listing_date": "2026-06-20",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+6.2%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+3.4%",
-          "method": "derived OLS slope",
-          "detail": "comp=230.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282866534",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 1304.3,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-271611135",
-      "neighborhood": "Dabouq",
-      "area_m2": 250.0,
-      "original_ppm2": 940.0,
-      "time_adjusted_ppm2": 940.0,
-      "adjusted_ppm2": 950.4,
-      "gross_adjustment": 0.0111,
-      "reconciliation_weight": 3.2345,
-      "similarity": 0.389,
-      "listing_date": "2025-10-20",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+4.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=250.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/271611135",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 940.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
       "listing_id": "opensooq-283442102",
       "neighborhood": "Dabouq",
       "area_m2": 216.0,
       "original_ppm2": 810.2,
       "time_adjusted_ppm2": 810.2,
-      "adjusted_ppm2": 899.3,
-      "gross_adjustment": 0.1101,
-      "reconciliation_weight": 3.2014,
+      "adjusted_ppm2": 891.6,
+      "gross_adjustment": 0.1005,
+      "reconciliation_weight": 3.3027,
       "similarity": 0.606,
       "listing_date": "2026-07-01",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-3.5%",
+          "adjustment": "-3.0%",
           "method": "derived OLS slope",
           "detail": "comp=0 -> subject=3"
         },
@@ -630,7 +603,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+2.5%",
+          "adjustment": "+1.1%",
           "method": "derived OLS slope",
           "detail": "comp=216.0 -> subject=175"
         }
@@ -649,20 +622,57 @@
       ]
     },
     {
+      "listing_id": "opensooq-271611135",
+      "neighborhood": "Dabouq",
+      "area_m2": 250.0,
+      "original_ppm2": 940.0,
+      "time_adjusted_ppm2": 940.0,
+      "adjusted_ppm2": 930.2,
+      "gross_adjustment": 0.0104,
+      "reconciliation_weight": 3.2445,
+      "similarity": 0.389,
+      "listing_date": "2025-10-20",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-3.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=0 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+2.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=250.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/271611135",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "price_per_m2": 940.0,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
       "listing_id": "opensooq-282343042",
       "neighborhood": "Dabouq",
       "area_m2": 200.0,
       "original_ppm2": 800.0,
       "time_adjusted_ppm2": 800.0,
-      "adjusted_ppm2": 889.5,
-      "gross_adjustment": 0.1119,
-      "reconciliation_weight": 3.0951,
+      "adjusted_ppm2": 885.1,
+      "gross_adjustment": 0.1064,
+      "reconciliation_weight": 3.1508,
       "similarity": 0.632,
       "listing_date": "2026-06-09",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-2.4%",
+          "adjustment": "-2.0%",
           "method": "derived OLS slope",
           "detail": "comp=1 -> subject=3"
         },
@@ -674,7 +684,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.5%",
+          "adjustment": "+0.7%",
           "method": "derived OLS slope",
           "detail": "comp=200.0 -> subject=175"
         }
@@ -697,7 +707,12 @@
     {
       "factor": "Investor ceiling below price",
       "severity": "medium",
-      "detail": "Income ceiling (770) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+      "detail": "Income ceiling (560) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+    },
+    {
+      "factor": "Valuation methods diverge",
+      "severity": "medium",
+      "detail": "Comparison, cost and income approaches disagree (PDF: divergence is informative)."
     },
     {
       "factor": "No cost-approach floor",
@@ -723,57 +738,53 @@
       "factor": "Price index not current",
       "severity": "low",
       "detail": "CBJ index covers only through 2021-Q3; time-adjustment of stale comps is disabled rather than extrapolated."
-    },
-    {
-      "factor": "No future-signal evidence",
-      "severity": "low",
-      "detail": "No infrastructure/development items collected yet — the appreciation story is not evidenced; premium tier rests on the comparison band."
     }
   ],
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 624.5,
+      "recommended_price_jd_m2": 596.4,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 887.7,
+      "recommended_price_jd_m2": 840.2,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 1150.9,
-      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.0). Enables the 'raise later, never cut' strategy under strong demand."
+      "recommended_price_jd_m2": 1084.1,
+      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.36). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a luxury apartment in Dabouq (~175 m²), the recommended launch price is 888 JD/m², within a defensible range of 624–1151 JD/m² (confidence: H, 0.74; 80% interval 624–1151). This is anchored on 11 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: income ceiling ≈ 770. Convergence supports the estimate; divergence is captured in the risks. Key risk: Income ceiling (770) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers.",
+  "narrative": "For a luxury apartment in Dabouq (~175 m²), the recommended launch price is 840 JD/m², within a defensible range of 596–1084 JD/m² (confidence: M, 0.68; 80% interval 596–1084). This is anchored on 10 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: income ceiling ≈ 560. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.36) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Income ceiling (560) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers.",
   "computed_date": "2026-07-07",
   "method_values": {
-    "comparison_asking": 986.4,
-    "comparison": 887.7,
+    "comparison_asking": 933.6,
+    "comparison": 840.2,
     "cost_floor": null,
-    "income_ceiling": 770.0,
-    "development_score": 0.0,
+    "income_ceiling": 560.0,
+    "development_score": 0.36,
     "confidence_components": {
       "data_density": 1.0,
-      "dispersion": 0.359,
-      "recency": 0.921,
-      "method_agreement": 0.763,
+      "dispersion": 0.427,
+      "recency": 0.917,
+      "method_agreement": 0.333,
       "source_quality": 0.6
     },
     "selection_notes": [
-      "99 same-submarket apartment listings; 28 within 18 months",
-      "11 comps selected (ranked by similarity)"
+      "39 near-duplicate cross-posting(s) collapsed (same beds, area & price/m2 within 1%)",
+      "261 same-submarket apartment listings; 26 within 18 months",
+      "10 comps selected (ranked by similarity)"
     ],
     "derived_premiums": [
       {
         "factor": "Finish quality: high vs luxury",
         "derived_premium": -0.1262,
-        "method": "paired median differential (n_high=9, n_luxury=155)",
+        "method": "paired median differential (n_high=9, n_luxury=156)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 164,
+        "sample_size": 165,
         "computed_date": "2026-07-07",
         "neighborhood": "citywide",
         "property_type": "apartment",
@@ -781,11 +792,11 @@
       },
       {
         "factor": "Furnishing: full vs no",
-        "derived_premium": 0.0206,
-        "method": "paired median differential (n_full=19, n_no=116)",
+        "derived_premium": 0.2449,
+        "method": "paired median differential (n_full=25, n_no=391)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 135,
+        "sample_size": 416,
         "computed_date": "2026-07-07",
         "neighborhood": "citywide",
         "property_type": "apartment",
@@ -793,11 +804,11 @@
       },
       {
         "factor": "Furnishing: semi vs no",
-        "derived_premium": 0.5548,
-        "method": "paired median differential (n_semi=21, n_no=116)",
+        "derived_premium": 0.8965,
+        "method": "paired median differential (n_semi=21, n_no=391)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 137,
+        "sample_size": 412,
         "computed_date": "2026-07-07",
         "neighborhood": "citywide",
         "property_type": "apartment",
@@ -805,7 +816,7 @@
       },
       {
         "factor": "Floor level",
-        "derived_premium": -0.01177,
+        "derived_premium": -0.01012,
         "method": "OLS slope of price/m² vs floor_level (n=48)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
@@ -817,7 +828,7 @@
       },
       {
         "factor": "Building age",
-        "derived_premium": -0.02065,
+        "derived_premium": -0.0211,
         "method": "OLS slope of price/m² vs building_age_years (n=47)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
@@ -829,11 +840,11 @@
       },
       {
         "factor": "Size (per m²)",
-        "derived_premium": -0.00062,
-        "method": "OLS slope of price/m² vs area_m2 (n=99)",
+        "derived_premium": -0.00027,
+        "method": "OLS slope of price/m² vs area_m2 (n=300)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 99,
+        "sample_size": 300,
         "computed_date": "2026-07-07",
         "neighborhood": "Dabouq",
         "property_type": "apartment",

@@ -24,6 +24,16 @@ MIN_COMPS = 3                    # below this the market is "thin" (PDF: reliabi
 MIN_COMPS_FULL_CONFIDENCE = 8    # at/above this, data density stops penalising confidence
 TARGET_COMPS = 12                # stop selecting once we have this many strong comps
 
+# --- Near-duplicate collapse (comparable_analysis.collapse_near_duplicates) ---
+# Portal data is heavily cross-syndicated: the SAME physical unit is posted on Bayut,
+# OpenSooq and Facebook (and relisted over time) under different listing_ids. Counting it
+# N times over-weights that price and inflates confidence (QA OBS-3). Real cross-posts in
+# the corpus are near-EXACT (identical bedrooms, area and price); this tight tolerance on
+# BOTH area and price/m² absorbs only rounding/formatting noise, so two genuinely distinct
+# units that merely look similar (e.g. 172 vs 175 m²) are never merged. Rows collapse only
+# when bedrooms are known-and-equal AND both area and price/m² fall within tolerance.
+DEDUP_TOLERANCE = 0.01
+
 # --- Paired-differential derivation (adjustment.py) ---
 MIN_PAIR_GROUP = 3               # need >=3 listings on each side to derive a premium
 MIN_SLOPE_POINTS = 6            # need >=6 (x,y) points to fit a continuous slope

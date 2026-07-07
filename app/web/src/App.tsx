@@ -20,6 +20,9 @@ import { AdjustmentWaterfall } from "./components/AdjustmentWaterfall";
 import { EvidenceSection } from "./components/EvidenceSection";
 import { Comparables } from "./components/Comparables";
 import { RiskAndNarrative } from "./components/RiskAndNarrative";
+import { ThemeToggle } from "./components/ThemeToggle";
+import { HelpPanel } from "./components/HelpPanel";
+import { useTheme } from "./lib/theme";
 import { shortDate } from "./lib/format";
 
 type ApiStatus = "checking" | "online" | "offline";
@@ -60,6 +63,10 @@ export default function App() {
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [computing, setComputing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [showHint, setShowHint] = useState(true);
+
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const apiStatusRef = useRef<ApiStatus>("checking");
   const bundleRef = useRef<RecommendationBundle | null>(null);
@@ -129,13 +136,15 @@ export default function App() {
 
   // Neighbourhood change (form select, search, map click, market bar): immediate.
   const selectNeighborhood = useCallback(
-    (nb: string) =>
+    (nb: string) => {
+      setShowHint(false);
       setSubject((prev) => {
         const next: SubjectInput = { ...(prev ?? { area_m2: 175 }), neighborhood: nb };
         window.clearTimeout(timer.current);
         recompute(next);
         return next;
-      }),
+      });
+    },
     [recompute],
   );
 
@@ -223,6 +232,7 @@ export default function App() {
           setToast(`No data for this location — select a covered submarket (${COVERED}).`)
         }
         layers={layers}
+        theme={theme}
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">
@@ -233,6 +243,7 @@ export default function App() {
           selected={selected}
           onSelect={selectNeighborhood}
         />
+        {showHint && !toast && <MapHint onDismiss={() => setShowHint(false)} />}
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       </div>
 
@@ -241,12 +252,24 @@ export default function App() {
         aria-label="Analysis panel"
       >
         <header className="sticky top-0 z-30 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
               <div className="label-eyebrow">Amman Real Estate</div>
               <div className="text-[15px] font-semibold tracking-tight text-ink">Analyst Terminal</div>
             </div>
-            <ApiBadge status={apiStatus} />
+            <div className="flex shrink-0 items-center gap-2">
+              <ApiBadge status={apiStatus} />
+              <button
+                type="button"
+                onClick={() => setHelpOpen(true)}
+                aria-label="How to use this tool"
+                title="How to use this tool"
+                className="grid h-7 w-7 place-items-center rounded-[3px] border border-line bg-panel text-[13px] font-semibold text-ink-dim transition-colors hover:border-cyan-dim hover:text-ink"
+              >
+                ?
+              </button>
+              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            </div>
           </div>
         </header>
 
@@ -270,6 +293,27 @@ export default function App() {
           {bundle.disclaimer}
         </footer>
       </aside>
+
+      {helpOpen && <HelpPanel onClose={() => setHelpOpen(false)} />}
+    </div>
+  );
+}
+
+// First-load nudge, positioned over the visible map area (right of the 440px
+// panel). Dismisses itself once the user picks a submarket.
+function MapHint({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="pointer-events-auto absolute top-4 left-[calc(50%+220px)] z-20 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-panel/95 px-3 py-1.5 shadow-2xl backdrop-blur-sm lg:flex">
+      <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-accent" aria-hidden />
+      <span className="text-2xs text-ink-dim">Click a submarket or use the form to begin</span>
+      <button
+        type="button"
+        onClick={onDismiss}
+        aria-label="Dismiss hint"
+        className="ml-1 text-ink-mute transition-colors hover:text-ink"
+      >
+        ✕
+      </button>
     </div>
   );
 }

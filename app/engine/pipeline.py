@@ -6,6 +6,7 @@ Confidence → Recommendation. All business logic stays inside this package.
 
 from __future__ import annotations
 
+import math
 from datetime import date
 from typing import Optional
 
@@ -26,6 +27,14 @@ def _citywide_pool(sales: list, subject: Subject) -> list:
 def recommend(subject: Subject, data_bundle: DataBundle,
               as_of: Optional[date] = None) -> RecommendationResult:
     as_of = as_of or data_bundle.as_of or date.today()
+
+    area = subject.area_m2
+    if area is not None and (not math.isfinite(area) or area <= 0):
+        return recommendation.unpriceable(
+            subject, as_of, "Invalid subject area",
+            f"Subject area_m2={area!r} is not a positive finite number; cannot price. "
+            "Provide a positive area, or leave it unset to price without a size adjustment.")
+
     sales = data_bundle.sales()
 
     scored, notes = comparable_analysis.select_comparables(sales, subject, as_of)

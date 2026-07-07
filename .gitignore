@@ -15,6 +15,15 @@ data/research-data/
 *.crdownload
 *.part
 
+# ── Large raw harvested source files from the friend's bundle ──
+# Kept locally (used for normalization + the DEM/geo feature join) but too
+# bulky to commit. The normalized schema-clean listings CSV IS committed.
+data/raw/friend/listings/
+data/raw/friend/geo/
+data/raw/friend/official/
+data/raw/friend/zoning/
+!data/raw/friend/listings_friend_geocoded.csv
+
 # ── Intermediate / backup artifacts ──────────────────────────
 *.preenrich.bak
 *.bak

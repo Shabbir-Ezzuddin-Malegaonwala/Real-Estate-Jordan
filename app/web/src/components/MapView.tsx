@@ -9,13 +9,14 @@ import type {
   RecommendationBundle,
 } from "../types";
 import {
-  CARTO_DARK,
+  themeStyle,
   AMMAN_CENTER,
   AMMAN_ZOOM,
   POI_COLORS,
-  ZONING_COLORS,
-  ZONING_DEFAULT,
+  mapPalette,
+  type MapPalette,
 } from "../lib/mapStyle";
+import type { Theme } from "../lib/theme";
 import { jd } from "../lib/format";
 import type { LayerState } from "./LayerControl";
 
@@ -35,6 +36,7 @@ export function MapView({
   onSelect,
   onOutside,
   layers,
+  theme,
 }: {
   geo: Geo;
   bundle: RecommendationBundle;
@@ -42,6 +44,7 @@ export function MapView({
   onSelect: (nb: string) => void;
   onOutside: () => void;
   layers: LayerState;
+  theme: Theme;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -56,13 +59,16 @@ export function MapView({
   bundleRef.current = bundle;
   const layersRef = useRef(layers);
   layersRef.current = layers;
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
+  const markersRef = useRef<HTMLElement[]>([]);
 
   // Init once — geo is loaded before this component mounts, so it is stable.
   useEffect(() => {
     if (!containerRef.current) return;
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: CARTO_DARK,
+      style: themeStyle(themeRef.current),
       center: AMMAN_CENTER,
       zoom: AMMAN_ZOOM,
       minZoom: 10,
@@ -74,15 +80,17 @@ export function MapView({
     mapRef.current = map;
 
     map.on("load", () => {
-      addBaseLayers(map, geo);
-      addNbhdLayers(map, geo);
+      const pal = mapPalette(themeRef.current);
+      installLayers(map, geo, pal);
+      addNbhdMarkers(map, geo, pal, markersRef);
       readyRef.current = true;
       applySelection(map, selectedRef.current, bundleRef.current);
-      applyVisibility(map, layersRef.current, geo);
+      applyVisibility(map, layersRef.current, geo, pal);
     });
 
     // Neighborhood selection — click inside a polygon selects it; clicking
-    // outside all five polygons is an honest "no coverage here" signal.
+    // outside all five polygons is an honest "no coverage here" signal. Layer-
+    // scoped handlers persist across setStyle, so they are bound once here.
     map.on("click", (e) => {
       if (!readyRef.current) return;
       const hits = map.queryRenderedFeatures(e.point, { layers: ["nbhd-fill"] });
@@ -102,7 +110,7 @@ export function MapView({
       const f = e.features?.[0];
       if (!f) return;
       const p = f.properties as PoiProps;
-      popup(map, e.lngLat, `<b>${esc(p.name || "POI")}</b><br/><span style="color:#9aa7b8">${esc(p.category)} · ${esc(p.neighborhood)}</span>`);
+      popup(map, e.lngLat, `<b>${esc(p.name || "POI")}</b><br/><span style="color:#8a94a5">${esc(p.category)} · ${esc(p.neighborhood)}</span>`);
     });
     map.on("click", "cmp-pts", (e) => {
       const f = e.features?.[0];
@@ -111,7 +119,7 @@ export function MapView({
       popup(
         map,
         e.lngLat,
-        `<b>${jd(Number(p.price_per_m2))} JD/m²</b><br/><span style="color:#9aa7b8">${esc(String(p.portal))} · ${jd(Number(p.area_m2))} m² · ${esc(String(p.view))} view</span>`,
+        `<b>${jd(Number(p.price_per_m2))} JD/m²</b><br/><span style="color:#8a94a5">${esc(String(p.portal))} · ${jd(Number(p.area_m2))} m² · ${esc(String(p.view))} view</span>`,
       );
     });
     map.on("click", "future-pts", (e) => {
@@ -121,13 +129,14 @@ export function MapView({
       popup(
         map,
         e.lngLat,
-        `<b style="color:#5fb2c9">${esc(String(p.factor))}</b><br/><span style="color:#9aa7b8">Future signal${p.expected_year ? " · ~" + p.expected_year : ""}</span>`,
+        `<b style="color:#3d9fb5">${esc(String(p.factor))}</b><br/><span style="color:#8a94a5">Future signal${p.expected_year ? " · ~" + p.expected_year : ""}</span>`,
       );
     });
 
     return () => {
       map.remove();
       mapRef.current = null;
+      markersRef.current = [];
       readyRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -144,21 +153,49 @@ export function MapView({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !readyRef.current) return;
-    applyVisibility(map, layers, geo);
-  }, [layers, geo]);
+    applyVisibility(map, layers, geo, mapPalette(theme));
+  }, [layers, geo, theme]);
+
+  // Theme swap — setStyle drops all sources/layers; re-add them on style.load.
+  // Markers are DOM overlays that survive setStyle, so they are only restyled.
+  // Selection + view are preserved (refs), so nothing the user set is lost.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !readyRef.current) return;
+    const pal = mapPalette(theme);
+    readyRef.current = false;
+    // diff:false forces a full reload — the two CARTO styles share source/layer
+    // ids, so diff mode would skip the reload, never fire style.load, and leave
+    // the basemap (and readyRef) stuck. A full reload drops the custom layers,
+    // which the style.load handler below re-adds deterministically.
+    map.setStyle(themeStyle(theme), { diff: false });
+    map.once("style.load", () => {
+      installLayers(map, geo, pal);
+      for (const el of markersRef.current) el.style.cssText = markerCss(pal);
+      applySelection(map, selectedRef.current, bundleRef.current);
+      applyVisibility(map, layersRef.current, geo, pal);
+      readyRef.current = true;
+    });
+  }, [theme, geo]);
 
   return <div ref={containerRef} className="absolute inset-0" aria-label="Map of Amman submarkets" />;
 }
 
 // ---------------------------------------------------------------------------
 
+function installLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
+  addBaseLayers(map, geo, pal);
+  addNbhdSourceLayers(map, geo, pal);
+}
+
 // The 3.4 MB OSM land-use layer is added lazily on first toggle — keeping it out
 // of the initial source batch. Tiling it synchronously alongside the other
 // polygon source (neighbourhoods) at load starved/stalled the geojson worker and
 // silently dropped both polygon layers; deferring it fixes neighbourhood rendering
 // (and avoids parsing 3.4 MB the user may never view).
-function ensureZoning(map: maplibregl.Map, geo: Geo) {
+function ensureZoning(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
   if (map.getSource("zoning")) return;
+  const z = pal.zoning;
   map.addSource("zoning", { type: "geojson", data: geo.zoning });
   map.addLayer(
     {
@@ -169,20 +206,20 @@ function ensureZoning(map: maplibregl.Map, geo: Geo) {
         "fill-color": [
           "match",
           ["get", "type"],
-          "residential", ZONING_COLORS.residential,
-          "farmland", ZONING_COLORS.farmland,
-          "orchard", ZONING_COLORS.orchard,
-          ["recreation_groun", "recreation_ground"], ZONING_COLORS.recreation_ground,
-          "quarry", ZONING_COLORS.quarry,
-          "industrial", ZONING_COLORS.industrial,
-          ["commercial", "retail"], ZONING_COLORS.commercial,
-          "forest", ZONING_COLORS.forest,
-          "cemetery", ZONING_COLORS.cemetery,
-          "construction", ZONING_COLORS.construction,
-          ZONING_DEFAULT,
+          "residential", z.residential,
+          "farmland", z.farmland,
+          "orchard", z.orchard,
+          ["recreation_groun", "recreation_ground"], z.recreation_ground,
+          "quarry", z.quarry,
+          "industrial", z.industrial,
+          ["commercial", "retail"], z.commercial,
+          "forest", z.forest,
+          "cemetery", z.cemetery,
+          "construction", z.construction,
+          pal.zoningDefault,
         ],
         "fill-opacity": 0.5,
-        "fill-outline-color": "#10151d",
+        "fill-outline-color": pal.zoningOutline,
       },
     },
     "roads",
@@ -201,17 +238,39 @@ function polygonCentroid(coords: number[][][]): [number, number] {
   return [sx / n, sy / n];
 }
 
+function markerCss(pal: MapPalette): string {
+  return `font:600 11px "IBM Plex Sans",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:${pal.markerColor};text-shadow:${pal.markerShadow};pointer-events:none;white-space:nowrap;`;
+}
+
 // Neighbourhood labels are DOM markers, NOT a symbol layer. A glyph-dependent
 // symbol layer on this source fails to tile whenever the external glyph CDN is
 // unreachable, which silently drops ALL of the source's layers (fill/line) and
 // leaves the map blank and unclickable. DOM markers need no glyphs, decoupling
-// map interactivity from font availability. Layers inserted beneath "poi" to
-// preserve z-order (roads < nbhd < poi).
-function addNbhdLayers(map: maplibregl.Map, geo: Geo) {
+// map interactivity from font availability — and they survive setStyle, so a
+// theme swap only restyles them.
+function addNbhdMarkers(
+  map: maplibregl.Map,
+  geo: Geo,
+  pal: MapPalette,
+  markersRef: { current: HTMLElement[] },
+) {
+  const css = markerCss(pal);
+  for (const f of geo.neighborhoods.features) {
+    const el = document.createElement("div");
+    el.textContent = f.properties.neighborhood;
+    el.style.cssText = css;
+    new maplibregl.Marker({ element: el }).setLngLat(polygonCentroid(f.geometry.coordinates)).addTo(map);
+    markersRef.current.push(el);
+  }
+}
+
+// Fill/line/selection layers, inserted beneath "poi" to preserve z-order
+// (roads < nbhd < poi). No markers here — those are added once and persist.
+function addNbhdSourceLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
   if (map.getSource("nbhd")) return;
   map.addSource("nbhd", { type: "geojson", data: geo.neighborhoods });
   map.addLayer(
-    { id: "nbhd-fill", type: "fill", source: "nbhd", paint: { "fill-color": "#e6a94b", "fill-opacity": 0.05 } },
+    { id: "nbhd-fill", type: "fill", source: "nbhd", paint: { "fill-color": pal.nbhdFill, "fill-opacity": 0.05 } },
     "poi",
   );
   map.addLayer(
@@ -219,7 +278,7 @@ function addNbhdLayers(map: maplibregl.Map, geo: Geo) {
       id: "nbhd-line",
       type: "line",
       source: "nbhd",
-      paint: { "line-color": "#a97d38", "line-width": 1, "line-dasharray": [3, 2], "line-opacity": 0.7 },
+      paint: { "line-color": pal.nbhdLine, "line-width": 1, "line-dasharray": [3, 2], "line-opacity": 0.7 },
     },
     "poi",
   );
@@ -229,21 +288,13 @@ function addNbhdLayers(map: maplibregl.Map, geo: Geo) {
       type: "line",
       source: "nbhd",
       filter: ["==", ["get", "neighborhood"], "__none__"],
-      paint: { "line-color": "#e6a94b", "line-width": 2.2, "line-opacity": 0.95 },
+      paint: { "line-color": pal.nbhdSel, "line-width": 2.2, "line-opacity": 0.95 },
     },
     "poi",
   );
-
-  for (const f of geo.neighborhoods.features) {
-    const el = document.createElement("div");
-    el.textContent = f.properties.neighborhood;
-    el.style.cssText =
-      'font:600 11px "IBM Plex Sans",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#d6deea;text-shadow:0 0 4px #0a0d12,0 1px 2px #0a0d12;pointer-events:none;white-space:nowrap;';
-    new maplibregl.Marker({ element: el }).setLngLat(polygonCentroid(f.geometry.coordinates)).addTo(map);
-  }
 }
 
-function addBaseLayers(map: maplibregl.Map, geo: Geo) {
+function addBaseLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
   map.addSource("poi", { type: "geojson", data: geo.pois });
   map.addSource("cmp", { type: "geojson", data: EMPTY });
   map.addSource("future", { type: "geojson", data: EMPTY });
@@ -258,10 +309,10 @@ function addBaseLayers(map: maplibregl.Map, geo: Geo) {
       "line-color": [
         "match",
         ["get", "highway"],
-        ["motorway", "trunk"], "#3a4658",
-        ["primary"], "#313c4c",
-        ["secondary"], "#28313f",
-        "#1e2733",
+        ["motorway", "trunk"], pal.roadMotorway,
+        ["primary"], pal.roadPrimary,
+        ["secondary"], pal.roadSecondary,
+        pal.roadOther,
       ],
       "line-width": [
         "interpolate", ["linear"], ["zoom"],
@@ -293,7 +344,7 @@ function addBaseLayers(map: maplibregl.Map, geo: Geo) {
       ],
       "circle-opacity": 0.85,
       "circle-stroke-width": 0.5,
-      "circle-stroke-color": "#0a0d12",
+      "circle-stroke-color": pal.poiStroke,
     },
   });
 
@@ -327,6 +378,7 @@ function addBaseLayers(map: maplibregl.Map, geo: Geo) {
 }
 
 function applySelection(map: maplibregl.Map, selected: string | null, bundle: RecommendationBundle) {
+  if (!map.getLayer("nbhd-sel")) return;
   map.setFilter("nbhd-sel", ["==", ["get", "neighborhood"], selected ?? "__none__"]);
 
   const r = selected ? bundle.results[selected] : null;
@@ -372,8 +424,8 @@ function applySelection(map: maplibregl.Map, selected: string | null, bundle: Re
   }
 }
 
-function applyVisibility(map: maplibregl.Map, layers: LayerState, geo: Geo) {
-  if (layers.zoning) ensureZoning(map, geo);
+function applyVisibility(map: maplibregl.Map, layers: LayerState, geo: Geo, pal: MapPalette) {
+  if (layers.zoning) ensureZoning(map, geo, pal);
   const set = (id: string, on: boolean) =>
     map.getLayer(id) && map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
   set("zoning-fill", layers.zoning);

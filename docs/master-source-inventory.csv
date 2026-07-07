@@ -1,0 +1,95 @@
+source_name,url,category,official,data_available,auth_required,referenced_by,notes
+Central Bank of Jordan - Real Estate Price Index,https://www.cbj.gov.jo/En/List/Jordan_Real_Estate_Price_Index,gov,yes,yes,no,"DR1,DR2,V1,G",Official quarterly index 2012=100 (Laspeyres) by governorate & property type. Time-adjust comparables.
+Dept. of Lands & Survey - price index PDF (2012=100),https://www.dls.gov.jo/ebv4.0/root_storage/ar/eb_list_page/%D8%A7%D9%84%D8%B1%D9%82%D9%85_%D8%A7%D9%84%D9%82%D9%8A%D8%A7%D8%B3%D9%8A_%D9%84%D8%A3%D8%B3%D8%B9%D8%A7%D8%B1_%D8%A7%D9%84%D8%A3%D8%B5%D9%88%D9%84_%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9_%D9%81%D9%8A_%D8%A7%D9%84%D8%A3%D8%B1%D8%AF%D9%86.pdf,gov,yes,yes,no,"DR1,DR2",Arabic PDF; official price index.
+Ministry of Transport (Jordan) - Amman-Zarqa BRT,https://www.mot.gov.jo/EN/ListDetails/Projects/48/2,gov,yes,yes,no,"DR2,G",Official MOT project page for 20km intercity BRT.
+Amman BRT (Bus Express Project) - GAM,http://www.ammanbrt.jo/?l=en,gov,yes,yes,no,"DR1,DR2","GAM BRT portal (multiple sub-pages: /Projects, /ProjectItems)."
+GAM - BRT Second Phase to Bid,https://media.ammancity.gov.jo,gov,yes,partial,no,G,GAM media site; BRT phase 2 tender + Arabic master-plan PDFs (not machine-readable GIS).
+Petra News Agency - RE sector JD7.179bn 2025,https://pt1.petra.gov.jo/en/news/real-estate-sector-hits-jd7179-billion-milestone-amid-surge-in-q4-liquidity,gov,yes,yes,no,"DR1,DR2",Official news agency; 2025 trading volume milestone.
+Petra - Housing Corporation plot auctions,https://petra.gov.jo/en/news/housing-corporation-offers-multiple-plots-across-kingdom-via-sealed-bid-auction,gov,yes,yes,no,DR1,Sealed-bid plot auctions.
+Mawared - The New Abdali downtown,https://mawared.jo/DetailsPage/ProjectsDetails.aspx?ID=43,gov,yes,yes,no,DR1,National Resources Investment & Development Corp (Mawared) project page.
+Jordan Engineers Association - Real Estate Dept,https://www.jea.org.jo/EN/ListDetails/Real_Estate_Department_Sections/71/3,gov,yes,partial,unknown,DR2,Professional body; possible QS/cost references (not surfaced).
+CBJ - Financial Stability Report,https://www.cbj.gov.jo,gov,yes,partial,no,G,Referenced generically in Gemini; mortgage/credit context.
+GAM ArcGIS REST (zoning) - geo-blocked,https://ammancitygis.gov.jo/arcgis/rest/services,gis,yes,no,yes,"DR1,DR2,V2",Official plot-level zoning API; CONFIRMED unreachable from outside Jordan (geo-blocked). Fallback: OSM landuse.
+Jordan Times - PM checks on BRT project,https://jordantimes.com/news/local/pm-checks-brt-project,news,no,yes,no,"DR1,DR2",BRT progress.
+Jordan Times - RE trading JD1.09b by Feb,https://jordantimes.com/news/business/real-estate-trading-reaches-jd109b-february,news,no,yes,no,DR1,Feb-2025 volume snapshot.
+Jordan News - BRT Sweileh to QAIA extension,https://www.jordannews.jo/Section-109/News/Amman-plans-to-extend-the-BRT-from-Sweileh-to-QAIA-34074,news,no,yes,no,"DR1,DR2","42km BRT extension study, Feb 2024."
+Jordan News - Amman-Zarqa BRT inspection,https://www.jordannews.jo/Section-109/News/Amman-Zarqa-BRT-inspection-reveals-progress-34736,news,no,yes,no,"DR1,DR2",BRT progress.
+Jordan News - GAM completes JD3.04m projects,https://www.jordannews.jo/Section-109/News/Greater-Amman-Municipality-Completes-Construction-Projects-Worth-JD-3-042-927-47642,news,no,yes,no,"DR1,DR2,PX",GAM sidewalks/culverts/paving.
+Jordan News - Apartment sales +19% (incentives),https://www.jordannews.jo/Section-109/News/Land-Director-Apartment-Sales-Rise-by-19-Due-to-Government-Incentives-for-the-Housing-Sector-38967,news,no,yes,no,DR1,DLS credits 2024 incentives for +19% apt sales.
+Jordan News - RE volume JD7.1bn 2025,https://www.jordannews.jo/Section-33/Trade-Industry/Real-Estate-Trading-Volume-Reaches-JD-7-1-Billion-in-2025-48007,news,no,yes,no,"DR1,DR2",2025 volume +7%.
+Jordan News - RE volume JD513m Jan,https://www.jordannews.jo/Section-112/Economy/Real-Estate-Trading-Volume-in-Jordan-Reaches-JD-513-Million-by-End-of-Last-January-48705,news,no,yes,no,"DR1,DR2",Jan-2026 cooling (-6% YoY).
+Jordan News - Mortgage transactions +6.1%,https://www.jordannews.jo/Section-112/Economy/Mortgage-Transactions-on-Real-Estate-in-Jordan-Rise-6-1-Last-Year-49048,news,no,yes,no,DR1,"22,325 mortgages 2025, Amman leading."
+Jordan Pulse - transport investment JD3.4bn,https://www.jordanpulse.com/article/11260,news,no,yes,no,"DR1,DR2",3.47bn JOD transport package incl. Sweileh-Naour corridor.
+Vista/Sahafi - RE volume JD3.132b H1 2025,http://vista.sahafi.jo/art.php?id=3832934840e779dc5ecbacacd128324e828106ef,news,no,yes,no,DR1,H1-2025 volume.
+Gulf News - tallest building in Jordan,https://gulfnews.com/business/property/work-begins-on-tallest-building-in-jordan-1.119654,news,no,yes,no,DR1,DAMAC/Abdali tower context.
+Highways Today - Amman smart parking,https://highways.today,news,no,yes,no,G,Kerbside/smart-parking PPP; also cited for Amman Bridge.
+Zawya - Thabat launches ARPI,https://www.zawya.com,news,no,yes,no,G,ARPI launch coverage.
+Taj Al Safa - Best Areas to Buy Apartments 2025 guide,https://tajalsafa.com/best-areas-to-buy-apartments-in-amman-2025-comprehensive-guide,market,no,yes,no,G,"PRIMARY sale-price anchor: Abdoun 1500-2500, Dabouq 1300-2200 JD/m2 (2025)."
+Taj Al Safa - Best Areas and Prices,https://tajalsafa.com/apartments-for-sale-in-jordan-the-best-areas-and-prices,market,no,yes,no,"DR1,DR2,G","Sale bands: West Amman 1200-2000, Shmeisani 900-1300 JD/m2."
+Amman Residential Property Index (ARPI),https://arpindex.com/,market,no,yes,no,"DR1,DR2,G","Private hedonic index, 30k+ bank-verified txns, 58 vars; +1.96% 12mo to mid-2026; 102 Q3'25 -> 104 Q1'26."
+ARPI - White Paper,https://arpindex.com,market,no,yes,unknown,G,"Methodology + sub-markets (North Abdoun, Sweifieh, Shmeisani)."
+Bright Levant - Asset Management,https://brightlevant.com,market,no,partial,unknown,G,Co-developer of ARPI with Thabat.
+Homes Jordan - Abdoun Apartments 2026 guide,https://www.homes-jordan.com/en/blogs/detail/abdoun-apartments-2026-comprehensive-guide-to-real-estate-in-ammans-upscale-district,market,no,yes,no,G,"Abdoun avg ~1200 JD/m2; min rent 9,000/yr."
+Homes Jordan - Best Areas for Land Investment 2026/27,https://www.homes-jordan.com/en/blogs/detail/amman-real-estate-best-areas-for-land-investment-in-2027,market,no,yes,no,"DR1,DR2,G",Dabouq/Abdoun land 1000-1200 JD/m2.
+Homes Jordan - Jordanian Building & Land Tax Bill 2025,https://www.homes-jordan.com,market,no,yes,no,G,2025 property-tax valuation formula; exact article URL not resolved (domain-level).
+Amman Apartments - 2026 Rental Market Report,https://ammanapts.co/news/apartment-for-rent-in-amman-2026-rental-market-report,market,no,yes,no,G,Abdoun 2-bed 650-900/mo; per-district rent bands.
+Amman Apartments - Cost of Living 2026,https://ammanapts.co/news/cost-of-living-in-amman-2026-rent-utilities-food-monthly-budget-guide-1,market,no,yes,no,G,Sweifieh/Khalda monthly rent baselines.
+Amman Apartments - Real Prices/Areas guide,https://ammanapts.co/news/apartment-for-rent-in-amman-real-prices-areas-local-advice,market,no,yes,no,"DR1,DR2",Rent-by-area local advice.
+ExpatLife.ai - Jordan Housing 2026,https://www.expatlife.ai/jordan/housing,market,no,yes,no,DR1,Tenant-friendly market commentary.
+Numbeo - price per m2 to buy apartment,https://www.numbeo.com,market,no,yes,no,G,Crowd-sourced cost-of-living / price per m2.
+Al Saudi Group - Jordan RE dynamics,https://alsaudigroup.com/BlogDetails/448,market,no,yes,no,G,"Historical Abdoun rents (2016: 1BR 5,500/yr, 3BR 19,250/yr)."
+Araboon Company - Amman property investment,https://arabooncompany.com,market,no,yes,unknown,G,Investment commentary.
+Bayut Jordan,https://www.bayut.jo/en/,portal,no,yes,no,"DR1,DR2,V0,V2,G",Primary sale/rent portal; embeds structured JSON (Algolia). Many per-neighborhood + per-listing URLs.
+Bayut - Land in Abdoun 1265 SQM (DKTT4278),https://www.bayut.jo/en/property/details-DKTT4278.html,portal,no,yes,no,G,Abdoun land 1000 JD/m2 point.
+Bayut - Land in Dabouq 2000 SQM (AD51020),https://www.bayut.jo/en/property/details-AD51020.html,portal,no,yes,no,G,Dabouq green-housing land 400 JD/m2.
+Bayut - Shmeisani 210sqm (AH0565),https://www.bayut.jo/en/property/details-AH0565.html,portal,no,yes,no,G,Shmeisani apt point 519 JD/m2.
+Bayut - Residential Properties Amman page-518,https://www.bayut.jo/en/amman/properties-for-sale/page-518/,portal,no,yes,no,"DR1,DR2",Aggregated land listings (Dabouq/Khalda/Shmeisani).
+OpenSooq Jordan,https://jo.opensooq.com/en/,portal,no,yes,no,"DR1,DR2,V0,V2,G",Volume/private-seller portal; embeds __NEXT_DATA__ (serpApiResponse).
+Homes Jordan (portal),https://www.homes-jordan.com/en/property/sale?adt=2&page=111&t=0,portal,no,yes,no,"DR1,DR2",Curated premium/commercial listings + land (S-3784 etc.).
+Amaken.jo,https://www.amaken.jo/en/,portal,no,yes,no,G,Rich per-listing sale/rent points with dates for all 5 districts.
+Hagzi.jo,https://hagzi.jo/amman/land-for-sale,portal,no,yes,no,"DR1,DR2,G",City-wide land stats + Dabouq rent medians.
+Abdoun Real Estate,https://abdoun.com.jo/en/properties/map,portal,no,yes,no,"DR1,G",Abdoun-focused local inventory (Arabic).
+Dwaik Estate - Land for sale Amman,https://www.dwaik.estate/land-for-sale-amman,portal,no,yes,no,"DR1,DR2","Abdoun Residential-B plot 2,667 JD/m2."
+GoldenKeys,https://land.goldenkeys.co/,portal,no,yes,unknown,DR1,Sweifieh commercial land example.
+Konyare (Konya Real Estate),https://konyare.com,portal,no,yes,no,G,Abdoun/Dabouq/Shmeisani listings + neighborhood pages.
+BRG (Brgjo),https://brgjo.com/area/shmeisani/,portal,no,yes,no,DR1,Shmeisani furnished rentals.
+Sakinni,https://sakinni.com,portal,no,yes,no,G,Ground-floor apartment listing example.
+Edraj Real Estate - Dabouq 395sqm flats,https://www.edraj.com/sale/luxurious-395-sqm-flats-sale-dabouq,builder,no,yes,no,G,Dabouq new-build 1100 JD/m2.
+Jordan Properties - Abdoun Terraces,https://jordan-properties.net/properties/abdounterraces/,builder,no,yes,no,"DR1,DR2,G","Abdoun Terraces 495,000 JOD/305 m2."
+Jordan Properties - all,https://jordan-properties.net/all/,builder,no,yes,no,DR1,Developer portfolio (GAIA/Majestic/Ayana referenced by Gemini).
+Hamdan Group,https://hamdangroupjo.com/?property_category=apartments,builder,no,yes,no,"DR1,DR2",Cloud 12 + Curva/Aura projects; prices not disclosed.
+Helio-Jordan (Google Sites),https://sites.google.com/view/jordanrealestate/Properties,builder,no,yes,no,"DR1,DR2",Helio Abdoun small-apartment project.
+Abu Judom Real Estate,https://www.abujudom.com/Project,builder,no,yes,no,DR1,Premium resale apartments/villas (Abdoun/Shmeisani).
+DAMAC Properties - DAMAC Tower Amman,https://www.damacproperties.com/en/projects/damac-tower-amman/,builder,no,yes,no,"DR1,DR2,G",Abdali branded tower; USD/AED pricing.
+dxb off-plan - Abdoun District,https://dxboffplan.com/for-sale/apartment/jordan/amman/abdoun-district/,portal,no,yes,no,"DR1,DR2",St. Regis / branded Abdoun-district units (Dubai-centric).
+Hagzi - Abdoun apartments,https://hagzi.jo/amman/abdoun/apartment-for-sale,portal,no,yes,no,DR1,135 Abdoun sale listings.
+Zeadat 2018 (Heriot-Watt) - Amman zoning A-D,https://www.ros.hw.ac.uk/bitstream/handle/10399/4008/ZeadatZFZ_0918_egis(6).pdf?sequence=7&isAllowed=y,academic,no,yes,no,DR2,KEY: Residential zones A/B/C/D plot/frontage/setback/height/FAR/parking params (cites Tewfik 1989).
+Emerald - Amman Metropolitan Growth Plan study,https://www.emerald.com,academic,no,yes,yes,G,MGP 2008 urban-envelope densification assessment.
+World Bank - Metropolitan Amman Climate Plans,https://documents1.worldbank.org,academic,yes,yes,no,G,"Demographic/urban context (refugees, densification)."
+World Bank - Transit-Oriented Neighborhoods in Amman,https://documents1.worldbank.org,academic,yes,yes,no,G,BRT/TOD welfare & densification modeling.
+World Bank OpenKnowledge - Welfare/Productivity of Transit Amman,https://openknowledge.worldbank.org,academic,yes,yes,no,G,BRT welfare effects.
+IGC - Governing Growth / 2025 Draft By-law peer review,https://www.theigc.org,academic,no,yes,no,G,FAR by-law (mezzanine/leveling exclusion) supply-constraint analysis.
+MDPI - Amman density/daylight/BRT studies,https://www.mdpi.com,academic,no,yes,no,G,"Setbacks, BRT preference, service accessibility studies."
+ResearchGate - TOD strategic approach,https://www.researchgate.net,academic,no,yes,unknown,G,TOD planning.
+Taylor & Francis - BRT traffic/env impacts Amman,https://www.tandfonline.com,academic,no,yes,yes,G,BRT construction/operation impacts.
+Presses de l'Ifpo - Social Disparities Amman,https://books.openedition.org,academic,no,yes,no,G,Social geography of Amman districts.
+UN-Habitat - It all starts at home,https://unhabitat.org,academic,yes,yes,no,G,Housing context.
+UN Statistics Division - No.67 June 2024,https://unstats.un.org,academic,yes,yes,no,G,Refugee/population figures.
+GIZ - Low-carbon transport Jordan,https://giz.de,academic,no,yes,no,G,Transport strategy economics.
+Codatu - Sustainable Mobility Amman,https://codatu.org,academic,no,yes,no,G,TMMP/BRT planning.
+Arab Urban Development Institute - TOD Amman,https://araburban.org,academic,no,yes,no,G,TOD neighborhoods.
+Jordan Climate Change - BRT mitigation,https://jordanclimatechange.com,academic,no,yes,no,G,BRT case study.
+PMC/NCBI - residential densification energy Jordan,https://pmc.ncbi.nlm.nih.gov,academic,no,yes,no,G,Densification study.
+Compass PC - KSA/UAE construction cost benchmark H2 2024,https://compass-pc.com/news-blog/compass-pc-com-ksa-uae-construction-costs-h2-2024,market,no,partial,no,DR1,Gulf cost benchmarks (NOT Jordan; used only as regional reference).
+New Abdali - Wikipedia,https://en.wikipedia.org/wiki/New_Abdali,other,no,yes,no,"DR1,DR2,G",Abdali master plan / Phase 2 details.
+Amman - Wikipedia,https://en.wikipedia.org/wiki/Amman,other,no,yes,no,G,City/demographic background.
+"ARPI Pulse Q3 2025 (Thabat, LinkedIn)",https://www.linkedin.com/posts/thabat_arpi-pulse-q3-2025-amman-residential-property-activity-7398971232563503104-gCtc,market,no,yes,yes,DR1,ARPI 102 Q3-2025; Abdali/Abdoun strength.
+ARPI Pulse Q1 2026 (LinkedIn),https://www.linkedin.com/posts/arpindex_amman-real-estate-report-q1-2026-en-activity-7457424058813480960-3FCn,market,no,yes,yes,"DR1,DR2",ARPI 104 Q1-2026.
+Reddit r/jordan - pick an area,https://www.reddit.com/r/jordan/comments/1eb0lc8/help_me_pick_an_area/,other,no,yes,no,"DR1,DR2",Anecdotal rent (Khalda/7th Circle).
+Expat Focus - Jordan buying property,https://expatfocus.com,other,no,yes,no,G,Foreign-ownership context.
+Yal Tarawneh - BRT UOJ-Sweileh-Yajouz,https://www.yaltarawneh.com/Project.aspx?ID=45&catId=3,other,no,yes,no,DR1,BRT engineering project page.
+ICMPD,https://icmpd.org,other,no,partial,no,G,Migration context (author page).
+Master Urban Resilience,https://masterurbanresilience.com,other,no,partial,no,G,Resilience context.
+Client PDF - Jordan Real Estate Data Sources (internal),https://ppl-ai-file-upload.s3.amazonaws.com/.../Jordan-Real-Estate-Data-Sources.pdf,other,no,yes,yes,"DR1,DR2,PX",INTERNAL client doc (expiring signed S3 URL). Source of the 5-15% ask-to-sale gap assumption + GAM/OSM notes.
+Client PDF - Real Estate Pricing Strategies (internal),https://ppl-ai-file-upload.s3.amazonaws.com/.../Real-Estate-Pricing-Strategies.pdf,other,no,yes,yes,"DR1,DR2,PX",INTERNAL client methodology doc (expiring signed S3 URL). Repeat-sales / hedonic guidance.
+Client PDF - Deep Research Prompts (internal),https://ppl-ai-file-upload.s3.amazonaws.com/.../DEEP-RESEARCH-PROMPTS.md,other,no,yes,yes,"DR1,DR2,PX",INTERNAL prompt pack (expiring signed S3 URL).

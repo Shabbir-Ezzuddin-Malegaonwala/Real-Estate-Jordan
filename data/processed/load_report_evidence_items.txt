@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : evidence_items
+source csv    : data\raw\research\evidence_items_research.csv
+generated     : 2026-07-07T21:11:31
+------------------------------------------------------------
+rows read     : 14
+inserted      : 14
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0
