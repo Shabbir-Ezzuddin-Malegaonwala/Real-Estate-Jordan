@@ -37,3 +37,7 @@ data/raw/osm/*.json.cache
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# National rebuild — large regenerable artifacts (see docs/national-rebuild-report.md)
+db/jordan_national.sqlite
+data/processed/listings_national_20260708.csv

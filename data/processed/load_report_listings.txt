@@ -1,10 +1,10 @@
 Jordan RE — CSV load report
 table         : listings
-source csv    : data\raw\listings_opensooq_20260707.csv
-generated     : 2026-07-07T10:56:40
+source csv    : data\processed\listings_national_20260708.csv
+generated     : 2026-07-08T05:41:56
 ------------------------------------------------------------
-rows read     : 254
-inserted      : 0
-updated       : 254 (upsert: enrichable attrs merged into existing rows)
+rows read     : 56854
+inserted      : 56854
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
 duplicates    : 0 (existing primary keys, skipped)
 rejected      : 0

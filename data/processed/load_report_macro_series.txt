@@ -1,10 +1,10 @@
 Jordan RE — CSV load report
 table         : macro_series
-source csv    : data\processed\macro_dls_transactions.csv
-generated     : 2026-07-07T10:19:20
+source csv    : data\processed\macro_construction_cost_dos.csv
+generated     : 2026-07-08T05:41:56
 ------------------------------------------------------------
-rows read     : 10
-inserted      : 10
+rows read     : 21
+inserted      : 21
 updated       : 0 (upsert: enrichable attrs merged into existing rows)
 duplicates    : 0 (existing primary keys, skipped)
 rejected      : 0

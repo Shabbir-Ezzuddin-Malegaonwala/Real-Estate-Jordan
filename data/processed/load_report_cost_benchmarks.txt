@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : cost_benchmarks
+source csv    : data\processed\cost_benchmarks_dos_20260708.csv
+generated     : 2026-07-08T05:41:56
+------------------------------------------------------------
+rows read     : 1
+inserted      : 1
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0
