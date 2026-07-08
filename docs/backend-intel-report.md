@@ -5,9 +5,11 @@
 engine function + a clean-JSON API endpoint. Additive only; the 100+ baseline tests still pass;
 no hardcoded pricing weights; every number sourced/explainable; degrades gracefully.
 
-**Verification:** `python -m pytest` — **engine 91 passed** (incl. `NoHardcodedWeights` scan over
-the three new modules + `RealDbInvariantFuzz`), **API 57 passed** (against the live 52,647-row
-server). New suites: `tests/test_engine_intel.py`, `tests/test_intel_endpoints.py` (wired into
+**Verification:** `python -m pytest` — **175 passed** across engine + API suites (incl.
+`NoHardcodedWeights` scan over all new modules, `RealDbInvariantFuzz`, and `EncodingSafety`
+guards). Run against the live 52,647-row server. Wave 2 (Builder Decision Intelligence): Decision
+Readiness (§9), Feasibility (§10), Scenario Comparison (§11). New suites:
+`tests/test_engine_intel.py`, `tests/test_intel_endpoints.py` (wired into
 `tests/run_all.py`). The one non-green in `run_all` is the Playwright E2E, which drives the SPA the
 frontend team is mid-rebuild on (selector `aside[aria-label="Analysis panel"]`) — not a backend
 regression; `/recommend` is a strict superset of the prior contract.
@@ -260,3 +262,129 @@ The HARD RULE stands: **no attribute→fraction pricing map** exists in any engi
 - Invalid body (negative area, out-of-range lever, missing required) → `422 {detail}` (Pydantic), never `500`.
 - Missing inputs the engine can't safely default (no cost benchmark, unpriceable submarket for GDV) → `422 {detail}` asking for the value explicitly — never invented.
 - Null/uncomputable component → `null` + reason, weight redistributed; scores stay finite/ordered/bounded.
+
+---
+
+## 9. Decision Readiness — extends `GET /opportunity`
+
+Each area now also carries a builder-facing `readiness` block: 8 dimensions + `overall`, each
+`{score: 0-100|null, reason, confidence: "high"|"medium"|"low"}`. Computed honestly from data we
+hold; dimensions we cannot yet source are `score:null` (never fabricated). `overall` = weighted
+mean over the NON-null dimensions (weights renormalized), weights exposed, `v1-heuristic`.
+
+| Dimension | Source | Status |
+|---|---|---|
+| `market_potential` | price level + demand proxy | computed |
+| `demand` | pop/night-light + listing density | computed (null if no geocontext) |
+| `competition` | competitor projects + listing supply (inverted) | computed |
+| `pricing_confidence` | the confidence engine on a standard subject | computed |
+| `future_growth` | pending area-intelligence enrichment | null |
+| `infrastructure` | pending area-intelligence enrichment | null |
+| `regulatory_readiness` | pending area-intelligence enrichment | null |
+| `construction_feasibility` | pending area-intelligence enrichment | null |
+
+`GET /opportunity` response gains `readiness_weights` (top-level) and per-area `readiness`:
+
+```json
+"readiness": {
+  "overall": {"score": 82, "reason": "weighted mean over 4 computable dimension(s); 4 pending enrichment", "confidence": "medium"},
+  "dimensions": {
+    "market_potential":         {"score": 60,   "reason": "price level + demand proxy (portal + geocontext)", "confidence": "medium"},
+    "demand":                   {"score": 100,  "reason": "population/night-light activity + listing density", "confidence": "medium"},
+    "competition":              {"score": 100,  "reason": "competitor projects + listing supply (low pressure = higher readiness)", "confidence": "medium"},
+    "future_growth":            {"score": null, "reason": "data not yet available - pending area-intelligence enrichment", "confidence": "low"},
+    "infrastructure":           {"score": null, "reason": "data not yet available - pending area-intelligence enrichment", "confidence": "low"},
+    "regulatory_readiness":     {"score": null, "reason": "data not yet available - pending area-intelligence enrichment", "confidence": "low"},
+    "pricing_confidence":       {"score": 65,   "reason": "decision-engine confidence 'M' on a standard 175 m2 subject", "confidence": "medium"},
+    "construction_feasibility": {"score": null, "reason": "data not yet available - pending area-intelligence enrichment", "confidence": "low"}
+  },
+  "weights": { "market_potential": 0.22, "demand": 0.20, "competition": 0.16, "future_growth": 0.12, "infrastructure": 0.10, "regulatory_readiness": 0.08, "pricing_confidence": 0.08, "construction_feasibility": 0.04 },
+  "weights_used": { "market_potential": 0.324, "demand": 0.294, "competition": 0.235, "pricing_confidence": 0.147 },
+  "version": "v1-heuristic"
+}
+```
+
+The existing `score` / `components` / `centroid` fields are unchanged (backward-compatible).
+
+> Scope note: Future Growth, Infrastructure, Regulatory Readiness and Construction Feasibility are
+> returned null "pending area-intelligence enrichment". Broad future-signal evidence IS surfaced in
+> the existing `components.future_signals`; the readiness block keeps these builder dimensions null
+> until true per-area datasets (GAM zoning, geotech, utilities, infra proximity) are collected —
+> conservative and honest, as instructed.
+
+---
+
+## 10. `GET /feasibility?neighborhood=` — build-feasibility scaffold
+
+Broad feasibility dimensions, each `{status: "available"|"partial"|"not_available", value?, detail,
+sources[]}`. Honest empties; dimensions flip to partial/available as datasets are enriched.
+
+| Dimension | Status (today) | Basis |
+|---|---|---|
+| `regulatory_zoning` | partial | OSM land-use plots citywide (n=2244); per-area FAR/height/zone pending GAM |
+| `construction_engineering` | partial | `cost_benchmarks` median midpoint (citywide, spec-mixed) |
+| `operational_market` | available | per-area portal listings (median sale JD/m2 + count) |
+| `environmental` | not_available | not yet collected |
+| `legal` | not_available | not yet collected |
+| `financial` | not_available | not yet collected |
+
+```json
+{
+  "neighborhood": "Abdoun",
+  "dimensions": {
+    "regulatory_zoning":        {"status": "partial", "detail": "OSM-derived land-use plots exist citywide but are not attributed to this neighborhood; per-area FAR / max-height / zone class pending GAM official data.", "sources": [{"name": "ArcGIS Online public mirror (OSM-derived Amman landuse)", "url": "...", "capture_date": "2026-07-07"}], "value": {"osm_landuse_plots_citywide": 2244}},
+    "construction_engineering": {"status": "partial", "detail": "Citywide construction-cost benchmark (spec-mixed); per-area geotechnical / engineering assessment not yet collected.", "sources": ["..."], "value": {"construction_cost_jd_m2_median": 898.0}},
+    "operational_market":       {"status": "available", "detail": "Active resale market observed from portal listings.", "sources": [{"name": "Portal listings", "url": "internal://listings", "capture_date": "2026-07-08"}], "value": {"median_sale_jd_m2": 1120.0, "sale_listing_count": 1523}},
+    "environmental":            {"status": "not_available", "detail": "Environmental / geotechnical data not yet collected.", "sources": []},
+    "legal":                    {"status": "not_available", "detail": "Title / legal due-diligence data not yet collected.", "sources": []},
+    "financial":                {"status": "not_available", "detail": "Financing terms / mortgage / transfer-tax data not yet collected.", "sources": []}
+  },
+  "summary": {"available": 1, "partial": 2, "not_available": 3},
+  "note": "Honest feasibility scaffold - dimensions flip to partial/available as datasets are enriched; empties are never fabricated."
+}
+```
+
+Uncovered submarket -> `422 {detail}`; missing `neighborhood` query -> `422`.
+
+---
+
+## 11. `POST /scenario/compare` — side-by-side scenarios
+
+Body: base subject fields + `scenarios: [{label, overrides:{...}}]` (2-4). Each scenario is run
+through the same engine as `/scenario`, so deltas are directly comparable. `best_by` flags the
+scenario that maxes recommended / min-safe.
+
+**Request:**
+
+```json
+{
+  "neighborhood": "Abdoun", "area_m2": 175, "finish_quality": "standard",
+  "floor_level": 3, "total_floors": 20,
+  "scenarios": [
+    {"label": "Launch now", "overrides": {}},
+    {"label": "+6mo luxury", "overrides": {"finish_quality": "luxury", "launch_delay_months": 6}},
+    {"label": "Floor 18 view", "overrides": {"target_floor": 18, "floors": 22, "apply_height_view_premium": true}}
+  ]
+}
+```
+
+**Response:** `{ base, scenarios:[{label, result, deltas_vs_base, levers_applied}], best_by, explanation }`
+where `result` is a full `RecommendationResult` and `deltas_vs_base` matches the `/scenario` deltas
+shape (`recommended_pct`, `min_safe_pct`, `premium_pct`, `confidence_change`, `future_signals_change`).
+
+```json
+{
+  "best_by": {"recommended": "Floor 18 view", "min_safe": "Launch now"},
+  "scenarios": [
+    {"label": "Launch now",    "result": {"recommended_price_jd_m2": 971.3}, "deltas_vs_base": {"recommended_pct": 0.0}, "levers_applied": []},
+    {"label": "+6mo luxury",   "result": {"recommended_price_jd_m2": 971.3}, "deltas_vs_base": {"recommended_pct": 0.0}, "levers_applied": ["finish_quality -> luxury", "launch delayed 6 months -> evidence ages"]},
+    {"label": "Floor 18 view", "result": {"recommended_price_jd_m2": 1075.6}, "deltas_vs_base": {"recommended_pct": 10.74}, "levers_applied": ["target_floor -> 18", "height/city-view premium (builder assumption) +10.7%"]}
+  ],
+  "explanation": "Compared 3 scenario(s) against base (971 JD/m2). Highest recommended price: Floor 18 view; safest floor: Launch now. Each scenario is run through the same engine as /scenario - deltas are directly comparable."
+}
+```
+
+Validation: `<2` or `>4` scenarios -> `422`; uncovered submarket -> `422 {detail}`. On dense pools
+the submarket-median anchor dominates the level (per `engine-tune-report.md`), so finish/age tweaks
+move price modestly while floor/view and cost levers move it more — this is faithful engine
+behaviour, not a bug.

@@ -45,29 +45,26 @@ export function salesNarrative(r: RecommendationResult): string {
   return parts.join(" ");
 }
 
-// BUYER — an honest "is this fair / is the area good / what's the catch" read.
-export function buyerSummary(
-  r: RecommendationResult,
-  opp: OpportunityScore | null,
-): { fairness: string; area: string; redFlags: string[] } {
-  const pos = positives(r);
-  const fairness = `A fair price here lands between ${jd(r.min_safe_jd_m2)} and ${jd(r.premium_jd_m2)} JD per m², centred near ${jd(r.recommended_jd_m2)}. Below ${jd(r.min_safe_jd_m2)} looks like a genuine deal; well above ${jd(r.premium_jd_m2)} you're paying a premium the comparable evidence doesn't yet support.`;
+// BUILDER — a decision-oriented executive summary: where, what price, how
+// confident, key risks. Grounded in the band + confidence + risks already shown.
+export function executiveSummary(r: RecommendationResult, opp: OpportunityScore | null): string {
+  const parts: string[] = [];
+  const oppLine = opp
+    ? ` It scores ${opp.score}/100 on our opportunity index${opp.low_data ? " (low data — treat as indicative)" : ""}.`
+    : "";
+  parts.push(
+    `${r.neighborhood} supports a launch around ${jd(r.recommended_jd_m2)} JD/m² (defensible range ${jd(r.min_safe_jd_m2)}–${jd(r.premium_jd_m2)}), at ${r.confidence.level.toLowerCase()} confidence.${oppLine}`,
+  );
 
-  const areaBits: string[] = [];
-  if (opp) {
-    const lvl = opp.score >= 66 ? "strong" : opp.score >= 40 ? "moderate" : "softer";
-    areaBits.push(`${r.neighborhood} scores ${opp.score}/100 on our opportunity index — a ${lvl} area on price level, demand and competition.`);
-  }
-  if (pos.length > 0) areaBits.push(`Buyers here pay for ${pos.slice(0, 3).join(", ")}.`);
-  const area = areaBits.join(" ") || `${r.neighborhood} is one of our covered submarkets.`;
+  const pos = positives(r).slice(0, 3);
+  if (pos.length > 0) parts.push(`Value is driven by ${pos.join(", ")}, each evidenced in comparable sales.`);
 
-  const redFlags: string[] = r.risk_factors
-    .filter((rf) => rf.severity !== "low")
-    .slice(0, 3)
-    .map((rf) => rf.detail || rf.title);
-  if (r.confidence.level === "Low") {
-    redFlags.push("Confidence is low for this area — treat the figure as indicative and verify with a local agent.");
-  }
+  const fut = futureDrivers(r).slice(0, 2);
+  if (fut.length > 0) parts.push(`Forward drivers (${fut.join(", ")}) support holding at the top of the range and raising later — never cutting.`);
 
-  return { fairness, area, redFlags };
+  const topRisk = r.risk_factors.find((rf) => rf.severity !== "low");
+  if (topRisk) parts.push(`Key risk: ${topRisk.detail || topRisk.title}.`);
+
+  parts.push(`Basis: ${r.comps_considered ?? r.comparables.length} comparables, every adjustment source-traceable. Decision-support, not a formal valuation.`);
+  return parts.join(" ");
 }

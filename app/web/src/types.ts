@@ -192,6 +192,7 @@ export interface OpportunityScore {
   listing_count?: number; // confidence signal — low-n cells are noise, not opportunity
   low_data?: boolean; // listing_count under the trust threshold (< 10)
   governorate?: string;
+  readiness?: ReadinessDimension[]; // 9-dim decision readiness from expanded /opportunity
 }
 
 // GET /areas → the full neighbourhood list for search/dropdown.
@@ -245,6 +246,46 @@ export interface ResidualInputs {
   profit_pct: number;
   gdv_per_m2?: number; // defaults to the engine's recommended launch price
 }
+// 9-dimension decision readiness (expanded GET /opportunity). A null score means
+// the signal is not yet collected — rendered muted as "data not yet available",
+// never as zero.
+export interface ReadinessDimension {
+  key: string;
+  label: string;
+  score: number | null; // 0..100 or null when unavailable
+  reason: string;
+  confidence?: "high" | "medium" | "low";
+}
+
+// Feasibility (GET /feasibility?neighborhood) — broad "can I build here?" checks.
+export type FeasibilityStatus = "ok" | "partial" | "caution" | "risk" | "unknown";
+export interface FeasibilityDimension {
+  key: string;
+  label: string;
+  status: FeasibilityStatus; // unknown = data not yet available
+  value?: string;
+  reason: string;
+  sources?: EvidenceSource[];
+}
+export interface Feasibility {
+  neighborhood: string;
+  dimensions: FeasibilityDimension[];
+  source: "live" | "mock";
+}
+
+// Scenario comparison (POST /scenario/compare) — 2-3 scenarios side by side.
+export interface ScenarioColumn {
+  label: string;
+  overrides: ScenarioOverrides;
+  band: ScenarioBand;
+  net_pct: number; // signed decimal vs base recommended
+}
+export interface ScenarioComparison {
+  base: ScenarioBand;
+  columns: ScenarioColumn[];
+  source: "live" | "local";
+}
+
 export interface ResidualBreakdown {
   gdv: number;
   gdv_per_m2: number;

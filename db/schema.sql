@@ -272,6 +272,39 @@ CREATE TABLE IF NOT EXISTS cost_benchmarks (
 );
 CREATE INDEX IF NOT EXISTS idx_cost_spec_class ON cost_benchmarks (spec_class);
 
+-- dos_building_cost — DoS quarterly Building-Licenses time series (friend archive, 2004-2026).
+-- Area/cost are authority totals (all building types blended; ~90% of licenses are residential);
+-- Area filed in 000 M2, Cost in 000 JD, so cost_jd_per_m2 = estimated_cost_jd / area_m2.
+-- NOTE: estimated_cost_jd is the licensing authority's *filed estimated cost* — an official
+-- administrative valuation that tends to understate turnkey market build cost; use as a
+-- conservative cost-approach floor. authority ∈ Kingdom (national) / Greater Amman Municipality
+-- (Amman urban) / Municipalities / Joint district committees / Regional authorities.
+CREATE TABLE IF NOT EXISTS dos_building_cost (
+    cost_id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    year                      INTEGER NOT NULL,
+    quarter                   TEXT NOT NULL,
+    authority                 TEXT NOT NULL,
+    building_type             TEXT NOT NULL DEFAULT 'all',
+    license_type              TEXT NOT NULL CHECK (license_type IN ('new','extension','existing')),
+    licenses                  INTEGER,
+    residential_license_share REAL,
+    area_m2                   REAL,
+    estimated_cost_jd         REAL,
+    cost_jd_per_m2            REAL,
+    evidence_category         TEXT NOT NULL CHECK (evidence_category IN ('market','government','gis','infrastructure','macro','portal','builder','news','derived','unknown')),
+    language                  TEXT NOT NULL DEFAULT 'en' CHECK (language IN ('en','ar','mixed','unknown')),
+    source_name               TEXT NOT NULL,
+    source_url                TEXT NOT NULL,
+    capture_date              TEXT NOT NULL,
+    collected_by              TEXT,
+    confidence                TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes                     TEXT,
+    created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (year, quarter, authority, license_type)
+);
+CREATE INDEX IF NOT EXISTS idx_dosbuild_year ON dos_building_cost (year);
+CREATE INDEX IF NOT EXISTS idx_dosbuild_auth ON dos_building_cost (authority, license_type);
+
 -- ===========================================================================
 -- E. GEO / TERRAIN CONTEXT (friend-sourced; NON-PRICED neighborhood context)
 -- ===========================================================================

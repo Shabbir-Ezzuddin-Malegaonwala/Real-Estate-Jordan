@@ -9,12 +9,17 @@ import type {
   AreaEntry,
   Confidence,
   ConfidenceComponent,
+  Feasibility,
+  FeasibilityDimension,
   OpportunityComponents,
   OpportunityScore,
+  ReadinessDimension,
   RecommendationResult,
   ResidualBreakdown,
   ResidualInputs,
   ScenarioBand,
+  ScenarioColumn,
+  ScenarioComparison,
   ScenarioOverrides,
   ScenarioResult,
 } from "../types";
@@ -305,6 +310,7 @@ export async function fetchOpportunity(
         listing_count: prior?.listing_count,
         low_data: prior?.low_data ?? false,
         governorate: prior?.governorate,
+        readiness: adaptReadiness(o.readiness),
         source: "live",
       });
     }
@@ -534,4 +540,223 @@ export async function requestResidual(
 // Derives the confidence badge label consistently for scenario/opportunity chips.
 export function levelFromScore(score: number): Confidence["level"] {
   return score >= 66 ? "High" : score >= 40 ? "Medium" : "Low";
+}
+
+// --- Decision readiness (9 dims) --------------------------------------------
+
+const READINESS_LABELS: Record<string, string> = {
+  market_potential: "Market Potential",
+  demand: "Demand",
+  competition: "Competition",
+  future_growth: "Future Growth",
+  infrastructure: "Infrastructure",
+  regulatory_readiness: "Regulatory Readiness",
+  pricing_confidence: "Pricing Confidence",
+  construction_feasibility: "Construction Feasibility",
+  overall: "Overall",
+};
+
+const READINESS_ORDER = [
+  "market_potential",
+  "demand",
+  "competition",
+  "future_growth",
+  "infrastructure",
+  "regulatory_readiness",
+  "pricing_confidence",
+  "construction_feasibility",
+];
+
+// Adapts the live /opportunity readiness object ({ overall: {...}, dimensions: {
+// key: {score, reason, confidence} } }) into the ordered dimension list, with a
+// null score preserved as "not yet available". Returns undefined if absent.
+export function adaptReadiness(raw: unknown): ReadinessDimension[] | undefined {
+  const r = raw as {
+    overall?: { score?: number | null; reason?: string; confidence?: string };
+    dimensions?: Record<string, { score?: number | null; reason?: string; confidence?: string }>;
+  };
+  if (!r || typeof r !== "object" || !r.dimensions) return undefined;
+  const conf = (c?: string) => (c === "high" || c === "medium" || c === "low" ? c : undefined);
+  const out: ReadinessDimension[] = [];
+  const keys = [
+    ...READINESS_ORDER.filter((k) => k in (r.dimensions as object)),
+    ...Object.keys(r.dimensions).filter((k) => !READINESS_ORDER.includes(k)),
+  ];
+  for (const key of keys) {
+    const d = r.dimensions[key];
+    out.push({
+      key,
+      label: READINESS_LABELS[key] ?? key.replace(/_/g, " "),
+      score: typeof d.score === "number" ? d.score : null,
+      reason: fixText(d.reason ?? ""),
+      confidence: conf(d.confidence),
+    });
+  }
+  if (r.overall) {
+    out.push({
+      key: "overall",
+      label: "Overall",
+      score: typeof r.overall.score === "number" ? r.overall.score : null,
+      reason: fixText(r.overall.reason ?? ""),
+      confidence: conf(r.overall.confidence),
+    });
+  }
+  return out.length > 0 ? out : undefined;
+}
+
+// Returns the 9 readiness dimensions. Uses the engine's own readiness when the
+// expanded /opportunity provides it; otherwise maps the 5 opportunity components
+// + pricing confidence + overall, and marks the dimensions we DON'T yet have
+// (regulatory, construction) as null → "data not yet available", never zero.
+export function readinessFor(
+  opp: OpportunityScore | null,
+  result: RecommendationResult | null,
+): ReadinessDimension[] {
+  if (opp?.readiness && opp.readiness.length > 0) return opp.readiness;
+  if (!opp) return [];
+
+  const c = opp.components;
+  const r = opp.component_reasons ?? {};
+  const conf: ReadinessDimension["confidence"] = opp.low_data ? "low" : "medium";
+  const dim = (
+    key: string,
+    score: number | null,
+    reason: string,
+  ): ReadinessDimension => ({ key, label: READINESS_LABELS[key], score, reason, confidence: conf });
+
+  const pricingConf = result ? result.confidence.score : null;
+
+  return [
+    dim("market_potential", c.price_level, r.price_level ?? "Price level vs the covered set."),
+    dim("demand", c.demand_density, r.demand_density ?? "Sale-listing demand density."),
+    dim("competition", c.supply_pressure, r.supply_pressure ?? "Active supply pressure (higher = less competition)."),
+    dim("future_growth", c.price_growth, r.price_growth ?? "Recent price trend."),
+    dim("infrastructure", c.future_signals, r.future_signals ?? "Collected infrastructure/policy signals."),
+    { key: "regulatory_readiness", label: READINESS_LABELS.regulatory_readiness, score: null, reason: "GAM zoning/height data not yet collected." },
+    {
+      key: "pricing_confidence",
+      label: READINESS_LABELS.pricing_confidence,
+      score: pricingConf,
+      reason: pricingConf != null ? `Engine confidence ${pricingConf}/100.` : "Run pricing to populate.",
+      confidence: conf,
+    },
+    { key: "construction_feasibility", label: READINESS_LABELS.construction_feasibility, score: null, reason: "Construction-feasibility data not yet available." },
+    dim("overall", opp.score, opp.reason ?? "Composite opportunity score."),
+  ];
+}
+
+// --- Feasibility (GET /feasibility?neighborhood) ----------------------------
+
+const FEASIBILITY_DIMS: { key: string; label: string }[] = [
+  { key: "zoning_height", label: "Zoning & permitted height (FAR)" },
+  { key: "slope", label: "Slope & elevation" },
+  { key: "flood", label: "Flood / valley risk" },
+  { key: "geotech", label: "Soil & geotechnical" },
+  { key: "access", label: "Road access" },
+  { key: "utilities", label: "Utilities (water / power / sewer)" },
+];
+
+function mockFeasibility(neighborhood: string): Feasibility {
+  return {
+    neighborhood,
+    source: "mock",
+    dimensions: FEASIBILITY_DIMS.map((d) => ({
+      key: d.key,
+      label: d.label,
+      status: "unknown" as const,
+      reason: "Not yet collected — GAM zoning & geotechnical data pending.",
+    })),
+  };
+}
+
+const FEASIBILITY_LABELS: Record<string, string> = {
+  regulatory_zoning: "Regulatory & zoning",
+  construction_engineering: "Construction & engineering",
+  operational_market: "Operational & market",
+  environmental: "Environmental",
+  legal: "Legal",
+  financial: "Financial",
+};
+
+function mapFeasStatus(s: string): FeasibilityDimension["status"] {
+  const v = s.trim().toLowerCase();
+  if (["ok", "pass", "available", "good", "clear"].includes(v)) return "ok";
+  if (["partial", "caution", "limited"].includes(v)) return "partial";
+  if (["risk", "fail", "blocked", "high_risk"].includes(v)) return "risk";
+  return "unknown";
+}
+
+// Live shape: { dimensions: { regulatory_zoning: {status, detail, sources}, ... } }
+// — a keyed object, not an array. Status includes "partial" for known-but-incomplete.
+export async function fetchFeasibility(neighborhood: string): Promise<Feasibility> {
+  const live = await tryGet<{ dimensions?: unknown }>(`/feasibility?neighborhood=${encodeURIComponent(neighborhood)}`);
+  const dims = (live as { dimensions?: unknown })?.dimensions;
+  if (!dims || typeof dims !== "object" || Array.isArray(dims)) return mockFeasibility(neighborhood);
+
+  const entries = Object.entries(dims as Record<string, Record<string, unknown>>);
+  if (entries.length === 0) return mockFeasibility(neighborhood);
+
+  return {
+    neighborhood,
+    source: "live",
+    dimensions: entries.map(([key, d]) => ({
+      key,
+      label: FEASIBILITY_LABELS[key] ?? key.replace(/_/g, " "),
+      status: mapFeasStatus(String(d.status ?? "unknown")),
+      value: typeof d.value === "string" || typeof d.value === "number" ? fixText(String(d.value)) : undefined,
+      reason: fixText(String(d.detail ?? d.reason ?? "")),
+      sources: Array.isArray(d.sources)
+        ? (d.sources as Record<string, unknown>[]).map((s) => ({
+            name: fixText(String(s.name ?? "source")),
+            url: String(s.url ?? "#"),
+            capture_date: String(s.capture_date ?? s.date ?? ""),
+          }))
+        : undefined,
+    })),
+  };
+}
+
+// --- Scenario comparison (POST /scenario/compare) ---------------------------
+
+export async function requestScenarioCompare(
+  r: RecommendationResult,
+  scenarios: { label: string; overrides: ScenarioOverrides }[],
+): Promise<ScenarioComparison> {
+  // Live wants ScenarioCompareItem {label, overrides} and at least 2 scenarios.
+  const live =
+    scenarios.length >= 2
+      ? await tryPost<{ base?: LiveBand; scenarios?: unknown }>("/scenario/compare", {
+          neighborhood: r.neighborhood,
+          area_m2: 175,
+          scenarios: scenarios.map((s) => ({ label: s.label, overrides: s.overrides })),
+        })
+      : null;
+
+  if (live && Array.isArray(live.scenarios) && live.scenarios.length > 0) {
+    // Response: { base, scenarios: [{ label, result: <recommendation> }] }.
+    const base = adaptLiveBand(live.base, bandOf(r));
+    const columns: ScenarioColumn[] = (live.scenarios as Record<string, unknown>[]).map((col, i) => {
+      const band = adaptLiveBand((col.result ?? col.scenario ?? col) as LiveBand, base);
+      return {
+        label: fixText(String(col.label ?? scenarios[i]?.label ?? `Scenario ${i + 1}`)),
+        overrides: scenarios[i]?.overrides ?? {},
+        band,
+        net_pct: base.recommended_jd_m2 > 0 ? (band.recommended_jd_m2 - base.recommended_jd_m2) / base.recommended_jd_m2 : 0,
+      };
+    });
+    return { base, columns, source: "live" };
+  }
+
+  // Local: each column is a deterministic localScenario.
+  const base = bandOf(r);
+  const columns: ScenarioColumn[] = scenarios.map((s) => {
+    const sc = localScenario(r, s.overrides).scenario;
+    return {
+      label: s.label,
+      overrides: s.overrides,
+      band: sc,
+      net_pct: base.recommended_jd_m2 > 0 ? (sc.recommended_jd_m2 - base.recommended_jd_m2) / base.recommended_jd_m2 : 0,
+    };
+  });
+  return { base, columns, source: "local" };
 }

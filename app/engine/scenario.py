@@ -147,3 +147,36 @@ def simulate(base_subject: Subject, bundle: DataBundle, overrides: dict[str, Any
         "explanation": explanation,
         "levers_applied": applied,
     }
+
+
+def compare(base_subject: Subject, bundle: DataBundle, scenarios: list[dict[str, Any]],
+            as_of: Optional[date] = None,
+            base_total_floors: Optional[int] = None) -> dict[str, Any]:
+    """Run 2-4 named scenarios against one base and lay them side by side. Each item is
+    {label, overrides:{...}}; each is simulated by the same engine as /scenario, so the deltas
+    are directly comparable. `best_by` flags which scenario maxes recommended / min-safe."""
+    as_of = as_of or bundle.as_of or date.today()
+    base = recommend(base_subject, bundle, as_of)
+    out: list[dict[str, Any]] = []
+    for i, item in enumerate(scenarios):
+        label = (item.get("label") or f"Scenario {i + 1}").strip() or f"Scenario {i + 1}"
+        sim = simulate(base_subject, bundle, item.get("overrides", {}), as_of, base_total_floors)
+        out.append({"label": label, "result": sim["scenario"],
+                    "deltas_vs_base": sim["deltas"], "levers_applied": sim["levers_applied"]})
+
+    def _best(metric: str) -> Optional[str]:
+        best_label, best_val = None, None
+        for s in out:
+            v = s["result"][metric]
+            if best_val is None or v > best_val:
+                best_val, best_label = v, s["label"]
+        return best_label
+
+    best_by = {"recommended": _best("recommended_price_jd_m2"),
+               "min_safe": _best("min_safe_price_jd_m2")}
+    explanation = (f"Compared {len(out)} scenario(s) against base "
+                   f"({base.recommended_price_jd_m2:.0f} JD/m2). Highest recommended price: "
+                   f"{best_by['recommended']}; safest floor: {best_by['min_safe']}. Each scenario "
+                   "is run through the same engine as /scenario — deltas are directly comparable.")
+    return {"base": base.to_dict(), "scenarios": out, "best_by": best_by,
+            "explanation": explanation}

@@ -4,7 +4,6 @@ import type {
   OpportunityScore,
   RecommendationBundle,
   RecommendationResult,
-  Role,
 } from "./types";
 import { loadGeo, loadRecommendations, poiCategoryCounts, type GeoLayers } from "./lib/loadData";
 import {
@@ -16,7 +15,7 @@ import {
 } from "./lib/api";
 import { fetchAreas, fetchOpportunity } from "./lib/intel";
 import { adaptApiRecommendation } from "./lib/adaptEngine";
-import { useRole, ROLE_META } from "./lib/role";
+import { useEntered, type EntryMode, type StepKey } from "./lib/journey";
 import { MapView } from "./components/MapView";
 import { LayerControl, type LayerState } from "./components/LayerControl";
 import { MarketCharts } from "./components/MarketCharts";
@@ -24,11 +23,10 @@ import { AreaSearch } from "./components/AreaSearch";
 import { Toast } from "./components/Toast";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { HelpPanel } from "./components/HelpPanel";
-import { RoleSelector } from "./components/RoleSelector";
+import { Landing } from "./components/Landing";
+import { Stepper } from "./components/Stepper";
+import { StepContent } from "./components/steps/StepContent";
 import { OpportunityLegend } from "./components/OpportunityLegend";
-import { BuilderWorkspace } from "./components/workspaces/BuilderWorkspace";
-import { AgentWorkspace } from "./components/workspaces/AgentWorkspace";
-import { BuyerWorkspace } from "./components/workspaces/BuyerWorkspace";
 import { useTheme } from "./lib/theme";
 
 type ApiStatus = "checking" | "online" | "offline";
@@ -41,8 +39,6 @@ const DEFAULT_LAYERS: LayerState = {
   roads: true,
 };
 
-// Builds the searchable/selectable area list from covered engine submarkets +
-// portal meta. Extended by GET /areas when that endpoint lands.
 function areasFromBundle(
   bundle: RecommendationBundle,
   meta: Record<string, NeighborhoodMeta>,
@@ -64,7 +60,7 @@ function areasFromBundle(
 }
 
 export default function App() {
-  const { role, setRole, clearRole } = useRole();
+  const { entered, enter, exit } = useEntered();
   const { theme, toggle: toggleTheme } = useTheme();
 
   const [geo, setGeo] = useState<GeoLayers | null>(null);
@@ -80,6 +76,7 @@ export default function App() {
   const [computing, setComputing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [step, setStep] = useState<StepKey>("opportunity");
 
   const apiStatusRef = useRef<ApiStatus>("checking");
   const bundleRef = useRef<RecommendationBundle | null>(null);
@@ -89,8 +86,7 @@ export default function App() {
     setApiStatusState(s);
   };
 
-  // Single compute path — unchanged engine wiring: online → POST /recommend;
-  // offline → the precomputed engine result for the submarket.
+  // Unchanged engine wiring: online → POST /recommend; offline → precomputed.
   const recompute = useCallback(async (subj: SubjectInput) => {
     const b = bundleRef.current;
     const centroid = b?.results[subj.neighborhood]?.centroid ?? null;
@@ -103,19 +99,14 @@ export default function App() {
         setResult(res);
       } else {
         const pre = b?.results[subj.neighborhood];
-        setResult(
-          pre ? { ...pre, source_note: "Offline — showing precomputed defaults (API unreachable)." } : null,
-        );
+        setResult(pre ? { ...pre, source_note: "Offline — showing precomputed defaults (API unreachable)." } : null);
       }
     } catch (e) {
       setApiStatus("offline");
       const pre = bundleRef.current?.results[subj.neighborhood];
       setResult(
         pre
-          ? {
-              ...pre,
-              source_note: `Offline — ${e instanceof Error ? e.message : "API error"}; showing precomputed defaults.`,
-            }
+          ? { ...pre, source_note: `Offline — ${e instanceof Error ? e.message : "API error"}; showing precomputed defaults.` }
           : null,
       );
     } finally {
@@ -126,11 +117,8 @@ export default function App() {
   const selectArea = useCallback(
     (area: AreaEntry) => {
       setSelectedArea(area);
-      if (area.covered) {
-        recompute({ neighborhood: area.name, area_m2: 175 });
-      } else {
-        setResult(null);
-      }
+      if (area.covered) recompute({ neighborhood: area.name, area_m2: 175 });
+      else setResult(null);
     },
     [recompute],
   );
@@ -145,6 +133,14 @@ export default function App() {
       selectArea(a);
     },
     [areas, selectArea],
+  );
+
+  const onEnter = useCallback(
+    (mode: EntryMode) => {
+      enter();
+      setStep(mode === "evaluate" ? "feasibility" : "opportunity");
+    },
+    [enter],
   );
 
   useEffect(() => {
@@ -170,11 +166,9 @@ export default function App() {
           }
         }
 
-        const fallbackAreas = areasFromBundle(b, meta);
-        const liveAreas = await fetchAreas(fallbackAreas);
+        const liveAreas = await fetchAreas(areasFromBundle(b, meta));
         if (!alive) return;
         setAreas(liveAreas);
-
         const opp = await fetchOpportunity(liveAreas, g.opportunityHeatmap);
         if (alive) setOpportunity(opp);
       } catch (e) {
@@ -198,11 +192,10 @@ export default function App() {
     [opportunity, selectedArea],
   );
 
-  if (!role) return <RoleSelector onPick={setRole} theme={theme} onToggleTheme={toggleTheme} />;
+  if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
   if (!geo || !bundle) return <Splash title="Loading Amman intelligence…" detail="Reading map layers and engine output." />;
 
-  const showOpportunity = role === "builder";
   const selected = selectedArea?.name ?? null;
 
   return (
@@ -216,28 +209,32 @@ export default function App() {
         layers={layers}
         theme={theme}
         opportunity={opportunity}
-        showOpportunity={showOpportunity}
+        showOpportunity
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">
         <LayerControl state={layers} onToggle={(k) => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
-        {showOpportunity && <OpportunityLegend />}
+        <OpportunityLegend />
         <MarketCharts bundle={bundle} poiCounts={poiCounts} selected={selected} onSelect={selectByName} />
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       </div>
 
       <aside
         className="scroll-thin absolute inset-y-0 left-0 z-20 flex w-[440px] max-w-[92vw] flex-col overflow-y-auto border-r border-line bg-surface/95 backdrop-blur-sm"
-        aria-label="Workspace panel"
+        aria-label="Builder workspace"
       >
         <header className="sticky top-0 z-30 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0">
+            <button
+              type="button"
+              onClick={exit}
+              className="min-w-0 text-left"
+              aria-label="Back to start"
+              title="Back to start"
+            >
               <div className="label-eyebrow">Jordan Real Estate Intelligence</div>
-              <div className="text-[15px] font-semibold tracking-tight text-ink">
-                {ROLE_META[role].label} workspace
-              </div>
-            </div>
+              <div className="text-[15px] font-semibold tracking-tight text-ink">Builder workspace</div>
+            </button>
             <div className="flex shrink-0 items-center gap-2">
               <ApiBadge status={apiStatus} />
               <button
@@ -251,18 +248,19 @@ export default function App() {
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
             </div>
           </div>
-          <RoleSwitcher role={role} onPick={setRole} onClear={clearRole} />
         </header>
 
+        <Stepper active={step} onSelect={setStep} />
         <AreaSearch areas={areas} onPick={selectArea} />
 
-        {role === "builder" && (
-          <BuilderWorkspace area={selectedArea} result={result} opportunity={selectedOpp} computing={computing} />
-        )}
-        {role === "agent" && <AgentWorkspace area={selectedArea} result={result} computing={computing} />}
-        {role === "buyer" && (
-          <BuyerWorkspace area={selectedArea} result={result} opportunity={selectedOpp} computing={computing} />
-        )}
+        <StepContent
+          step={step}
+          area={selectedArea}
+          result={result}
+          opportunity={selectedOpp}
+          computing={computing}
+          generatedAt={bundle.generated_at}
+        />
 
         <footer className="mt-auto border-t border-line px-4 py-3 text-2xs leading-relaxed text-ink-mute">
           {bundle.disclaimer}
@@ -270,38 +268,6 @@ export default function App() {
       </aside>
 
       {helpOpen && <HelpPanel onClose={() => setHelpOpen(false)} />}
-    </div>
-  );
-}
-
-function RoleSwitcher({ role, onPick, onClear }: { role: Role; onPick: (r: Role) => void; onClear: () => void }) {
-  const roles: Role[] = ["builder", "agent", "buyer"];
-  return (
-    <div className="mt-2.5 flex items-center gap-1" role="tablist" aria-label="Workspace role">
-      {roles.map((r) => (
-        <button
-          key={r}
-          type="button"
-          role="tab"
-          aria-selected={r === role}
-          onClick={() => onPick(r)}
-          className={`rounded-[3px] border px-2.5 py-1 text-2xs font-medium transition-colors ${
-            r === role
-              ? "border-accent/60 bg-accent/[0.12] text-accent"
-              : "border-line bg-panel text-ink-mute hover:text-ink"
-          }`}
-        >
-          {ROLE_META[r].label}
-        </button>
-      ))}
-      <button
-        type="button"
-        onClick={onClear}
-        aria-label="Change role from the start screen"
-        className="ml-auto text-2xs text-ink-faint transition-colors hover:text-ink-dim"
-      >
-        reset
-      </button>
     </div>
   );
 }

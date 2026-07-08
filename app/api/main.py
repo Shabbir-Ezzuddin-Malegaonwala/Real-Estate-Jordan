@@ -23,7 +23,7 @@ from app.engine import builder, opportunity, recommend, scenario
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
 from app.engine.data import DataBundle, load_bundle_from_sqlite
 from app.engine.models import Subject
-from app.engine.opportunity import OPPORTUNITY_WEIGHTS
+from app.engine.opportunity import OPPORTUNITY_WEIGHTS, READINESS_WEIGHTS
 from app.engine.stats import median as _median_stat
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -124,11 +124,34 @@ def _load_districts() -> list[tuple[str, Optional[float], Optional[float]]]:
     return [(r[0], r[1], r[2]) for r in rows]
 
 
+def _zoning_meta() -> Optional[dict]:
+    """OSM land-use proxy count + source for the feasibility Regulatory/Zoning dimension."""
+    import sqlite3
+
+    conn = sqlite3.connect(_DB_PATH)
+    try:
+        exists = conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='zoning_plots'").fetchone()
+        if not exists:
+            return None
+        count = conn.execute("SELECT count(*) FROM zoning_plots").fetchone()[0]
+        src = conn.execute(
+            "SELECT source_name, source_url, capture_date FROM zoning_plots LIMIT 1").fetchone()
+    finally:
+        conn.close()
+    if not count:
+        return None
+    source = ({"name": src[0], "url": src[1], "capture_date": src[2] or "unknown"}
+              if src else None)
+    return {"plot_count": count, "source": source}
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     bundle = load_bundle_from_sqlite(_DB_PATH)
     app.state.bundle = bundle
     app.state.coverage = Coverage(bundle)
+    app.state.zoning = _zoning_meta()
     yield
 
 
@@ -163,7 +186,7 @@ class RecommendRequest(BaseModel):
 
 # Fields on RecommendRequest that are NOT engine Subject attributes.
 _NON_SUBJECT_FIELDS = {"neighborhood", "property_type", "area_m2", "bathrooms",
-                       "total_floors", "apply_height_view_premium", "overrides"}
+                       "total_floors", "apply_height_view_premium", "overrides", "scenarios"}
 
 
 def _subject_from(req: RecommendRequest, neighborhood: str) -> Subject:
@@ -275,6 +298,30 @@ def post_scenario(req: ScenarioRequest):
                              as_of=app.state.bundle.as_of, base_total_floors=req.total_floors)
 
 
+class ScenarioCompareItem(BaseModel):
+    label: str = Field(..., min_length=1, max_length=80)
+    overrides: ScenarioOverrides = Field(default_factory=ScenarioOverrides)
+
+
+class ScenarioCompareRequest(RecommendRequest):
+    scenarios: list[ScenarioCompareItem] = Field(..., min_length=2, max_length=4)
+
+
+@app.post("/scenario/compare")
+def post_scenario_compare(req: ScenarioCompareRequest):
+    cov: Coverage = app.state.coverage
+    canonical = cov.resolve(req.neighborhood)
+    if canonical is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"No data for {req.neighborhood}; covered: {cov.names()}")
+    base_subject = _subject_from(req, canonical)
+    scenarios = [{"label": s.label, "overrides": s.overrides.model_dump(exclude_none=True)}
+                 for s in req.scenarios]
+    return scenario.compare(base_subject, app.state.bundle, scenarios,
+                            as_of=app.state.bundle.as_of, base_total_floors=req.total_floors)
+
+
 class ResidualRequest(BaseModel):
     neighborhood: str = Field(..., min_length=1)
     buildable_area_m2: float = Field(..., gt=0)
@@ -347,11 +394,25 @@ def get_opportunity():
         "version": "v1-heuristic",
         "note": ("Composite = documented, tunable weights over five derived components. "
                  "A null component is dropped and its weight redistributed. Scores are "
-                 "relative to the covered set (min-max), for a map heatmap."),
+                 "relative to the covered set (min-max), for a map heatmap. Each area also "
+                 "carries a builder Decision-Readiness block (8 dimensions + overall)."),
         "weights": OPPORTUNITY_WEIGHTS,
+        "readiness_weights": READINESS_WEIGHTS,
         "as_of": bundle.as_of.isoformat(),
         "areas": scores,
     }
+
+
+@app.get("/feasibility")
+def get_feasibility(neighborhood: str = Query(..., min_length=1)):
+    cov: Coverage = app.state.coverage
+    bundle: DataBundle = app.state.bundle
+    canonical = cov.resolve(neighborhood)
+    if canonical is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"No data for {neighborhood}; covered: {cov.names()}")
+    return opportunity.feasibility_for(bundle, canonical, zoning=app.state.zoning)
 
 
 @app.get("/areas")

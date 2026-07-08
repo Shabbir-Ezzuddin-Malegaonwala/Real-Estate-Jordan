@@ -22,6 +22,7 @@ from typing import Any, Optional
 from . import config
 from .data import DataBundle
 from .models import Subject
+from .pipeline import recommend
 from .stats import median, months_between, robust_keep
 from . import evidence as _evidence
 
@@ -33,6 +34,23 @@ OPPORTUNITY_WEIGHTS = {
     "supply_pressure": 0.15,
     "future_signals": 0.15,
 }
+
+# Builder Decision-Readiness dimensions — a broader, builder-facing framing on top of the
+# opportunity components. v1 heuristic weights, DEFINED + EXPOSED + tunable. Dimensions we cannot
+# yet source honestly are returned score=null (never fabricated) and their weight is redistributed.
+READINESS_WEIGHTS = {
+    "market_potential": 0.22,
+    "demand": 0.20,
+    "competition": 0.16,
+    "future_growth": 0.12,
+    "infrastructure": 0.10,
+    "regulatory_readiness": 0.08,
+    "pricing_confidence": 0.08,
+    "construction_feasibility": 0.04,
+}
+_ENRICH_REASON = "data not yet available - pending area-intelligence enrichment"
+_CONF_LABEL = {"H": "high", "M": "medium", "L": "low"}
+_STD_READINESS_AREA_M2 = 175.0
 _GROWTH_MIN_SAMPLE = 8       # min sales on each side of the window to trust a growth number
 _GROWTH_RECENT_MONTHS = 12   # "recent" window
 _GROWTH_OLDER_MONTHS = 36    # "older" window ceiling (12–36 mo back)
@@ -105,6 +123,63 @@ def _composite(components: dict[str, dict]) -> float:
     return round(num / den, 1) if den else 0.0
 
 
+def _dim(score: Optional[float], reason: str, confidence: str) -> dict:
+    return {"score": None if score is None else round(score), "reason": reason,
+            "confidence": confidence}
+
+
+def _pricing_confidence(bundle: DataBundle, area: str, as_of: date) -> tuple[Optional[float], str]:
+    """Reuse the decision engine's own confidence on a standard subject for the area."""
+    r = recommend(Subject(neighborhood=area, property_type="apartment",
+                          area_m2=_STD_READINESS_AREA_M2), bundle, as_of)
+    if r.recommended_price_jd_m2 <= 0:
+        return None, r.confidence_label
+    return r.confidence_numeric * 100, r.confidence_label
+
+
+def _readiness(price_level: Optional[float], demand: Optional[float],
+               competition: Optional[float], pricing_pct: Optional[float],
+               pricing_label: str) -> dict[str, Any]:
+    mp_parts = [x for x in (price_level, demand) if x is not None]
+    market_potential = sum(mp_parts) / len(mp_parts) if mp_parts else None
+    dims = {
+        "market_potential": _dim(market_potential, "price level + demand proxy (portal + geocontext)",
+                                 "medium" if market_potential is not None else "low"),
+        "demand": _dim(demand, "population/night-light activity + listing density",
+                       "medium" if demand is not None else "low"),
+        "competition": _dim(competition,
+                            "competitor projects + listing supply (low pressure = higher readiness)",
+                            "medium" if competition is not None else "low"),
+        "future_growth": _dim(None, _ENRICH_REASON, "low"),
+        "infrastructure": _dim(None, _ENRICH_REASON, "low"),
+        "regulatory_readiness": _dim(None, _ENRICH_REASON, "low"),
+        "pricing_confidence": _dim(pricing_pct,
+                                   f"decision-engine confidence '{pricing_label}' on a standard "
+                                   f"{_STD_READINESS_AREA_M2:.0f} m2 subject",
+                                   _CONF_LABEL.get(pricing_label, "low")),
+        "construction_feasibility": _dim(None, _ENRICH_REASON, "low"),
+    }
+    num = den = 0.0
+    used = {}
+    for k, w in READINESS_WEIGHTS.items():
+        s = dims[k]["score"]
+        if s is not None:
+            num += w * s
+            den += w
+            used[k] = w
+    overall_score = round(num / den, 1) if den else None
+    tot = sum(used.values()) or 1.0
+    weights_used = {k: round(w / tot, 4) for k, w in used.items()}
+    confs = [dims[k]["confidence"] for k in used]
+    overall_conf = ("low" if not confs or "low" in confs
+                    else "high" if all(c == "high" for c in confs) else "medium")
+    overall = _dim(overall_score,
+                   f"weighted mean over {len(used)} computable dimension(s); "
+                   f"{len(READINESS_WEIGHTS) - len(used)} pending enrichment", overall_conf)
+    return {"overall": overall, "dimensions": dims, "weights": READINESS_WEIGHTS,
+            "weights_used": weights_used, "version": "v1-heuristic"}
+
+
 def opportunity_scores(bundle: DataBundle, areas: list[str],
                        as_of: Optional[date] = None,
                        centroids: Optional[dict[str, tuple]] = None) -> list[dict[str, Any]]:
@@ -166,12 +241,15 @@ def opportunity_scores(bundle: DataBundle, areas: list[str],
                         if components[n]["score"] is not None}
         total_w = sum(weights_used.values()) or 1.0
         weights_used = {n: round(w / total_w, 4) for n, w in weights_used.items()}
+        pricing_pct, pricing_label = _pricing_confidence(bundle, a, as_of)
+        readiness = _readiness(price_n[a], demand, supply_n[a], pricing_pct, pricing_label)
         lat, lng = centroids.get(keys[a], (None, None))
         out.append({
             "area": a,
             "score": _composite(components),
             "components": components,
             "weights_used": weights_used,
+            "readiness": readiness,
             "centroid_lat": lat,
             "centroid_lng": lng,
         })
@@ -203,3 +281,93 @@ def area_catalog(bundle: DataBundle, covered: set[str],
                     "centroid_lat": lat, "centroid_lng": lng})
     out.sort(key=lambda r: (not r["covered"], -r["listing_count"]))
     return out
+
+
+# --- Feasibility (build-readiness) dimensions --------------------------------------------------
+# A broad, honest feasibility structure. Each dimension reports what we can source and marks the
+# rest not_available (never invented). Extensible: as GAM zoning / environmental / legal datasets
+# are collected, flip a dimension from not_available to partial/available.
+
+def _dim_status(status: str, detail: str, sources: list[dict],
+                value: Optional[dict] = None) -> dict:
+    out = {"status": status, "detail": detail, "sources": sources}
+    if value is not None:
+        out["value"] = value
+    return out
+
+
+def feasibility_for(bundle: DataBundle, area: str,
+                    zoning: Optional[dict] = None) -> dict[str, Any]:
+    """Broad build-feasibility read for one submarket. `zoning` (optional, from the caller) carries
+    an OSM land-use proxy count + source; everything else is derived from the bundle."""
+    key = area.strip().lower()
+    sales = [l.price_per_m2 for l in bundle.sales()
+             if l.neighborhood.strip().lower() == key
+             and l.price_per_m2 and l.price_per_m2 >= config.MIN_PLAUSIBLE_SALE_PPM2]
+
+    if zoning and zoning.get("plot_count"):
+        regulatory = _dim_status(
+            "partial",
+            "OSM-derived land-use plots exist citywide but are not attributed to this "
+            "neighborhood; per-area FAR / max-height / zone class pending GAM official data.",
+            [zoning["source"]] if zoning.get("source") else [],
+            {"osm_landuse_plots_citywide": zoning["plot_count"]})
+    else:
+        regulatory = _dim_status(
+            "not_available",
+            "Per-area zoning (FAR, max height, zone class) pending GAM official data.", [])
+
+    mids = [c.midpoint for c in bundle.cost_benchmarks if c.midpoint]
+    if mids:
+        cost_sources = _dedupe([{"name": c.source_name, "url": c.source_url,
+                                 "capture_date": c.capture_date or "unknown"}
+                                for c in bundle.cost_benchmarks if c.midpoint])
+        construction = _dim_status(
+            "partial",
+            "Citywide construction-cost benchmark (spec-mixed); per-area geotechnical / "
+            "engineering assessment not yet collected.",
+            cost_sources, {"construction_cost_jd_m2_median": round(median(mids), 1)})
+    else:
+        construction = _dim_status(
+            "not_available", "No construction-cost benchmark available.", [])
+
+    if sales:
+        operational = _dim_status(
+            "available",
+            "Active resale market observed from portal listings.",
+            [{"name": "Portal listings", "url": "internal://listings",
+              "capture_date": bundle.as_of.isoformat()}],
+            {"median_sale_jd_m2": round(median(sales), 1), "sale_listing_count": len(sales)})
+    else:
+        operational = _dim_status(
+            "not_available", "No plausible sale listings for this submarket.", [])
+
+    dims = {
+        "regulatory_zoning": regulatory,
+        "construction_engineering": construction,
+        "operational_market": operational,
+        "environmental": _dim_status(
+            "not_available", "Environmental / geotechnical data not yet collected.", []),
+        "legal": _dim_status(
+            "not_available", "Title / legal due-diligence data not yet collected.", []),
+        "financial": _dim_status(
+            "not_available",
+            "Financing terms / mortgage / transfer-tax data not yet collected.", []),
+    }
+    summary = {"available": 0, "partial": 0, "not_available": 0}
+    for d in dims.values():
+        summary[d["status"]] += 1
+    return {"neighborhood": area, "dimensions": dims, "summary": summary,
+            "note": "Honest feasibility scaffold — dimensions flip to partial/available as "
+                    "datasets are enriched; empties are never fabricated."}
+
+
+def _dedupe(sources: list[dict]) -> list[dict]:
+    seen, out = set(), []
+    for s in sources:
+        k = (s.get("name"), s.get("url"))
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(s)
+    return out[:8]

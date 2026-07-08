@@ -245,6 +245,91 @@ class Opportunity(unittest.TestCase):
             self.assertIn("centroid_lat", a)
             self.assertIn("centroid_lng", a)
 
+    def test_readiness_block_present_and_honest(self):
+        self.assertIn("readiness_weights", self.body)
+        dims = {"market_potential", "demand", "competition", "future_growth", "infrastructure",
+                "regulatory_readiness", "pricing_confidence", "construction_feasibility"}
+        for a in self.body["areas"]:
+            r = a["readiness"]
+            self.assertEqual(set(r["dimensions"]), dims)
+            self.assertIn("overall", r)
+            for d in r["dimensions"].values():
+                self.assertEqual(set(d), {"score", "reason", "confidence"})
+                self.assertIn(d["confidence"], ("high", "medium", "low"))
+                if d["score"] is not None:
+                    self.assertTrue(0 <= d["score"] <= 100)
+            # the four enrichment-pending dims must be null (never fabricated)
+            for k in ("future_growth", "infrastructure", "regulatory_readiness",
+                      "construction_feasibility"):
+                self.assertIsNone(r["dimensions"][k]["score"])
+            self.assertAlmostEqual(sum(r["weights_used"].values()), 1.0, places=2)
+
+
+class FeasibilityEndpoint(unittest.TestCase):
+    _DIMS = {"regulatory_zoning", "construction_engineering", "operational_market",
+             "environmental", "legal", "financial"}
+
+    def test_valid_shape(self):
+        r = _request("GET", "/feasibility?neighborhood=Abdoun")
+        self.assertEqual(r.status, 200, r.text[:200])
+        self.assertEqual(set(r.body["dimensions"]), self._DIMS)
+        for d in r.body["dimensions"].values():
+            self.assertIn(d["status"], ("available", "partial", "not_available"))
+            self.assertTrue(d["detail"])
+            self.assertIsInstance(d["sources"], list)
+        self.assertEqual(sum(r.body["summary"].values()), len(self._DIMS))
+
+    def test_operational_market_available(self):
+        r = _request("GET", "/feasibility?neighborhood=Khalda")
+        self.assertEqual(r.body["dimensions"]["operational_market"]["status"], "available")
+
+    def test_uncovered_neighborhood_422(self):
+        r = _request("GET", "/feasibility?neighborhood=Atlantis")
+        self.assertEqual(r.status, 422)
+        self.assertIn("detail", r.body)
+
+    def test_missing_query_422(self):
+        self.assertEqual(_request("GET", "/feasibility").status, 422)
+
+
+class ScenarioCompareEndpoint(unittest.TestCase):
+    def _body(self, n_scen=3):
+        scen = [{"label": "Launch now", "overrides": {}},
+                {"label": "+6mo luxury", "overrides": {"finish_quality": "luxury",
+                                                       "launch_delay_months": 6}},
+                {"label": "Floor 18 view", "overrides": {"target_floor": 18, "floors": 22,
+                                                        "apply_height_view_premium": True}},
+                {"label": "Cost +20%", "overrides": {"construction_cost_delta_pct": 20}}]
+        return {"neighborhood": "Abdoun", "area_m2": 175, "finish_quality": "standard",
+                "floor_level": 3, "total_floors": 20, "scenarios": scen[:n_scen]}
+
+    def test_valid_shape(self):
+        r = _request("POST", "/scenario/compare", data=self._body(3))
+        self.assertEqual(r.status, 200, r.text[:200])
+        for k in ("base", "scenarios", "best_by", "explanation"):
+            self.assertIn(k, r.body)
+        self.assertEqual(len(r.body["scenarios"]), 3)
+        for s in r.body["scenarios"]:
+            self.assertEqual(set(s), {"label", "result", "deltas_vs_base", "levers_applied"})
+            self.assertGreater(s["result"]["recommended_price_jd_m2"], 0)
+        self.assertEqual(set(r.body["best_by"]), {"recommended", "min_safe"})
+        labels = {s["label"] for s in r.body["scenarios"]}
+        self.assertIn(r.body["best_by"]["recommended"], labels)
+
+    def test_too_few_scenarios_422(self):
+        b = self._body(1)
+        self.assertEqual(_request("POST", "/scenario/compare", data=b).status, 422)
+
+    def test_too_many_scenarios_422(self):
+        scen = [{"label": f"s{i}", "overrides": {}} for i in range(5)]
+        b = {"neighborhood": "Abdoun", "scenarios": scen}
+        self.assertEqual(_request("POST", "/scenario/compare", data=b).status, 422)
+
+    def test_uncovered_neighborhood_422(self):
+        b = {"neighborhood": "Atlantis",
+             "scenarios": [{"label": "a", "overrides": {}}, {"label": "b", "overrides": {}}]}
+        self.assertEqual(_request("POST", "/scenario/compare", data=b).status, 422)
+
 
 class EncodingSafety(unittest.TestCase):
     """Every response body must be pure ASCII (no byte > 127) so no mis-configured decoder can
@@ -280,6 +365,16 @@ class EncodingSafety(unittest.TestCase):
 
     def test_areas_is_ascii(self):
         self._assert_ascii("GET", "/areas")
+
+    def test_feasibility_is_ascii(self):
+        self._assert_ascii("GET", "/feasibility?neighborhood=Abdoun")
+
+    def test_scenario_compare_is_ascii(self):
+        self._assert_ascii("POST", "/scenario/compare", {
+            "neighborhood": "Abdoun", "area_m2": 175,
+            "scenarios": [{"label": "A", "overrides": {}},
+                          {"label": "B", "overrides": {"target_floor": 18, "floors": 22,
+                                                       "apply_height_view_premium": True}}]})
 
 
 class Areas(unittest.TestCase):

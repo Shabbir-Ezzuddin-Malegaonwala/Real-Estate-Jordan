@@ -241,6 +241,135 @@ class AreaCatalog(unittest.TestCase):
         self.assertEqual(names["Abdoun"]["listing_count"], 3)
 
 
+class DecisionReadiness(unittest.TestCase):
+    _DIMS = {"market_potential", "demand", "competition", "future_growth", "infrastructure",
+             "regulatory_readiness", "pricing_confidence", "construction_feasibility"}
+    _NULL_DIMS = {"future_growth", "infrastructure", "regulatory_readiness",
+                  "construction_feasibility"}
+
+    def _bundle(self):
+        ls = []
+        for n, ppm2 in [("Abdoun", 1100), ("Khalda", 780)]:
+            ls += [_listing(neighborhood=n, ppm2=ppm2 + j) for j in range(15)]
+        return _bundle(ls)
+
+    def _readiness(self):
+        out = opportunity.opportunity_scores(self._bundle(), ["Abdoun", "Khalda"], AS_OF)
+        return out[0]["readiness"]
+
+    def test_structure(self):
+        r = self._readiness()
+        self.assertEqual(set(r["dimensions"]), self._DIMS)
+        self.assertIn("overall", r)
+        self.assertEqual(r["version"], "v1-heuristic")
+        for name, d in r["dimensions"].items():
+            self.assertEqual(set(d), {"score", "reason", "confidence"})
+            self.assertIn(d["confidence"], ("high", "medium", "low"))
+            self.assertTrue(d["reason"])
+            if d["score"] is not None:
+                self.assertTrue(0 <= d["score"] <= 100)
+
+    def test_unavailable_dims_are_null_with_enrichment_reason(self):
+        dims = self._readiness()["dimensions"]
+        for k in self._NULL_DIMS:
+            self.assertIsNone(dims[k]["score"], f"{k} must be null (not fabricated)")
+            self.assertIn("enrichment", dims[k]["reason"].lower())
+            self.assertEqual(dims[k]["confidence"], "low")
+
+    def test_computed_dims_present(self):
+        dims = self._readiness()["dimensions"]
+        # pricing_confidence + competition are always computable from the bundle
+        self.assertIsNotNone(dims["pricing_confidence"]["score"])
+        self.assertIsNotNone(dims["competition"]["score"])
+
+    def test_overall_is_weighted_mean_over_non_null_and_weights_renormalize(self):
+        r = self._readiness()
+        self.assertIsNotNone(r["overall"]["score"])
+        self.assertTrue(0 <= r["overall"]["score"] <= 100)
+        self.assertAlmostEqual(sum(r["weights_used"].values()), 1.0, places=2)
+        # every weight_used key corresponds to a non-null dimension
+        for k in r["weights_used"]:
+            self.assertIsNotNone(r["dimensions"][k]["score"])
+
+
+class Feasibility(unittest.TestCase):
+    _DIMS = {"regulatory_zoning", "construction_engineering", "operational_market",
+             "environmental", "legal", "financial"}
+
+    def _bundle(self):
+        from app.engine.data import CostBenchmark
+        ls = [_listing(neighborhood="Abdoun", ppm2=1100 + j) for j in range(10)]
+        costs = [CostBenchmark("standard", 480, 560, 2026, "TestSrc", "https://x.invalid/c",
+                               "2026-07-08", "M")]
+        return DataBundle(listings=ls, cost_benchmarks=costs, as_of=AS_OF)
+
+    def test_all_dims_present_with_valid_status(self):
+        f = opportunity.feasibility_for(self._bundle(), "Abdoun")
+        self.assertEqual(set(f["dimensions"]), self._DIMS)
+        for name, d in f["dimensions"].items():
+            self.assertIn(d["status"], ("available", "partial", "not_available"))
+            self.assertTrue(d["detail"])
+            self.assertIsInstance(d["sources"], list)
+        self.assertEqual(sum(f["summary"].values()), len(self._DIMS))
+
+    def test_operational_available_from_listings(self):
+        f = opportunity.feasibility_for(self._bundle(), "Abdoun")
+        self.assertEqual(f["dimensions"]["operational_market"]["status"], "available")
+        self.assertIn("median_sale_jd_m2", f["dimensions"]["operational_market"]["value"])
+
+    def test_construction_partial_when_cost_present(self):
+        f = opportunity.feasibility_for(self._bundle(), "Abdoun")
+        self.assertEqual(f["dimensions"]["construction_engineering"]["status"], "partial")
+
+    def test_regulatory_partial_only_with_zoning_else_not_available(self):
+        without = opportunity.feasibility_for(self._bundle(), "Abdoun")
+        self.assertEqual(without["dimensions"]["regulatory_zoning"]["status"], "not_available")
+        with_z = opportunity.feasibility_for(
+            self._bundle(), "Abdoun",
+            zoning={"plot_count": 2244, "source": {"name": "OSM", "url": "internal://z",
+                                                   "capture_date": "2026-07-07"}})
+        self.assertEqual(with_z["dimensions"]["regulatory_zoning"]["status"], "partial")
+
+    def test_never_fabricates_unavailable_dims(self):
+        f = opportunity.feasibility_for(self._bundle(), "Abdoun")
+        for k in ("environmental", "legal", "financial"):
+            self.assertEqual(f["dimensions"][k]["status"], "not_available")
+            self.assertNotIn("value", f["dimensions"][k])
+
+
+class ScenarioCompare(unittest.TestCase):
+    def _bundle(self):
+        ls = [_listing(neighborhood="Abdoun", ppm2=980 + j * 5, finish_quality="standard")
+              for j in range(10)]
+        ls += [_listing(neighborhood="Abdoun", ppm2=1180 + j * 5, finish_quality="luxury")
+               for j in range(10)]
+        return _bundle(ls)
+
+    def test_shape_and_best_by(self):
+        base = Subject(neighborhood="Abdoun", area_m2=180, finish_quality="standard",
+                       floor_level=3)
+        out = scenario.compare(base, self._bundle(), [
+            {"label": "Launch now", "overrides": {}},
+            {"label": "Floor 18 view", "overrides": {"target_floor": 18, "floors": 22,
+                                                     "apply_height_view_premium": True}},
+        ])
+        self.assertIn("base", out)
+        self.assertEqual(len(out["scenarios"]), 2)
+        for s in out["scenarios"]:
+            self.assertEqual(set(s), {"label", "result", "deltas_vs_base", "levers_applied"})
+            self.assertGreater(s["result"]["recommended_price_jd_m2"], 0)
+        self.assertEqual(set(out["best_by"]), {"recommended", "min_safe"})
+        self.assertIn(out["best_by"]["recommended"], {"Launch now", "Floor 18 view"})
+        # the height/view scenario should win recommended
+        self.assertEqual(out["best_by"]["recommended"], "Floor 18 view")
+
+    def test_empty_override_scenario_is_zero_delta(self):
+        base = Subject(neighborhood="Abdoun", area_m2=180)
+        out = scenario.compare(base, self._bundle(), [
+            {"label": "A", "overrides": {}}, {"label": "B", "overrides": {"target_floor": 10}}])
+        self.assertEqual(out["scenarios"][0]["deltas_vs_base"]["recommended_pct"], 0.0)
+
+
 @unittest.skipUnless(os.path.exists(_DB_PATH), "real DB not present")
 class RealDbIntel(unittest.TestCase):
     @classmethod
