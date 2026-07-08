@@ -14,7 +14,7 @@ from typing import Optional
 from . import config, confidence, evidence
 from .adjustment import index_is_current
 from .data import DataBundle
-from .models import ComparableRecord, RecommendationResult, Subject
+from .models import ComparableRecord, EvidenceObject, RecommendationResult, Subject
 from .stats import coeff_of_variation, median, robust_keep, weighted_mean
 
 
@@ -162,7 +162,56 @@ def _collect_evidence(subject, bundle, comps, premiums, bench, cost_floor,
     mix = evidence.market_composition_evidence(comps)
     if mix:
         objs.append(mix)
+    objs.extend(_spatial_context(bundle, subject))   # Phase 2: satellite/GIS context
     objs.extend(future_objs)
+    return objs
+
+
+def _spatial_context(bundle: DataBundle, subject: Subject) -> list[EvidenceObject]:
+    """Phase 2 — surface satellite/GIS context (affluence, density, terrain, amenity
+    proximity) for the submarket. Context only (not price adjustments): they inform the
+    reader and back the location narrative without double-counting into the number."""
+    key = subject.neighborhood.strip().lower()
+    pool = [l for l in bundle.sales()
+            if l.neighborhood.strip().lower() == key and l.property_type == subject.property_type]
+
+    def med(attr):
+        vals = [getattr(l, attr) for l in pool if getattr(l, attr) is not None]
+        return median(vals) if vals else None
+
+    src = [{"name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
+            "url": "internal://spatial", "capture_date": bundle.as_of.isoformat()}]
+
+    def ctx(factor, method, datasets, explanation):
+        return EvidenceObject(factor=factor, adjustment="context", confidence="Medium",
+                              method=method, datasets=datasets, sources=src,
+                              category="current_state", explanation=explanation)
+
+    objs = []
+    ntl = med("ntl_radiance")
+    if ntl is not None:
+        objs.append(ctx("Affluence (night-lights)", "VIIRS median radiance in submarket", ["viirs"],
+                        f"Submarket night-lights radiance {ntl:.0f} — a proxy for economic "
+                        f"activity/affluence (Jordan publishes no neighborhood income data)."))
+    elev = med("elevation_m")
+    if elev is not None:
+        objs.append(ctx("Terrain / view (DEM)", "Copernicus DEM median elevation", ["dem"],
+                        f"Median elevation {elev:.0f} m — Amman's jabals give higher, "
+                        f"view-favourable ground a real price signal (fed as the elevation premium)."))
+    dens = med("pop_density")
+    if dens is not None:
+        objs.append(ctx("Demand density", "GHS-POP median residential density", ["ghs_pop"],
+                        f"Residential density ~{dens:,.0f} people/km² (GHS-POP) — higher = "
+                        f"more central/liquid, lower = exclusive/low-rise."))
+    parts = []
+    for attr, label in (("dist_school_km", "school"), ("dist_hospital_km", "hospital"),
+                        ("dist_mall_km", "mall")):
+        d = med(attr)
+        if d is not None:
+            parts.append(f"{label} {d:.1f} km")
+    if parts:
+        objs.append(ctx("Amenity proximity", "OSM POI nearest-distance (median)", ["osm_poi"],
+                        "Nearest " + ", ".join(parts) + " — proximity drives desirability."))
     return objs
 
 

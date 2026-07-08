@@ -33,6 +33,10 @@ _CONTINUOUS = {
     "floor_level": "Floor level",
     "building_age_years": "Building age",
     "area_m2": "Size (per m²)",
+    # NB: DEM elevation is NOT a within-submarket premium — portals geocode to the
+    # submarket centroid, so elevation has ~zero intra-submarket variance. It varies
+    # BETWEEN submarkets, so it is surfaced as neighborhood-level context (see
+    # recommendation._spatial_context) and would enter a cross-submarket hedonic (Phase 3).
 }
 # Neither portal exposes total_floors, so this is absolute floor, not floor-position-in-building.
 _FLOOR_NOTE = "absolute floor_level (total_floors unavailable from portals)"

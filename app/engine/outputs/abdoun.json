@@ -279,6 +279,78 @@
       ],
       "category": "current_state",
       "explanation": "Investment buyers cap price at rent ÷ required yield (8.9%). Above ≈ 1043 JD/m² the unit stops clearing to investors."
+    },
+    {
+      "factor": "Affluence (night-lights)",
+      "adjustment": "context",
+      "confidence": "Medium",
+      "method": "VIIRS median radiance in submarket",
+      "datasets": [
+        "viirs"
+      ],
+      "sources": [
+        {
+          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
+          "url": "internal://spatial",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Submarket night-lights radiance 81 — a proxy for economic activity/affluence (Jordan publishes no neighborhood income data)."
+    },
+    {
+      "factor": "Terrain / view (DEM)",
+      "adjustment": "context",
+      "confidence": "Medium",
+      "method": "Copernicus DEM median elevation",
+      "datasets": [
+        "dem"
+      ],
+      "sources": [
+        {
+          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
+          "url": "internal://spatial",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Median elevation 914 m — Amman's jabals give higher, view-favourable ground a real price signal (fed as the elevation premium)."
+    },
+    {
+      "factor": "Demand density",
+      "adjustment": "context",
+      "confidence": "Medium",
+      "method": "GHS-POP median residential density",
+      "datasets": [
+        "ghs_pop"
+      ],
+      "sources": [
+        {
+          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
+          "url": "internal://spatial",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Residential density ~25,032 people/km² (GHS-POP) — higher = more central/liquid, lower = exclusive/low-rise."
+    },
+    {
+      "factor": "Amenity proximity",
+      "adjustment": "context",
+      "confidence": "Medium",
+      "method": "OSM POI nearest-distance (median)",
+      "datasets": [
+        "osm_poi"
+      ],
+      "sources": [
+        {
+          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
+          "url": "internal://spatial",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Nearest school 1.7 km, hospital 0.3 km, mall 0.0 km — proximity drives desirability."
     }
   ],
   "comparables": [
@@ -762,7 +834,7 @@
       "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.0). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a high apartment in Abdoun (~175 m²), the recommended launch price is 869 JD/m², within a defensible range of 565–1173 JD/m² (confidence: M, 0.55; 80% interval 565–1173). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: cost floor ≈ 155, income ceiling ≈ 1044. Convergence supports the estimate; divergence is captured in the risks. Key risk: Adjusted comps vary 31% — the submarket is heterogeneous.",
+  "narrative": "For a high apartment in Abdoun (~175 m²), the recommended launch-price ESTIMATE is 869 JD/m², within an evidence-anchored range of 565–1173 JD/m² (confidence: M, 0.55; evidence-dispersion band 565–1173, uncalibrated — not yet validated against realized transactions). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: cost floor ≈ 155, income ceiling ≈ 1044. Convergence supports the estimate; divergence is captured in the risks. Key risk: Adjusted comps vary 31% — the submarket is heterogeneous.",
   "computed_date": "2026-07-08",
   "method_values": {
     "comparison_asking": 965.2,
@@ -896,8 +968,8 @@
     "data_source_file": "db/jordan_national.sqlite",
     "listings_source_csv": "data\\processed\\listings_national_20260708.csv",
     "listings_row_count": 56854,
-    "listings_snapshot_hash": "c9d6595d636ee44c",
-    "engine_git_sha": "2dfbd2a",
+    "listings_snapshot_hash": "bf527c6d2da4e050",
+    "engine_git_sha": "b0aa0cd",
     "generated_at": "2026-07-08"
   }
 }

@@ -63,6 +63,13 @@ class Listing:
     listing_date: Optional[date] = None
     lat: Optional[float] = None
     lng: Optional[float] = None
+    # Phase 2 spatial features (from enrich_spatial.py)
+    elevation_m: Optional[float] = None
+    ntl_radiance: Optional[float] = None
+    pop_density: Optional[float] = None
+    dist_school_km: Optional[float] = None
+    dist_hospital_km: Optional[float] = None
+    dist_mall_km: Optional[float] = None
     source_name: str = "unknown"
     source_url: str = "unknown"
     capture_date: Optional[date] = None
@@ -100,6 +107,12 @@ class Listing:
             listing_date=_parse_date(g("listing_date")),
             lat=_num(g("lat")),
             lng=_num(g("lng")),
+            elevation_m=_num(g("elevation_m")),
+            ntl_radiance=_num(g("ntl_radiance")),
+            pop_density=_num(g("pop_density")),
+            dist_school_km=_num(g("dist_school_km")),
+            dist_hospital_km=_num(g("dist_hospital_km")),
+            dist_mall_km=_num(g("dist_mall_km")),
             source_name=g("source_name", "unknown"),
             source_url=g("source_url", "unknown"),
             capture_date=_parse_date(g("capture_date")),
@@ -124,6 +137,7 @@ class Subject:
     elevator: str = "unknown"
     lat: Optional[float] = None
     lng: Optional[float] = None
+    elevation_m: Optional[float] = None   # defaulted to submarket median in pipeline
     location_id: Optional[str] = None
 
 
