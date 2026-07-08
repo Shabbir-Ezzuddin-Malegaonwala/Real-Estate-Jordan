@@ -38,3 +38,8 @@ HOW TO READ IT
 There is a "Share your thoughts" button in the report to email us feedback.
 
 Generated 2026-07-08.
+
+TECHNICAL (optional)
+  text2sql_training_document.md — a technical reference that lets the
+  dataset be queried in plain language on a semantic-layer system. Not
+  needed to read the report; included for completeness.
