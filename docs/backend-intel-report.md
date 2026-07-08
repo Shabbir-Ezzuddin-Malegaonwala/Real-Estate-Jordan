@@ -5,10 +5,11 @@
 engine function + a clean-JSON API endpoint. Additive only; the 100+ baseline tests still pass;
 no hardcoded pricing weights; every number sourced/explainable; degrades gracefully.
 
-**Verification:** `python -m pytest` — **175 passed** across engine + API suites (incl.
+**Verification:** `python -m pytest` — **182 passed** across engine + API suites (incl.
 `NoHardcodedWeights` scan over all new modules, `RealDbInvariantFuzz`, and `EncodingSafety`
 guards). Run against the live 52,647-row server. Wave 2 (Builder Decision Intelligence): Decision
-Readiness (§9), Feasibility (§10), Scenario Comparison (§11). New suites:
+Readiness (§9), Feasibility (§10), Scenario Comparison (§11). Wave 3 (mined-data wiring): DoS
+construction cost + ASEZ Aqaba regulatory (§12). New suites:
 `tests/test_engine_intel.py`, `tests/test_intel_endpoints.py` (wired into
 `tests/run_all.py`). The one non-green in `run_all` is the Playwright E2E, which drives the SPA the
 frontend team is mid-rebuild on (selector `aside[aria-label="Analysis panel"]`) — not a backend
@@ -117,7 +118,7 @@ Fees on construction, finance on (construction + fees), profit on GDV — each b
 ```
 
 - `gdv_per_m2` omitted → defaults to the **engine recommended price/m²** (sourced), `gdv_per_m2_defaulted: true`.
-- `construction_cost_per_m2` omitted → **median of available `cost_benchmarks` midpoints** (sourced); if none exist → `422` (never invented).
+- `construction_cost_per_m2` omitted → defaults to the **official DoS building-licence filed cost** (recent-12q mean, Greater Amman for Amman / Kingdom otherwise), with a floor/upper-bound caveat (see §12.1); if no series exists → `422` (never invented).
 - The three pct are documented builder assumptions with defaults (6% / 5% / 20%), overridable.
 
 **Response:**
@@ -388,3 +389,65 @@ Validation: `<2` or `>4` scenarios -> `422`; uncovered submarket -> `422 {detail
 the submarket-median anchor dominates the level (per `engine-tune-report.md`), so finish/age tweaks
 move price modestly while floor/view and cost levers move it more — this is faithful engine
 behaviour, not a bug.
+
+---
+
+## 12. Wave 3 — mined-data wiring (DoS construction cost + ASEZ Aqaba)
+
+Turns three honest-nulls into real sourced signals and fixes one correctness bug, using data the
+friend-data-miner loaded: `dos_building_cost` (official DoS filed building cost) and the ASEZ Aqaba
+zoning polygons + foreign-ownership rules.
+
+### 12.1 Residual land value — CORRECTNESS FIX
+
+The `/residual-land-value` construction default previously came from `cost_benchmarks` midpoints —
+but those rows are LAND prices (400-2667 JD/m2), not build cost. It now defaults from
+`dos_building_cost` recent-12-quarter new-build mean (Greater Amman for Amman submarkets, Kingdom
+otherwise), and surfaces the floor caveat.
+
+| | Construction default | Residual/m2 (Abdoun, 1200 m2, GDV=engine) | Viable |
+|---|---|---|---|
+| **Before** | 898 JD/m2 (cost_benchmarks land price) | **-228** | false |
+| **After** | 174.8 JD/m2 (DoS Greater Amman, recent 12q to 2026-Q1) | **+576.7** | true |
+
+The response now carries `caveat` and a DoS-sourced `construction_cost_per_m2`:
+
+```json
+"inputs": { "construction_cost_per_m2": 174.8, "construction_cost_defaulted": true, ... },
+"caveat": "DoS filed-licence administrative estimate - a conservative construction-cost FLOOR that understates full turnkey build; residual land value derived from it is an UPPER bound.",
+"sources": [ ..., {"name": "DoS building-licence filed cost (Greater Amman, recent 12q mean to 2026-Q1)", "url": "https://dosweb.dos.gov.jo/...", "capture_date": "2026-07-08"} ]
+```
+
+The user-supplied `construction_cost_per_m2` override path is unchanged. If no DoS series exists and
+no override is given -> `422` (never invented).
+
+### 12.2 Feasibility — construction now available; Aqaba regulatory now available
+
+- `construction_engineering`: **available** (was partial). `value.construction_cost_jd_m2` = DoS
+  cost for the governorate, `value.authority`, with the filed-licence FLOOR caveat + DoS source.
+  (The old `cost_benchmarks`-based "partial" is gone — that was land-price data.)
+- `regulatory_zoning`: for **Aqaba** -> **available**, `value = {foreign_ownership_rules: 6,
+  official_zoning_polygons: 118}`, sources = ASEZ official zoning + the 6 ASEZA foreign-ownership
+  rule PDFs. Other governorates stay **partial** (OSM land-use proxy). `/feasibility` now accepts any
+  corpus neighborhood (e.g. Aqaba, 90 listings), not just the 5 covered.
+
+```
+Abdoun: regulatory_zoning=partial,  construction_engineering=available, operational_market=available, environmental/legal/financial=not_available
+Aqaba : regulatory_zoning=available, construction_engineering=available, operational_market=available, environmental/legal/financial=not_available
+```
+
+### 12.3 Decision Readiness — construction_feasibility now non-null; Aqaba regulatory_readiness
+
+- `construction_feasibility`: **non-null** where DoS covers the governorate. Score = build-cost
+  headroom (median sale vs DoS floor), confidence **medium** (the floor understates turnkey, so it
+  reads optimistic). Live: Abdoun 84, Dabouq 84, Sweifieh 82, Shmeisani 79, Khalda 78.
+  Reason e.g. `"sale ~1116 vs DoS build floor ~175 JD/m2 (84% headroom; floor understates turnkey, so optimistic)"`.
+- `regulatory_readiness`: **non-null for Aqaba** (documented ASEZ foreign-ownership regime, score 90,
+  confidence medium); stays **null** ("pending enrichment") for Amman submarkets. Since `/opportunity`
+  covers only the 5 Amman areas today, it shows null there — Aqaba would score if added to coverage.
+
+### 12.4 Governorate mapping (documented)
+
+Covered submarkets (the 5) are all Greater Amman -> DoS Greater Amman cost (174.8). Anything else
+(e.g. Aqaba) -> Kingdom cost (157.4). Recent-12-quarter mean of `license_type='new'`,
+`building_type='all'`. Engine reads `bundle.construction_cost` (loaded once at startup); no per-request DB hit.

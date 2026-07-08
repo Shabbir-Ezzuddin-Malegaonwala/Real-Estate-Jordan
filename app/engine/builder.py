@@ -120,7 +120,8 @@ def residual_land_value(buildable_area_m2: float, gdv_per_m2: float,
                         gdv_source: Optional[dict] = None,
                         cost_source: Optional[dict] = None,
                         gdv_defaulted: bool = False,
-                        cost_defaulted: bool = False) -> dict[str, Any]:
+                        cost_defaulted: bool = False,
+                        construction_caveat: Optional[str] = None) -> dict[str, Any]:
     """Residual land valuation (client Pricing PDF): the most a developer can pay for the land is
 
         GDV − construction − professional fees − finance − required profit.
@@ -140,6 +141,14 @@ def residual_land_value(buildable_area_m2: float, gdv_per_m2: float,
 
     def line(label: str, value: float, basis: str) -> dict:
         return {"label": label, "value_jd": round(value, 1), "basis": basis}
+
+    assumptions = [
+        "Residual method and cost-approach floor - client 'Real Estate Pricing Strategies' PDF.",
+        "finance_pct / professional_fees_pct / developer_profit_pct are builder assumptions "
+        "(defaults shown); override per deal.",
+    ]
+    if construction_caveat:
+        assumptions.append(construction_caveat)
 
     return {
         "buildable_area_m2": buildable_area_m2,
@@ -169,16 +178,13 @@ def residual_land_value(buildable_area_m2: float, gdv_per_m2: float,
         "residual_land_value_per_m2_jd": round(residual_per_m2, 1),
         "viable": residual_total > 0,
         "explanation": (
-            f"Max supportable land price ≈ {residual_total:,.0f} JD "
-            f"({residual_per_m2:,.0f} JD per buildable m²): GDV {gdv_total:,.0f} − construction "
-            f"{construction_total:,.0f} − fees {professional_fees:,.0f} − finance {finance_cost:,.0f} "
-            f"− profit {developer_profit:,.0f}." + ("" if residual_total > 0 else
-            " Negative residual: construction, finance, fees and required profit exceed GDV — "
+            f"Max supportable land price ~ {residual_total:,.0f} JD "
+            f"({residual_per_m2:,.0f} JD per buildable m2): GDV {gdv_total:,.0f} - construction "
+            f"{construction_total:,.0f} - fees {professional_fees:,.0f} - finance {finance_cost:,.0f} "
+            f"- profit {developer_profit:,.0f}." + ("" if residual_total > 0 else
+            " Negative residual: construction, finance, fees and required profit exceed GDV - "
             "the land cannot support this program at these inputs.")),
         "sources": [s for s in (gdv_source, cost_source) if s],
-        "assumptions": [
-            "Residual method and cost-approach floor — client 'Real Estate Pricing Strategies' PDF.",
-            "finance_pct / professional_fees_pct / developer_profit_pct are builder assumptions "
-            "(defaults shown); override per deal.",
-        ],
+        "assumptions": assumptions,
+        "caveat": construction_caveat,
     }

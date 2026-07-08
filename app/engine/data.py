@@ -62,6 +62,32 @@ class CostBenchmark:
 
 
 @dataclass
+class ConstructionCost:
+    """Official DoS building-licence construction cost (JD/m2), recent-quarter mean by authority.
+
+    This is the licensing authority's FILED administrative estimate — a conservative construction
+    FLOOR that understates full turnkey market build. A residual land value derived from it is
+    therefore an UPPER bound (real build cost is higher -> real land ceiling is lower)."""
+
+    amman_jd_m2: Optional[float]      # Greater Amman Municipality recent-12 new-build mean
+    kingdom_jd_m2: Optional[float]    # Kingdom-wide recent-12 new-build mean
+    quarters: int
+    latest_period: Optional[str]
+    source_name: str
+    source_url: str
+    capture_date: Optional[str]
+    caveat: str
+
+    def for_area(self, is_amman: bool) -> Optional[float]:
+        v = self.amman_jd_m2 if is_amman else self.kingdom_jd_m2
+        return v if v is not None else (self.kingdom_jd_m2 or self.amman_jd_m2)
+
+    def source(self) -> dict:
+        return {"name": self.source_name, "url": self.source_url,
+                "capture_date": self.capture_date or "unknown"}
+
+
+@dataclass
 class EvidenceItem:
     """Future-signal row (infrastructure / policy / market news)."""
 
@@ -124,6 +150,7 @@ class DataBundle:
     projects: list[Project] = field(default_factory=list)
     price_index: PriceIndex = field(default_factory=PriceIndex)
     geocontext: list[NeighborhoodGeoContext] = field(default_factory=list)
+    construction_cost: Optional["ConstructionCost"] = None
     as_of: date = field(default_factory=date.today)
 
     def geocontext_for(self, neighborhood: str) -> Optional[NeighborhoodGeoContext]:
@@ -231,11 +258,46 @@ def load_bundle_from_sqlite(db_path: str, as_of: Optional[date] = None) -> DataB
             price_index=_index_from_sqlite(conn),
             geocontext=[_geocontext_from(dict(r))
                         for r in _table(conn, "neighborhood_geocontext")],
+            construction_cost=_construction_cost_from_sqlite(conn),
             as_of=as_of or date.today(),
         )
         return bundle
     finally:
         conn.close()
+
+
+def _construction_cost_from_sqlite(conn: sqlite3.Connection) -> Optional[ConstructionCost]:
+    """Recent-12-quarter mean of DoS new-build filed cost/m2, by licensing authority."""
+    if not conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='dos_building_cost'"
+    ).fetchone():
+        return None
+
+    def recent_mean(authority: str):
+        rows = conn.execute(
+            "SELECT year, quarter, cost_jd_per_m2, source_name, source_url, capture_date "
+            "FROM dos_building_cost WHERE authority=? AND license_type='new' "
+            "AND building_type='all' AND cost_jd_per_m2 IS NOT NULL "
+            "ORDER BY year DESC, quarter DESC LIMIT 12", (authority,)).fetchall()
+        vals = [r["cost_jd_per_m2"] for r in rows]
+        if not vals:
+            return None, None, None
+        return sum(vals) / len(vals), f"{rows[0]['year']}-{rows[0]['quarter']}", rows[0]
+
+    amman, amman_period, a_row = recent_mean("Greater Amman Municipality")
+    kingdom, kingdom_period, k_row = recent_mean("Kingdom")
+    if amman is None and kingdom is None:
+        return None
+    ref = a_row or k_row
+    return ConstructionCost(
+        amman_jd_m2=round(amman, 1) if amman is not None else None,
+        kingdom_jd_m2=round(kingdom, 1) if kingdom is not None else None,
+        quarters=12, latest_period=amman_period or kingdom_period,
+        source_name=ref["source_name"], source_url=ref["source_url"],
+        capture_date=ref["capture_date"],
+        caveat="DoS filed-licence administrative estimate - a conservative construction-cost FLOOR "
+               "that understates full turnkey build; residual land value derived from it is an "
+               "UPPER bound.")
 
 
 def _table(conn: sqlite3.Connection, name: str) -> list[sqlite3.Row]:

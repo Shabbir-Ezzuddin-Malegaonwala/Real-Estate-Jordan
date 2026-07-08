@@ -139,9 +139,31 @@ def _pricing_confidence(bundle: DataBundle, area: str, as_of: date) -> tuple[Opt
 
 def _readiness(price_level: Optional[float], demand: Optional[float],
                competition: Optional[float], pricing_pct: Optional[float],
-               pricing_label: str) -> dict[str, Any]:
+               pricing_label: str, construction_cost: Optional[float] = None,
+               median_sale: Optional[float] = None, asez_count: int = 0) -> dict[str, Any]:
     mp_parts = [x for x in (price_level, demand) if x is not None]
     market_potential = sum(mp_parts) / len(mp_parts) if mp_parts else None
+
+    # Construction feasibility = build-cost headroom (sale price vs the DoS cost FLOOR). Since the
+    # floor understates real turnkey build, this reads optimistic -> confidence medium, not high.
+    if construction_cost and median_sale:
+        headroom = max(0.0, min(100.0, (median_sale - construction_cost) / median_sale * 100))
+        construction_dim = _dim(
+            headroom,
+            f"sale ~{median_sale:.0f} vs DoS build floor ~{construction_cost:.0f} JD/m2 "
+            f"({headroom:.0f}% headroom; floor understates turnkey, so optimistic)", "medium")
+    else:
+        construction_dim = _dim(None, _ENRICH_REASON, "low")
+
+    # Regulatory readiness: only non-null where a documented tenure regime exists (Aqaba/ASEZ).
+    if asez_count > 0:
+        regulatory_dim = _dim(
+            90, f"ASEZ documented foreign-ownership regime ({asez_count} official rules): "
+                "non-Jordanian ownership permitted with resale locks - high regulatory clarity "
+                "(v1 heuristic)", "medium")
+    else:
+        regulatory_dim = _dim(None, _ENRICH_REASON, "low")
+
     dims = {
         "market_potential": _dim(market_potential, "price level + demand proxy (portal + geocontext)",
                                  "medium" if market_potential is not None else "low"),
@@ -152,12 +174,12 @@ def _readiness(price_level: Optional[float], demand: Optional[float],
                             "medium" if competition is not None else "low"),
         "future_growth": _dim(None, _ENRICH_REASON, "low"),
         "infrastructure": _dim(None, _ENRICH_REASON, "low"),
-        "regulatory_readiness": _dim(None, _ENRICH_REASON, "low"),
+        "regulatory_readiness": regulatory_dim,
         "pricing_confidence": _dim(pricing_pct,
                                    f"decision-engine confidence '{pricing_label}' on a standard "
                                    f"{_STD_READINESS_AREA_M2:.0f} m2 subject",
                                    _CONF_LABEL.get(pricing_label, "low")),
-        "construction_feasibility": _dim(None, _ENRICH_REASON, "low"),
+        "construction_feasibility": construction_dim,
     }
     num = den = 0.0
     used = {}
@@ -242,7 +264,13 @@ def opportunity_scores(bundle: DataBundle, areas: list[str],
         total_w = sum(weights_used.values()) or 1.0
         weights_used = {n: round(w / total_w, 4) for n, w in weights_used.items()}
         pricing_pct, pricing_label = _pricing_confidence(bundle, a, as_of)
-        readiness = _readiness(price_n[a], demand, supply_n[a], pricing_pct, pricing_label)
+        # Covered submarkets are all Greater Amman -> use the Amman DoS build-cost floor.
+        cc = bundle.construction_cost
+        build_cost = cc.amman_jd_m2 if cc else None
+        asez_n = len(asez_rules_for(bundle, keys[a]))
+        readiness = _readiness(price_n[a], demand, supply_n[a], pricing_pct, pricing_label,
+                               construction_cost=build_cost, median_sale=price_raw[a],
+                               asez_count=asez_n)
         lat, lng = centroids.get(keys[a], (None, None))
         out.append({
             "area": a,
@@ -296,16 +324,39 @@ def _dim_status(status: str, detail: str, sources: list[dict],
     return out
 
 
-def feasibility_for(bundle: DataBundle, area: str,
-                    zoning: Optional[dict] = None) -> dict[str, Any]:
-    """Broad build-feasibility read for one submarket. `zoning` (optional, from the caller) carries
-    an OSM land-use proxy count + source; everything else is derived from the bundle."""
+def asez_rules_for(bundle: DataBundle, key: str) -> list:
+    """ASEZ foreign-ownership / land-tenure policy rules attached to this submarket (Aqaba)."""
+    return [it for it in bundle.evidence_items
+            if it.type == "policy" and it.impact_area.strip().lower() == key]
+
+
+def feasibility_for(bundle: DataBundle, area: str, zoning: Optional[dict] = None,
+                    construction: Optional[dict] = None) -> dict[str, Any]:
+    """Broad build-feasibility read for one submarket. `zoning` (from the caller) carries the
+    picked zoning proxy (official ASEZ for Aqaba, OSM elsewhere); `construction` carries the
+    official DoS cost floor. ASEZ policy rules are read from the bundle."""
     key = area.strip().lower()
     sales = [l.price_per_m2 for l in bundle.sales()
              if l.neighborhood.strip().lower() == key
              and l.price_per_m2 and l.price_per_m2 >= config.MIN_PLAUSIBLE_SALE_PPM2]
 
-    if zoning and zoning.get("plot_count"):
+    asez = asez_rules_for(bundle, key)
+    if asez:
+        value = {"foreign_ownership_rules": len(asez)}
+        srcs = []
+        if zoning and zoning.get("kind") == "asez" and zoning.get("plot_count"):
+            value["official_zoning_polygons"] = zoning["plot_count"]
+            if zoning.get("source"):
+                srcs.append(zoning["source"])
+        srcs += [{"name": it.source_name, "url": it.source_url,
+                  "capture_date": it.capture_date or "unknown"} for it in asez]
+        regulatory = _dim_status(
+            "available",
+            f"Official ASEZ zoning + foreign-ownership regime ({len(asez)} rules): non-Jordanian "
+            "ownership permitted with resale locks; land sale/lease governed by ASEZ regulation "
+            "(ASEZA official).",
+            _dedupe(srcs), value)
+    elif zoning and zoning.get("plot_count"):
         regulatory = _dim_status(
             "partial",
             "OSM-derived land-use plots exist citywide but are not attributed to this "
@@ -317,19 +368,18 @@ def feasibility_for(bundle: DataBundle, area: str,
             "not_available",
             "Per-area zoning (FAR, max height, zone class) pending GAM official data.", [])
 
-    mids = [c.midpoint for c in bundle.cost_benchmarks if c.midpoint]
-    if mids:
-        cost_sources = _dedupe([{"name": c.source_name, "url": c.source_url,
-                                 "capture_date": c.capture_date or "unknown"}
-                                for c in bundle.cost_benchmarks if c.midpoint])
-        construction = _dim_status(
-            "partial",
-            "Citywide construction-cost benchmark (spec-mixed); per-area geotechnical / "
-            "engineering assessment not yet collected.",
-            cost_sources, {"construction_cost_jd_m2_median": round(median(mids), 1)})
+    if construction and construction.get("value"):
+        construction_dim = _dim_status(
+            "available",
+            f"Official DoS building-licence filed construction cost ({construction.get('authority', '')}) "
+            "- a conservative FLOOR that understates full turnkey build; per-area geotechnical "
+            "assessment still pending.",
+            [construction["source"]] if construction.get("source") else [],
+            {"construction_cost_jd_m2": round(construction["value"], 1),
+             "authority": construction.get("authority"), "basis": "filed-licence floor"})
     else:
-        construction = _dim_status(
-            "not_available", "No construction-cost benchmark available.", [])
+        construction_dim = _dim_status(
+            "not_available", "No official construction-cost series available.", [])
 
     if sales:
         operational = _dim_status(
@@ -344,7 +394,7 @@ def feasibility_for(bundle: DataBundle, area: str,
 
     dims = {
         "regulatory_zoning": regulatory,
-        "construction_engineering": construction,
+        "construction_engineering": construction_dim,
         "operational_market": operational,
         "environmental": _dim_status(
             "not_available", "Environmental / geotechnical data not yet collected.", []),

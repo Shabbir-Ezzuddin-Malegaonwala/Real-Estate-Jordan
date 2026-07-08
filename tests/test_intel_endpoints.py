@@ -177,6 +177,20 @@ class Residual(unittest.TestCase):
         self.assertAlmostEqual(r.body["residual_land_value_per_m2_jd"],
                                r.body["residual_land_value_total_jd"] / 1200, delta=1.0)
 
+    def test_default_construction_is_dos_build_cost_not_land_price(self):
+        r = _request("POST", "/residual-land-value",
+                     data={"neighborhood": "Abdoun", "buildable_area_m2": 1200})
+        self.assertEqual(r.status, 200, r.text[:200])
+        self.assertTrue(r.body["inputs"]["construction_cost_defaulted"])
+        cost = r.body["inputs"]["construction_cost_per_m2"]
+        # DoS build floor is ~150-200 JD/m2, NOT the old land-price default (400-2667).
+        self.assertLess(cost, 300, f"construction default {cost} looks like a land price")
+        self.assertGreater(cost, 100)
+        # the floor/upper-bound caveat must be surfaced
+        self.assertTrue(r.body.get("caveat"))
+        self.assertIn("floor", r.body["caveat"].lower())
+        self.assertTrue(any("dos" in s["name"].lower() for s in r.body["sources"]))
+
     def test_explicit_inputs_viable(self):
         r = _request("POST", "/residual-land-value", data={
             "neighborhood": "Abdoun", "buildable_area_m2": 1200, "gdv_per_m2": 1100,
@@ -258,10 +272,11 @@ class Opportunity(unittest.TestCase):
                 self.assertIn(d["confidence"], ("high", "medium", "low"))
                 if d["score"] is not None:
                     self.assertTrue(0 <= d["score"] <= 100)
-            # the four enrichment-pending dims must be null (never fabricated)
-            for k in ("future_growth", "infrastructure", "regulatory_readiness",
-                      "construction_feasibility"):
+            # still-pending dims are null (never fabricated); construction_feasibility is now
+            # non-null where the DoS build-cost series covers the governorate (Amman here).
+            for k in ("future_growth", "infrastructure", "regulatory_readiness"):
                 self.assertIsNone(r["dimensions"][k]["score"])
+            self.assertIsNotNone(r["dimensions"]["construction_feasibility"]["score"])
             self.assertAlmostEqual(sum(r["weights_used"].values()), 1.0, places=2)
 
 
@@ -282,6 +297,26 @@ class FeasibilityEndpoint(unittest.TestCase):
     def test_operational_market_available(self):
         r = _request("GET", "/feasibility?neighborhood=Khalda")
         self.assertEqual(r.body["dimensions"]["operational_market"]["status"], "available")
+
+    def test_construction_available_from_dos(self):
+        r = _request("GET", "/feasibility?neighborhood=Abdoun")
+        d = r.body["dimensions"]["construction_engineering"]
+        self.assertEqual(d["status"], "available")
+        self.assertIn("construction_cost_jd_m2", d["value"])
+        self.assertLess(d["value"]["construction_cost_jd_m2"], 300)  # build floor, not land price
+        self.assertTrue(d["sources"])
+
+    def test_aqaba_regulatory_available_via_asez(self):
+        r = _request("GET", "/feasibility?neighborhood=Aqaba")
+        self.assertEqual(r.status, 200, r.text[:200])
+        reg = r.body["dimensions"]["regulatory_zoning"]
+        self.assertEqual(reg["status"], "available")
+        self.assertGreaterEqual(reg["value"]["foreign_ownership_rules"], 1)
+        self.assertTrue(reg["sources"])
+
+    def test_amman_regulatory_partial_osm(self):
+        r = _request("GET", "/feasibility?neighborhood=Abdoun")
+        self.assertEqual(r.body["dimensions"]["regulatory_zoning"]["status"], "partial")
 
     def test_uncovered_neighborhood_422(self):
         r = _request("GET", "/feasibility?neighborhood=Atlantis")

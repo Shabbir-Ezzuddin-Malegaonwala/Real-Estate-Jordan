@@ -291,6 +291,19 @@ class DecisionReadiness(unittest.TestCase):
         for k in r["weights_used"]:
             self.assertIsNotNone(r["dimensions"][k]["score"])
 
+    def test_construction_feasibility_non_null_with_dos_cost(self):
+        from app.engine.data import ConstructionCost
+        cc = ConstructionCost(174.8, 157.4, 12, "2026-Q1", "DoS", "internal://dos",
+                              "2026-07-08", "floor caveat")
+        ls = [_listing(neighborhood="Abdoun", ppm2=1100 + j) for j in range(15)]
+        ls += [_listing(neighborhood="Khalda", ppm2=780 + j) for j in range(15)]
+        bundle = DataBundle(listings=ls, construction_cost=cc, as_of=AS_OF)
+        out = opportunity.opportunity_scores(bundle, ["Abdoun", "Khalda"], AS_OF)
+        cf = out[0]["readiness"]["dimensions"]["construction_feasibility"]
+        self.assertIsNotNone(cf["score"])
+        self.assertEqual(cf["confidence"], "medium")
+        self.assertTrue(0 <= cf["score"] <= 100)
+
 
 class Feasibility(unittest.TestCase):
     _DIMS = {"regulatory_zoning", "construction_engineering", "operational_market",
@@ -317,18 +330,44 @@ class Feasibility(unittest.TestCase):
         self.assertEqual(f["dimensions"]["operational_market"]["status"], "available")
         self.assertIn("median_sale_jd_m2", f["dimensions"]["operational_market"]["value"])
 
-    def test_construction_partial_when_cost_present(self):
+    def test_construction_available_with_dos_cost(self):
+        cons = {"value": 174.8, "authority": "Greater Amman",
+                "source": {"name": "DoS", "url": "internal://dos", "capture_date": "2026-07-08"}}
+        f = opportunity.feasibility_for(self._bundle(), "Abdoun", construction=cons)
+        d = f["dimensions"]["construction_engineering"]
+        self.assertEqual(d["status"], "available")
+        self.assertAlmostEqual(d["value"]["construction_cost_jd_m2"], 174.8, places=1)
+        self.assertIn("floor", d["detail"].lower())
+
+    def test_construction_not_available_without_dos(self):
         f = opportunity.feasibility_for(self._bundle(), "Abdoun")
-        self.assertEqual(f["dimensions"]["construction_engineering"]["status"], "partial")
+        self.assertEqual(f["dimensions"]["construction_engineering"]["status"], "not_available")
 
     def test_regulatory_partial_only_with_zoning_else_not_available(self):
         without = opportunity.feasibility_for(self._bundle(), "Abdoun")
         self.assertEqual(without["dimensions"]["regulatory_zoning"]["status"], "not_available")
         with_z = opportunity.feasibility_for(
             self._bundle(), "Abdoun",
-            zoning={"plot_count": 2244, "source": {"name": "OSM", "url": "internal://z",
-                                                   "capture_date": "2026-07-07"}})
+            zoning={"kind": "osm", "plot_count": 2244,
+                    "source": {"name": "OSM", "url": "internal://z", "capture_date": "2026-07-07"}})
         self.assertEqual(with_z["dimensions"]["regulatory_zoning"]["status"], "partial")
+
+    def test_aqaba_regulatory_available_via_asez(self):
+        from app.engine.data import EvidenceItem
+        rules = [EvidenceItem(f"asez-{i}", "policy", f"ASEZ rule {i}", "sum", "Aqaba", None,
+                              "unknown", None, "ASEZA", "https://aseza.jo/r", "2026-07-08", "H")
+                 for i in range(6)]
+        ls = [_listing(neighborhood="Aqaba", ppm2=700 + j) for j in range(8)]
+        bundle = DataBundle(listings=ls, evidence_items=rules, as_of=AS_OF)
+        f = opportunity.feasibility_for(
+            bundle, "Aqaba",
+            zoning={"kind": "asez", "plot_count": 118,
+                    "source": {"name": "Aqaba ASEZ official", "url": "x", "capture_date": "2026-07-07"}})
+        reg = f["dimensions"]["regulatory_zoning"]
+        self.assertEqual(reg["status"], "available")
+        self.assertEqual(reg["value"]["foreign_ownership_rules"], 6)
+        self.assertEqual(reg["value"]["official_zoning_polygons"], 118)
+        self.assertTrue(reg["sources"])
 
     def test_never_fabricates_unavailable_dims(self):
         f = opportunity.feasibility_for(self._bundle(), "Abdoun")

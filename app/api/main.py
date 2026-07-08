@@ -24,7 +24,6 @@ from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
 from app.engine.data import DataBundle, load_bundle_from_sqlite
 from app.engine.models import Subject
 from app.engine.opportunity import OPPORTUNITY_WEIGHTS, READINESS_WEIGHTS
-from app.engine.stats import median as _median_stat
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_re.sqlite"))
@@ -88,6 +87,13 @@ class Coverage:
             if key in sales_keys:
                 self.canonical[key] = name
                 self.stats.append(self._profile(name))
+        # Every neighborhood present in the corpus (for area-intelligence endpoints that also
+        # serve non-covered submarkets like Aqaba), lower-cased key -> display name.
+        self.all_names: dict[str, str] = {}
+        for l in bundle.listings:
+            n = (l.neighborhood or "").strip()
+            if n and n.lower() != "unknown":
+                self.all_names.setdefault(n.lower(), n)
 
     def _profile(self, name: str) -> dict:
         key = name.strip().lower()
@@ -111,6 +117,16 @@ class Coverage:
     def resolve(self, raw: str) -> Optional[str]:
         return self.canonical.get((raw or "").strip().lower())
 
+    def resolve_any(self, raw: str) -> Optional[str]:
+        """Covered submarket first, then any neighborhood in the corpus (e.g. Aqaba)."""
+        key = (raw or "").strip().lower()
+        return self.canonical.get(key) or self.all_names.get(key)
+
+
+def _is_amman(cov: "Coverage", canonical: str) -> bool:
+    """Covered submarkets are all Greater Amman; anything else (e.g. Aqaba) is Kingdom-wide."""
+    return canonical.strip().lower() in {n.strip().lower() for n in cov.names()}
+
 
 def _load_districts() -> list[tuple[str, Optional[float], Optional[float]]]:
     import sqlite3
@@ -124,26 +140,32 @@ def _load_districts() -> list[tuple[str, Optional[float], Optional[float]]]:
     return [(r[0], r[1], r[2]) for r in rows]
 
 
-def _zoning_meta() -> Optional[dict]:
-    """OSM land-use proxy count + source for the feasibility Regulatory/Zoning dimension."""
+def _zoning_meta() -> dict:
+    """Zoning plot counts + source by kind: official ASEZ (Aqaba) vs OSM land-use proxy (rest)."""
     import sqlite3
 
     conn = sqlite3.connect(_DB_PATH)
     try:
-        exists = conn.execute(
-            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='zoning_plots'").fetchone()
-        if not exists:
-            return None
-        count = conn.execute("SELECT count(*) FROM zoning_plots").fetchone()[0]
-        src = conn.execute(
-            "SELECT source_name, source_url, capture_date FROM zoning_plots LIMIT 1").fetchone()
+        if not conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='zoning_plots'"
+        ).fetchone():
+            return {}
+
+        def by_kind(like: str, official: bool):
+            op = "LIKE" if official else "NOT LIKE"
+            rows = conn.execute(
+                f"SELECT count(*) n, min(source_name) sn, min(source_url) su, "
+                f"min(capture_date) cd FROM zoning_plots WHERE source_name {op} ?",
+                (like,)).fetchone()
+            if not rows or not rows[0]:
+                return None
+            return {"plot_count": rows[0], "kind": "asez" if official else "osm",
+                    "source": {"name": rows[1], "url": rows[2],
+                               "capture_date": rows[3] or "unknown"}}
+
+        return {"asez": by_kind("%ASEZ%", True), "osm": by_kind("%ASEZ%", False)}
     finally:
         conn.close()
-    if not count:
-        return None
-    source = ({"name": src[0], "url": src[1], "capture_date": src[2] or "unknown"}
-              if src else None)
-    return {"plot_count": count, "source": source}
 
 
 @asynccontextmanager
@@ -363,24 +385,29 @@ def post_residual_land_value(req: ResidualRequest):
 
     cost = req.construction_cost_per_m2
     cost_source = None
+    caveat = None
     cost_defaulted = cost is None
     if cost_defaulted:
-        mids = [c.midpoint for c in bundle.cost_benchmarks if c.midpoint]
-        default_cost = _median_stat(mids) if mids else None
+        cc = bundle.construction_cost
+        default_cost = cc.for_area(_is_amman(cov, canonical)) if cc else None
         if not default_cost:
             raise HTTPException(
                 status_code=422,
-                detail=("construction_cost_per_m2 not supplied and no cost benchmark is "
-                        "available — provide construction_cost_per_m2 explicitly"))
+                detail=("construction_cost_per_m2 not supplied and no official DoS building-cost "
+                        "series is available - provide construction_cost_per_m2 explicitly"))
         cost = default_cost
-        cost_source = {"name": "cost_benchmarks (median of available midpoints)",
-                       "url": "internal://cost_benchmarks", "capture_date": bundle.as_of.isoformat()}
+        authority = "Greater Amman" if _is_amman(cov, canonical) else "Kingdom"
+        caveat = cc.caveat
+        cost_source = {"name": f"DoS building-licence filed cost ({authority}, "
+                               f"recent {cc.quarters}q mean to {cc.latest_period})",
+                       "url": cc.source_url, "capture_date": cc.capture_date or "unknown"}
 
     result = builder.residual_land_value(
         buildable_area_m2=req.buildable_area_m2, gdv_per_m2=gdv, construction_cost_per_m2=cost,
         finance_pct=req.finance_pct, professional_fees_pct=req.professional_fees_pct,
         developer_profit_pct=req.developer_profit_pct, gdv_source=gdv_source,
-        cost_source=cost_source, gdv_defaulted=gdv_defaulted, cost_defaulted=cost_defaulted)
+        cost_source=cost_source, gdv_defaulted=gdv_defaulted, cost_defaulted=cost_defaulted,
+        construction_caveat=caveat)
     return {"neighborhood": canonical, **result}
 
 
@@ -407,12 +434,22 @@ def get_opportunity():
 def get_feasibility(neighborhood: str = Query(..., min_length=1)):
     cov: Coverage = app.state.coverage
     bundle: DataBundle = app.state.bundle
-    canonical = cov.resolve(neighborhood)
+    canonical = cov.resolve_any(neighborhood)
     if canonical is None:
         raise HTTPException(
             status_code=422,
-            detail=f"No data for {neighborhood}; covered: {cov.names()}")
-    return opportunity.feasibility_for(bundle, canonical, zoning=app.state.zoning)
+            detail=f"No data for {neighborhood}; covered: {cov.names()} (or any corpus neighborhood)")
+    z = app.state.zoning or {}
+    is_aqaba = bool(opportunity.asez_rules_for(bundle, canonical.strip().lower()))
+    zoning = z.get("asez") if is_aqaba else z.get("osm")
+    construction = None
+    cc = bundle.construction_cost
+    if cc:
+        is_amman = _is_amman(cov, canonical)
+        construction = {"value": cc.for_area(is_amman),
+                        "authority": "Greater Amman" if is_amman else "Kingdom",
+                        "source": cc.source()}
+    return opportunity.feasibility_for(bundle, canonical, zoning=zoning, construction=construction)
 
 
 @app.get("/areas")

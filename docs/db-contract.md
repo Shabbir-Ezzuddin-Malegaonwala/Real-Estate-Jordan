@@ -127,6 +127,16 @@ Unique on `(indicator, geography, period)` — re-loading the same series is ide
 `benchmark_id (PK, auto), spec_class (req), cost_jd_per_m2_low, cost_jd_per_m2_high, year` + universal + provenance
 
 - `spec_class`: `basic`, `standard`, `high`, `luxury`, `unknown`
+- `basic`/`standard` low/high are filled from **DoS Building Licenses** (filed licensed estimated
+  cost — a conservative floor, not turnkey build cost; see `dos_building_cost`).
+
+### `dos_building_cost` — DoS quarterly building-licence cost time series (2004–2026)
+
+`cost_id (PK, auto), year (req), quarter (req), authority (req), building_type, license_type (req: new|extension|existing), licenses, residential_license_share, area_m2, estimated_cost_jd, cost_jd_per_m2` + universal + provenance
+Unique on `(year, quarter, authority, license_type)`. `authority` ∈ Kingdom / Greater Amman
+Municipality / Municipalities / Joint district committees / Regional authorities. Area/cost are
+authority totals (all building types blended); `cost_jd_per_m2 = estimated_cost_jd / area_m2`. The
+cost is the licensing authority's *filed estimate* — a conservative cost-approach floor.
 
 ### Geo / terrain context (friend-sourced, **NON-PRICED**)
 
