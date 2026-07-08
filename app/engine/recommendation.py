@@ -9,13 +9,14 @@ divergence becomes a surfaced risk — exactly the client PDF's integrated frame
 from __future__ import annotations
 
 from datetime import date
+from statistics import pstdev
 from typing import Optional
 
 from . import config, confidence, evidence
 from .adjustment import index_is_current
 from .data import DataBundle
-from .models import ComparableRecord, RecommendationResult, Subject
-from .stats import coeff_of_variation, median, robust_keep, weighted_mean
+from .models import ComparableRecord, Listing, RecommendationResult, Subject
+from .stats import coeff_of_variation, median, robust_keep, weighted_mean, weighted_std
 
 
 def _clean(values: list[float], floor: float) -> list[float]:
@@ -28,6 +29,40 @@ def _comparison_value(comps: list[ComparableRecord]) -> Optional[float]:
         return None
     return weighted_mean([c.adjusted_ppm2 for c in comps],
                          [c.reconciliation_weight for c in comps])
+
+
+def _reconcile_to_submarket(pool: list[Listing], comps: list[ComparableRecord],
+                            comp_draw: float) -> tuple[float, Optional[dict]]:
+    """Stabilise the comp-selected value against the submarket's robust median.
+
+    The top-N similarity shortlist is a small, high-variance draw from a large pool; once the
+    corpus is dense it can settle on an unrepresentative price pocket and pull the point
+    estimate off the submarket's true centre (in either direction). The robust median of ALL
+    same-submarket same-type sales is a far steadier level. The two are blended by
+    inverse-variance (precision) weighting — each counts as 1/SE² — and the comps' own
+    attribute-adjustment ratio is carried onto the anchor so subject tailoring survives. On a
+    thin pool the comps already ARE the submarket, so the draw is returned untouched.
+    """
+    anchor_vals = _clean([l.price_per_m2 for l in pool], config.MIN_PLAUSIBLE_SALE_PPM2)
+    if len(anchor_vals) < config.ANCHOR_MIN_POOL or len(comps) < 2:
+        return comp_draw, None
+    weights = [c.reconciliation_weight for c in comps]
+    comp_raw = weighted_mean([c.time_adjusted_ppm2 for c in comps], weights)
+    if not comp_raw:
+        return comp_draw, None
+    var_anchor = pstdev(anchor_vals) ** 2 / len(anchor_vals)
+    var_comp = weighted_std([c.adjusted_ppm2 for c in comps], weights) ** 2 / len(comps)
+    if var_anchor <= 0 or var_comp <= 0:
+        return comp_draw, None
+    anchor_ppm2 = median(anchor_vals)
+    adj_mult = comp_draw / comp_raw                       # attribute normalisation; level bias cancels
+    lam = (1 / var_anchor) / (1 / var_anchor + 1 / var_comp)   # anchor's precision share
+    reconciled = lam * anchor_ppm2 * adj_mult + (1 - lam) * comp_draw
+    note = (f"reconciled to submarket robust median {anchor_ppm2:.0f} JD/m² "
+            f"(n={len(anchor_vals)} same-type sales) via inverse-variance weighting "
+            f"(anchor λ={lam:.2f}) — guards against an unrepresentative comp shortlist")
+    return round(reconciled, 1), {"anchor_ppm2": round(anchor_ppm2, 1), "lambda": round(lam, 3),
+                                  "note": note}
 
 
 def _cost_floor(bundle: DataBundle, subject: Subject):
@@ -67,10 +102,15 @@ def _income_ceiling(bundle: DataBundle, subject: Subject):
 
 
 def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord],
-             premiums, selection_notes: list[str], as_of: date) -> RecommendationResult:
-    comparison_asking = _comparison_value(comps)
-    if comparison_asking is None:
+             premiums, selection_notes: list[str], as_of: date,
+             pool: list[Listing]) -> RecommendationResult:
+    comp_draw = _comparison_value(comps)
+    if comp_draw is None:
         return _empty_result(subject, as_of, selection_notes)
+
+    comparison_asking, anchor = _reconcile_to_submarket(pool, comps, comp_draw)
+    if anchor:
+        selection_notes = selection_notes + [anchor["note"]]
 
     mid_gap = (config.ASK_TO_TX_GAP_LOW + config.ASK_TO_TX_GAP_HIGH) / 2
     comparison_tx = comparison_asking * (1 - mid_gap)
@@ -82,6 +122,8 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
     adjusted_cv = coeff_of_variation([c.adjusted_ppm2 for c in comps])
     method_values = {
         "comparison_asking": round(comparison_asking, 1),
+        "comparison_comp_draw": round(comp_draw, 1),
+        "submarket_anchor_ppm2": anchor["anchor_ppm2"] if anchor else None,
         "comparison": round(comparison_tx, 1),
         "cost_floor": round(cost_floor, 1) if cost_floor else None,
         "income_ceiling": round(income_ceiling, 1) if income_ceiling else None,
@@ -272,6 +314,14 @@ def _narrative(subject, recommended, min_safe, premium, conf, comps,
         f"subject with market-derived adjustments and calibrated from asking to transaction "
         f"level; comps needing fewer/smaller adjustments carried more weight."
     )
+    anchor_ppm2 = method_values.get("submarket_anchor_ppm2")
+    if anchor_ppm2:
+        lines.append(
+            f"To stay representative of the whole submarket, the comp value was reconciled "
+            f"toward the robust median of all same-type sales (~{anchor_ppm2:.0f} JD/m² asking) "
+            f"by statistical precision, so a dense pool anchors the price level while the comps "
+            f"supply the subject-specific adjustments."
+        )
     floor, ceil = method_values.get("cost_floor"), method_values.get("income_ceiling")
     cross = []
     if floor:

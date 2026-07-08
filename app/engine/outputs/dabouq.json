@@ -2,172 +2,66 @@
   "location_id": "demo-dabouq",
   "neighborhood": "Dabouq",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 596.4,
-  "recommended_price_jd_m2": 840.2,
-  "premium_price_jd_m2": 1084.1,
+  "min_safe_price_jd_m2": 617.8,
+  "recommended_price_jd_m2": 950.4,
+  "premium_price_jd_m2": 1283.0,
   "confidence": {
     "label": "M",
-    "numeric": 0.679,
+    "numeric": 0.605,
     "interval_jd_m2": [
-      596.4,
-      1084.1
+      617.8,
+      1283.0
     ]
   },
   "evidence_objects": [
     {
-      "factor": "Floor level",
-      "adjustment": "-1.0% per unit",
-      "confidence": "Medium",
-      "method": "OLS slope of price/m² vs floor_level (n=48)",
-      "datasets": [
-        "listings"
-      ],
-      "sources": [
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283156470",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282446612",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283442102",
-          "capture_date": "2026-07-07"
-        }
-      ],
-      "category": "current_state",
-      "explanation": "Each unit of floor level moves price/m² by -1.0% (finish-controlled regression); subject value = 3."
-    },
-    {
-      "factor": "Building age",
-      "adjustment": "-2.1% per unit",
-      "confidence": "Medium",
-      "method": "OLS slope of price/m² vs building_age_years (n=47)",
-      "datasets": [
-        "listings"
-      ],
-      "sources": [
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283156470",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282446612",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283442102",
-          "capture_date": "2026-07-07"
-        }
-      ],
-      "category": "current_state",
-      "explanation": "Each unit of building age moves price/m² by -2.1% (finish-controlled regression); subject value = 0."
-    },
-    {
       "factor": "Size (per m²)",
       "adjustment": "-0.0% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs area_m2 (n=300)",
+      "method": "OLS slope of price/m² vs area_m2 (n=394)",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/flat-roof-with-terrace-for-sale-in-dabouq-with-a-total-area-of-375m/HMM-S-5843",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283156470",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-with-a-terrace-for-sale-in-dabouq-174m/HMM-S-7518",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/dd53de73-e047-4f1d-9a8c-8a5b5e7e2638",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/ground-floor-apartment-with-a-garden-for-sale-in-dabouq-172m/HMM-S-7515",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/2dd010a3-f197-423e-b84d-8e5dfef158a9",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-for-sale-in-dabouq-with-a-building-area-of-170m/HMM-S-6643",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282446612",
-          "capture_date": "2026-07-07"
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/f8acc7be-cebe-434f-b2f9-e9aa5e75a4c1",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283442102",
-          "capture_date": "2026-07-07"
+          "name": "AbuJudom",
+          "url": "https://www.abujudom.com/Property/Details/33954/High-End-Roof-for-Sale-in-Dabouq-%7C-Under-Construction-in-Prime-Area",
+          "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
@@ -193,9 +87,9 @@
     },
     {
       "factor": "Income approach ceiling",
-      "adjustment": "560 JD/m²",
+      "adjustment": "757 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (107.1%, citywide rents vs sales)",
+      "method": "income approach: annual rent ÷ derived market yield (79.3%, citywide rents vs sales)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -207,7 +101,7 @@
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (107.1%). Above ≈ 560 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (79.3%). Above ≈ 757 JD/m² the unit stops clearing to investors."
     },
     {
       "factor": "Competitive positioning",
@@ -231,54 +125,54 @@
       "factor": "Market composition (context)",
       "adjustment": "context — not a price adjustment",
       "confidence": "High",
-      "method": "seller-type share of the 10 comps",
+      "method": "seller-type share of the 8 comps",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283368668",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/flat-roof-with-terrace-for-sale-in-dabouq-with-a-total-area-of-375m/HMM-S-5843",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283156470",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-with-a-terrace-for-sale-in-dabouq-174m/HMM-S-7518",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282444326",
-          "capture_date": "2026-07-07"
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/dd53de73-e047-4f1d-9a8c-8a5b5e7e2638",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283035926",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/ground-floor-apartment-with-a-garden-for-sale-in-dabouq-172m/HMM-S-7515",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282731706",
-          "capture_date": "2026-07-07"
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/2dd010a3-f197-423e-b84d-8e5dfef158a9",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/281066838",
-          "capture_date": "2026-07-07"
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-for-sale-in-dabouq-with-a-building-area-of-170m/HMM-S-6643",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282446612",
-          "capture_date": "2026-07-07"
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/f8acc7be-cebe-434f-b2f9-e9aa5e75a4c1",
+          "capture_date": "2026-07-08"
         },
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283442102",
-          "capture_date": "2026-07-07"
+          "name": "AbuJudom",
+          "url": "https://www.abujudom.com/Property/Details/33954/High-End-Roof-for-Sale-in-Dabouq-%7C-Under-Construction-in-Prime-Area",
+          "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
-      "explanation": "Of the comparables driving this estimate, 50% agent-listed, 50% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
+      "explanation": "Of the comparables driving this estimate, 100% agent-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
     },
     {
       "factor": "Neighborhood spatial context",
@@ -347,386 +241,353 @@
   ],
   "comparables": [
     {
-      "listing_id": "opensooq-283368668",
+      "listing_id": "homes-HMM-S-5843",
       "neighborhood": "Dabouq",
-      "area_m2": 230.0,
-      "original_ppm2": 904.3,
-      "time_adjusted_ppm2": 904.3,
-      "adjusted_ppm2": 899.3,
-      "gross_adjustment": 0.0056,
-      "reconciliation_weight": 4.8214,
-      "similarity": 0.573,
-      "listing_date": "2026-06-30",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-2.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=1 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+1.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=230.0 -> subject=175"
-        }
-      ],
+      "area_m2": 175.0,
+      "original_ppm2": 1828.6,
+      "time_adjusted_ppm2": 1828.6,
+      "adjusted_ppm2": 1828.6,
+      "gross_adjustment": 0,
+      "reconciliation_weight": 3.0,
+      "similarity": 0.706,
+      "listing_date": null,
+      "adjustments": [],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283368668",
-        "capture_date": "2026-07-07"
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/flat-roof-with-terrace-for-sale-in-dabouq-with-a-total-area-of-375m/HMM-S-5843",
+        "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
-      "price_per_m2": 904.3,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
+      "price_per_m2": 1828.6,
+      "adjustments_applied": []
     },
     {
-      "listing_id": "opensooq-283156470",
+      "listing_id": "homes-HMM-S-7518",
       "neighborhood": "Dabouq",
-      "area_m2": 250.0,
-      "original_ppm2": 508.0,
-      "time_adjusted_ppm2": 508.0,
-      "adjusted_ppm2": 518.1,
-      "gross_adjustment": 0.0199,
-      "reconciliation_weight": 4.4848,
-      "similarity": 0.67,
-      "listing_date": "2026-06-26",
+      "area_m2": 174.0,
+      "original_ppm2": 1092.0,
+      "time_adjusted_ppm2": 1092.0,
+      "adjusted_ppm2": 1091.7,
+      "gross_adjustment": 0.0002,
+      "reconciliation_weight": 2.9965,
+      "similarity": 0.704,
+      "listing_date": null,
       "adjustments": [
         {
           "factor": "Size (per m²)",
-          "adjustment": "+2.0%",
+          "adjustment": "-0.0%",
           "method": "derived OLS slope",
-          "detail": "comp=250.0 -> subject=175"
+          "detail": "comp=174.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283156470",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 508.0,
-      "adjustments_applied": [
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-282444326",
-      "neighborhood": "Dabouq",
-      "area_m2": 225.0,
-      "original_ppm2": 977.8,
-      "time_adjusted_ppm2": 977.8,
-      "adjusted_ppm2": 961.1,
-      "gross_adjustment": 0.0171,
-      "reconciliation_weight": 4.459,
-      "similarity": 0.574,
-      "listing_date": "2026-06-11",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+1.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=225.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282444326",
-        "capture_date": "2026-07-07"
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-with-a-terrace-for-sale-in-dabouq-174m/HMM-S-7518",
+        "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
-      "price_per_m2": 977.8,
+      "price_per_m2": 1092.0,
       "adjustments_applied": [
-        "Floor level",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq-283035926",
+      "listing_id": "eureka-dd53de73-e047-4f1d-9a8c-8a5b5e7e2638",
       "neighborhood": "Dabouq",
-      "area_m2": 200.0,
-      "original_ppm2": 1150.0,
-      "time_adjusted_ppm2": 1150.0,
-      "adjusted_ppm2": 1122.7,
-      "gross_adjustment": 0.0237,
-      "reconciliation_weight": 4.3927,
-      "similarity": 0.639,
-      "listing_date": "2026-06-23",
+      "area_m2": 177.0,
+      "original_ppm2": 892.7,
+      "time_adjusted_ppm2": 892.7,
+      "adjusted_ppm2": 893.1,
+      "gross_adjustment": 0.0005,
+      "reconciliation_weight": 2.9931,
+      "similarity": 0.701,
+      "listing_date": null,
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
           "factor": "Size (per m²)",
-          "adjustment": "+0.7%",
+          "adjustment": "+0.0%",
           "method": "derived OLS slope",
-          "detail": "comp=200.0 -> subject=175"
+          "detail": "comp=177.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283035926",
-        "capture_date": "2026-07-07"
+        "name": "EurekaJo",
+        "url": "https://eurekajo.com/Realestates/Details/dd53de73-e047-4f1d-9a8c-8a5b5e7e2638",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "unknown",
+      "price_per_m2": 892.7,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "homes-HMM-S-7515",
+      "neighborhood": "Dabouq",
+      "area_m2": 172.0,
+      "original_ppm2": 1151.2,
+      "time_adjusted_ppm2": 1151.2,
+      "adjusted_ppm2": 1150.4,
+      "gross_adjustment": 0.0007,
+      "reconciliation_weight": 2.9896,
+      "similarity": 0.699,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=172.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/ground-floor-apartment-with-a-garden-for-sale-in-dabouq-172m/HMM-S-7515",
+        "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
-      "price_per_m2": 1150.0,
+      "price_per_m2": 1151.2,
       "adjustments_applied": [
-        "Floor level",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq-282731706",
+      "listing_id": "eureka-2dd010a3-f197-423e-b84d-8e5dfef158a9",
       "neighborhood": "Dabouq",
-      "area_m2": 204.0,
-      "original_ppm2": 1102.9,
-      "time_adjusted_ppm2": 1102.9,
-      "adjusted_ppm2": 1078.0,
-      "gross_adjustment": 0.0227,
-      "reconciliation_weight": 4.3804,
-      "similarity": 0.627,
-      "listing_date": "2026-06-17",
+      "area_m2": 172.0,
+      "original_ppm2": 1220.9,
+      "time_adjusted_ppm2": 1220.9,
+      "adjusted_ppm2": 1220.1,
+      "gross_adjustment": 0.0007,
+      "reconciliation_weight": 2.9896,
+      "similarity": 0.699,
+      "listing_date": null,
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
           "factor": "Size (per m²)",
-          "adjustment": "+0.8%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
-          "detail": "comp=204.0 -> subject=175"
+          "detail": "comp=172.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282731706",
-        "capture_date": "2026-07-07"
+        "name": "EurekaJo",
+        "url": "https://eurekajo.com/Realestates/Details/2dd010a3-f197-423e-b84d-8e5dfef158a9",
+        "capture_date": "2026-07-08"
       },
-      "seller_type": "private",
-      "price_per_m2": 1102.9,
+      "seller_type": "unknown",
+      "price_per_m2": 1220.9,
       "adjustments_applied": [
-        "Floor level",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq-281066838",
+      "listing_id": "homes-HMM-S-6643",
       "neighborhood": "Dabouq",
-      "area_m2": 199.0,
-      "original_ppm2": 1231.2,
-      "time_adjusted_ppm2": 1231.2,
-      "adjusted_ppm2": 1201.6,
-      "gross_adjustment": 0.024,
-      "reconciliation_weight": 4.1615,
-      "similarity": 0.619,
-      "listing_date": "2026-05-12",
+      "area_m2": 170.0,
+      "original_ppm2": 1176.5,
+      "time_adjusted_ppm2": 1176.5,
+      "adjusted_ppm2": 1175.1,
+      "gross_adjustment": 0.0012,
+      "reconciliation_weight": 2.9828,
+      "similarity": 0.694,
+      "listing_date": null,
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
           "factor": "Size (per m²)",
-          "adjustment": "+0.6%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
-          "detail": "comp=199.0 -> subject=175"
+          "detail": "comp=170.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/281066838",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 1231.2,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-282446612",
-      "neighborhood": "Dabouq",
-      "area_m2": 200.0,
-      "original_ppm2": 810.0,
-      "time_adjusted_ppm2": 810.0,
-      "adjusted_ppm2": 842.1,
-      "gross_adjustment": 0.0396,
-      "reconciliation_weight": 4.0401,
-      "similarity": 0.633,
-      "listing_date": "2026-06-11",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+6.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.7%",
-          "method": "derived OLS slope",
-          "detail": "comp=200.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282446612",
-        "capture_date": "2026-07-07"
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-for-sale-in-dabouq-with-a-building-area-of-170m/HMM-S-6643",
+        "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
-      "price_per_m2": 810.0,
+      "price_per_m2": 1176.5,
       "adjustments_applied": [
-        "Floor level",
-        "Building age",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq-283442102",
+      "listing_id": "eureka-f8acc7be-cebe-434f-b2f9-e9aa5e75a4c1",
       "neighborhood": "Dabouq",
-      "area_m2": 216.0,
-      "original_ppm2": 810.2,
-      "time_adjusted_ppm2": 810.2,
-      "adjusted_ppm2": 891.6,
-      "gross_adjustment": 0.1005,
-      "reconciliation_weight": 3.3027,
-      "similarity": 0.606,
-      "listing_date": "2026-07-01",
+      "area_m2": 170.0,
+      "original_ppm2": 1235.3,
+      "time_adjusted_ppm2": 1235.3,
+      "adjusted_ppm2": 1233.9,
+      "gross_adjustment": 0.0012,
+      "reconciliation_weight": 2.9828,
+      "similarity": 0.694,
+      "listing_date": null,
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+12.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=7 -> subject=0"
-        },
-        {
           "factor": "Size (per m²)",
-          "adjustment": "+1.1%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
-          "detail": "comp=216.0 -> subject=175"
+          "detail": "comp=170.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283442102",
-        "capture_date": "2026-07-07"
+        "name": "EurekaJo",
+        "url": "https://eurekajo.com/Realestates/Details/f8acc7be-cebe-434f-b2f9-e9aa5e75a4c1",
+        "capture_date": "2026-07-08"
       },
-      "seller_type": "private",
-      "price_per_m2": 810.2,
+      "seller_type": "unknown",
+      "price_per_m2": 1235.3,
       "adjustments_applied": [
-        "Floor level",
-        "Building age",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq-271611135",
+      "listing_id": "abujudom-33954",
       "neighborhood": "Dabouq",
-      "area_m2": 250.0,
-      "original_ppm2": 940.0,
-      "time_adjusted_ppm2": 940.0,
-      "adjusted_ppm2": 930.2,
-      "gross_adjustment": 0.0104,
-      "reconciliation_weight": 3.2445,
-      "similarity": 0.389,
-      "listing_date": "2025-10-20",
+      "area_m2": 170.0,
+      "original_ppm2": 2235.3,
+      "time_adjusted_ppm2": 2235.3,
+      "adjusted_ppm2": 2232.7,
+      "gross_adjustment": 0.0012,
+      "reconciliation_weight": 2.9828,
+      "similarity": 0.694,
+      "listing_date": null,
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
           "factor": "Size (per m²)",
-          "adjustment": "+2.0%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
-          "detail": "comp=250.0 -> subject=175"
+          "detail": "comp=170.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/271611135",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 940.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-282343042",
-      "neighborhood": "Dabouq",
-      "area_m2": 200.0,
-      "original_ppm2": 800.0,
-      "time_adjusted_ppm2": 800.0,
-      "adjusted_ppm2": 885.1,
-      "gross_adjustment": 0.1064,
-      "reconciliation_weight": 3.1508,
-      "similarity": 0.632,
-      "listing_date": "2026-06-09",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-2.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=1 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+12.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=7 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.7%",
-          "method": "derived OLS slope",
-          "detail": "comp=200.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282343042",
-        "capture_date": "2026-07-07"
+        "name": "AbuJudom",
+        "url": "https://www.abujudom.com/Property/Details/33954/High-End-Roof-for-Sale-in-Dabouq-%7C-Under-Construction-in-Prime-Area",
+        "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
-      "price_per_m2": 800.0,
+      "price_per_m2": 2235.3,
       "adjustments_applied": [
-        "Floor level",
-        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "homes-HMM-S-7517",
+      "neighborhood": "Dabouq",
+      "area_m2": 168.0,
+      "original_ppm2": 1113.1,
+      "time_adjusted_ppm2": 1113.1,
+      "adjusted_ppm2": 1111.3,
+      "gross_adjustment": 0.0016,
+      "reconciliation_weight": 2.9759,
+      "similarity": 0.689,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=168.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/first-floor-apartment-for-sale-in-dabouq-168m/HMM-S-7517",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 1113.1,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "homes-HMM-S-7978",
+      "neighborhood": "Dabouq",
+      "area_m2": 182.0,
+      "original_ppm2": 1291.2,
+      "time_adjusted_ppm2": 1291.2,
+      "adjusted_ppm2": 1293.3,
+      "gross_adjustment": 0.0016,
+      "reconciliation_weight": 2.9759,
+      "similarity": 0.689,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=182.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/first-floor-apartment-for-sale-in-dabouq183m/HMM-S-7978",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 1291.2,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "homes-HMM-S-6434",
+      "neighborhood": "Dabouq",
+      "area_m2": 182.0,
+      "original_ppm2": 1373.6,
+      "time_adjusted_ppm2": 1373.6,
+      "adjusted_ppm2": 1375.8,
+      "gross_adjustment": 0.0016,
+      "reconciliation_weight": 2.9759,
+      "similarity": 0.689,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=182.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Homes-Jordan",
+        "url": "https://www.homes-jordan.com/en/sale/apartments/flat-roof-with-terrace-for-sale-in-dabouq-412m/HMM-S-6434",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 1373.6,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "eureka-50c4f8c0-0479-4fa3-90c6-116b9262db09",
+      "neighborhood": "Dabouq",
+      "area_m2": 188.0,
+      "original_ppm2": 1223.4,
+      "time_adjusted_ppm2": 1223.4,
+      "adjusted_ppm2": 1227.1,
+      "gross_adjustment": 0.003,
+      "reconciliation_weight": 2.9556,
+      "similarity": 0.675,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.3%",
+          "method": "derived OLS slope",
+          "detail": "comp=188.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "EurekaJo",
+        "url": "https://eurekajo.com/Realestates/Details/50c4f8c0-0479-4fa3-90c6-116b9262db09",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "unknown",
+      "price_per_m2": 1223.4,
+      "adjustments_applied": [
         "Size (per m²)"
       ]
     }
@@ -735,12 +596,7 @@
     {
       "factor": "Investor ceiling below price",
       "severity": "medium",
-      "detail": "Income ceiling (560) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
-    },
-    {
-      "factor": "Valuation methods diverge",
-      "severity": "medium",
-      "detail": "Comparison, cost and income approaches disagree (PDF: divergence is informative)."
+      "detail": "Income ceiling (757) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
     },
     {
       "factor": "No cost-approach floor",
@@ -771,39 +627,42 @@
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 596.4,
+      "recommended_price_jd_m2": 617.8,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 840.2,
+      "recommended_price_jd_m2": 950.4,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 1084.1,
+      "recommended_price_jd_m2": 1283.0,
       "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.36). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a luxury apartment in Dabouq (~175 m²), the recommended launch price is 840 JD/m², within a defensible range of 596–1084 JD/m² (confidence: M, 0.68; 80% interval 596–1084). This is anchored on 10 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: income ceiling ≈ 560. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.36) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Income ceiling (560) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers.",
+  "narrative": "For a luxury apartment in Dabouq (~175 m²), the recommended launch price is 950 JD/m², within a defensible range of 618–1283 JD/m² (confidence: M, 0.60; 80% interval 618–1283). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~1051 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: income ceiling ≈ 757. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.36) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Income ceiling (757) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers.",
   "computed_date": "2026-07-07",
   "method_values": {
-    "comparison_asking": 933.6,
-    "comparison": 840.2,
+    "comparison_asking": 1056.0,
+    "comparison_comp_draw": 1319.5,
+    "submarket_anchor_ppm2": 1050.6,
+    "comparison": 950.4,
     "cost_floor": null,
-    "income_ceiling": 560.0,
+    "income_ceiling": 757.0,
     "development_score": 0.36,
     "confidence_components": {
       "data_density": 1.0,
-      "dispersion": 0.427,
-      "recency": 0.917,
-      "method_agreement": 0.333,
+      "dispersion": 0.214,
+      "recency": 0.5,
+      "method_agreement": 0.622,
       "source_quality": 0.6
     },
     "selection_notes": [
       "39 near-duplicate cross-posting(s) collapsed (same beds, area & price/m2 within 1%)",
-      "261 same-submarket apartment listings; 26 within 18 months",
-      "10 comps selected (ranked by similarity)"
+      "355 same-submarket apartment listings; 120 within 18 months",
+      "12 comps selected (ranked by similarity)",
+      "reconciled to submarket robust median 1051 JD/m² (n=394 same-type sales) via inverse-variance weighting (anchor λ=0.98) — guards against an unrepresentative comp shortlist"
     ],
     "derived_premiums": [
       {
@@ -820,11 +679,11 @@
       },
       {
         "factor": "Furnishing: full vs no",
-        "derived_premium": 0.2449,
-        "method": "paired median differential (n_full=25, n_no=391)",
+        "derived_premium": 0.2821,
+        "method": "paired median differential (n_full=445, n_no=3075)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 416,
+        "sample_size": 3520,
         "computed_date": "2026-07-07",
         "neighborhood": "citywide",
         "property_type": "apartment",
@@ -832,11 +691,11 @@
       },
       {
         "factor": "Furnishing: semi vs no",
-        "derived_premium": 0.8965,
-        "method": "paired median differential (n_semi=21, n_no=391)",
+        "derived_premium": 0.26,
+        "method": "paired median differential (n_semi=212, n_no=3075)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 412,
+        "sample_size": 3287,
         "computed_date": "2026-07-07",
         "neighborhood": "citywide",
         "property_type": "apartment",
@@ -844,11 +703,11 @@
       },
       {
         "factor": "Floor level",
-        "derived_premium": -0.01012,
-        "method": "OLS slope of price/m² vs floor_level (n=48)",
+        "derived_premium": -0.00945,
+        "method": "OLS slope of price/m² vs floor_level (n=49)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 48,
+        "sample_size": 49,
         "computed_date": "2026-07-07",
         "neighborhood": "Dabouq",
         "property_type": "apartment",
@@ -856,7 +715,7 @@
       },
       {
         "factor": "Building age",
-        "derived_premium": -0.0211,
+        "derived_premium": -0.02163,
         "method": "OLS slope of price/m² vs building_age_years (n=47)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
@@ -868,11 +727,11 @@
       },
       {
         "factor": "Size (per m²)",
-        "derived_premium": -0.00027,
-        "method": "OLS slope of price/m² vs area_m2 (n=300)",
+        "derived_premium": -0.00023,
+        "method": "OLS slope of price/m² vs area_m2 (n=394)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 300,
+        "sample_size": 394,
         "computed_date": "2026-07-07",
         "neighborhood": "Dabouq",
         "property_type": "apartment",

@@ -52,6 +52,16 @@ NET_ADJ_RELIABILITY_FLAG = 0.30  # comps beyond this net adjustment are flagged 
 # much a single near-identical comp can dominate the weighted mean (max/min ratio ~3x).
 RECONCILIATION_WEIGHT_FLOOR = 0.20
 
+# --- Submarket-median anchor (recommendation._reconcile_to_submarket) ---
+# The top-N similarity shortlist is a small, high-variance draw. Once the corpus is dense
+# (50k+ portal rows) it can settle on an unrepresentative price pocket and pull the point
+# estimate off the submarket's true centre in EITHER direction. When the pool is a genuine
+# super-set of the selection, the comp value is blended toward the pool's robust median by
+# inverse-variance weighting (each estimate counts as 1/SE² — no price constant). Engage only
+# once the pool is at least twice the selection; below that the comps already ARE the
+# submarket and its median adds nothing.
+ANCHOR_MIN_POOL = 2 * TARGET_COMPS
+
 # --- Ask-to-transaction calibration (DOCUMENTED assumption, client PDF; NOT derived) ---
 # Asking prices sit above transaction prices; the PDF documents a 5-15% gap.
 # Applied uniformly to the asking-derived value and surfaced as sourced evidence.

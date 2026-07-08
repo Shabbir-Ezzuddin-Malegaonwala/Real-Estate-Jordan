@@ -1,10 +1,10 @@
 Jordan RE — CSV load report
 table         : listings
-source csv    : data\raw\friend\listings_friend_geocoded.csv
-generated     : 2026-07-07T21:14:25
+source csv    : data\raw\friend\listings_abujudom.csv
+generated     : 2026-07-08T05:47:11
 ------------------------------------------------------------
-rows read     : 23617
-inserted      : 23617
+rows read     : 439
+inserted      : 439
 updated       : 0 (upsert: enrichable attrs merged into existing rows)
 duplicates    : 0 (existing primary keys, skipped)
 rejected      : 0

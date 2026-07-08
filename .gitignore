@@ -49,3 +49,12 @@ desktop.ini
 
 # geofeatures raw CSVs (data is in the committed DB)
 data/raw/friend/listing_geofeatures*.csv
+
+# large raw portal CSVs + DLS raw (data is in the committed DB / parsed CSVs)
+data/raw/friend/listings_opensooq_full.csv
+data/raw/friend/listings_eureka.csv
+data/raw/friend/listings_homes.csv
+data/raw/friend/listings_abujudom.csv
+data/raw/dls_vpn/*.pdf
+data/raw/dls_vpn/pages/
+data/raw/dls_vpn/_dl*.log

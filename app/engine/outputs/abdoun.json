@@ -2,27 +2,47 @@
   "location_id": "demo-abdoun",
   "neighborhood": "Abdoun",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 649.6,
-  "recommended_price_jd_m2": 991.2,
-  "premium_price_jd_m2": 1332.8,
+  "min_safe_price_jd_m2": 596.8,
+  "recommended_price_jd_m2": 918.1,
+  "premium_price_jd_m2": 1376.4,
   "confidence": {
-    "label": "H",
-    "numeric": 0.762,
+    "label": "M",
+    "numeric": 0.587,
     "interval_jd_m2": [
-      649.6,
-      1332.8
+      596.8,
+      1239.4
     ]
   },
   "evidence_objects": [
     {
       "factor": "Furnishing",
       "adjustment": "+0.0%",
-      "confidence": "High",
-      "method": "paired median differential (n_semi=12, n_no=17)",
+      "confidence": "Medium",
+      "method": "paired median differential (n_semi=36, n_no=118)",
       "datasets": [
         "listings"
       ],
       "sources": [
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283475390",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283323892",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283075954",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282977722",
+          "capture_date": "2026-07-08"
+        },
         {
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282996068",
@@ -30,38 +50,18 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282282874",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282228748",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282283228",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-99741.html",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-98781.html",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282995644",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283670820",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283664290",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283669748",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282876778",
+          "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
@@ -69,13 +69,33 @@
     },
     {
       "factor": "Floor level",
-      "adjustment": "-0.2% per unit",
+      "adjustment": "+1.4% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs floor_level (n=43)",
+      "method": "OLS slope of price/m² vs floor_level (n=196)",
       "datasets": [
         "listings"
       ],
       "sources": [
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283475390",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283323892",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283075954",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282977722",
+          "capture_date": "2026-07-08"
+        },
         {
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282996068",
@@ -83,105 +103,52 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282282874",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282228748",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282283228",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-99741.html",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-98781.html",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282995644",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283670820",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283664290",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283669748",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282876778",
+          "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of floor level moves price/m² by -0.2% (finish-controlled regression); subject value = 3."
-    },
-    {
-      "factor": "Building age",
-      "adjustment": "-2.8% per unit",
-      "confidence": "Medium",
-      "method": "OLS slope of price/m² vs building_age_years (n=50)",
-      "datasets": [
-        "listings"
-      ],
-      "sources": [
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282996068",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282282874",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282283228",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-99741.html",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-98781.html",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283670820",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283664290",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283669748",
-          "capture_date": "2026-07-07"
-        }
-      ],
-      "category": "current_state",
-      "explanation": "Each unit of building age moves price/m² by -2.8% (finish-controlled regression); subject value = 0."
+      "explanation": "Each unit of floor level moves price/m² by +1.4% (finish-controlled regression); subject value = 3."
     },
     {
       "factor": "Size (per m²)",
-      "adjustment": "+0.0% per unit",
+      "adjustment": "-0.0% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs area_m2 (n=538)",
+      "method": "OLS slope of price/m² vs area_m2 (n=853)",
       "datasets": [
         "listings"
       ],
       "sources": [
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283475390",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283323892",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283075954",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282977722",
+          "capture_date": "2026-07-08"
+        },
         {
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282996068",
@@ -189,42 +156,22 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282282874",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282228748",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282283228",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-99741.html",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-98781.html",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282995644",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283670820",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283664290",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283669748",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282876778",
+          "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of size (per m²) moves price/m² by +0.0% (finish-controlled regression); subject value = 175."
+      "explanation": "Each unit of size (per m²) moves price/m² by -0.0% (finish-controlled regression); subject value = 175."
     },
     {
       "factor": "Ask-to-transaction calibration",
@@ -246,9 +193,9 @@
     },
     {
       "factor": "Income approach ceiling",
-      "adjustment": "1027 JD/m²",
+      "adjustment": "1376 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (107.1%, citywide rents vs sales)",
+      "method": "income approach: annual rent ÷ derived market yield (79.3%, citywide rents vs sales)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -260,7 +207,7 @@
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (107.1%). Above ≈ 1027 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (79.3%). Above ≈ 1376 JD/m² the unit stops clearing to investors."
     },
     {
       "factor": "Competitive positioning",
@@ -291,47 +238,47 @@
       "sources": [
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283475390",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283323892",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283075954",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282977722",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282996068",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282282874",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282228748",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282283228",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-99741.html",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-98781.html",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282995644",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283670820",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283664290",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283669748",
-          "capture_date": "2026-07-07"
+          "url": "https://jo.opensooq.com/en/search/282876778",
+          "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
-      "explanation": "Of the comparables driving this estimate, 83% private-listed, 17% agent-listed — a predominantly private-seller comp set. Provided as market texture; it does not move the price."
+      "explanation": "Of the comparables driving this estimate, 83% agent-listed, 17% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
     },
     {
       "factor": "Neighborhood spatial context",
@@ -400,26 +347,167 @@
   ],
   "comparables": [
     {
-      "listing_id": "opensooq-282996068",
+      "listing_id": "opensooq2-283475390",
       "neighborhood": "Abdoun",
-      "area_m2": 190.0,
-      "original_ppm2": 789.5,
-      "time_adjusted_ppm2": 789.5,
-      "adjusted_ppm2": 785.7,
-      "gross_adjustment": 0.0048,
-      "reconciliation_weight": 4.7924,
-      "similarity": 0.957,
-      "listing_date": "2026-06-22",
+      "area_m2": 150.0,
+      "original_ppm2": 500.0,
+      "time_adjusted_ppm2": 500.0,
+      "adjusted_ppm2": 506.6,
+      "gross_adjustment": 0.0133,
+      "reconciliation_weight": 4.6599,
+      "similarity": 0.938,
+      "listing_date": "2026-07-02",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-0.2%",
+          "adjustment": "+1.4%",
           "method": "derived OLS slope",
           "detail": "comp=2 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.3%",
+          "adjustment": "-0.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=150.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283475390",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 500.0,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-283323892",
+      "neighborhood": "Abdoun",
+      "area_m2": 125.0,
+      "original_ppm2": 640.0,
+      "time_adjusted_ppm2": 640.0,
+      "adjusted_ppm2": 631.0,
+      "gross_adjustment": 0.0141,
+      "reconciliation_weight": 4.6255,
+      "similarity": 0.878,
+      "listing_date": "2026-06-29",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=4 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=125.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283323892",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "private",
+      "price_per_m2": 640.0,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-283075954",
+      "neighborhood": "Abdoun",
+      "area_m2": 220.0,
+      "original_ppm2": 568.2,
+      "time_adjusted_ppm2": 568.2,
+      "adjusted_ppm2": 576.1,
+      "gross_adjustment": 0.014,
+      "reconciliation_weight": 4.5978,
+      "similarity": 0.887,
+      "listing_date": "2026-06-24",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "+1.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=220.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283075954",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 568.2,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-282977722",
+      "neighborhood": "Abdoun",
+      "area_m2": 175.0,
+      "original_ppm2": 971.4,
+      "time_adjusted_ppm2": 971.4,
+      "adjusted_ppm2": 984.6,
+      "gross_adjustment": 0.0135,
+      "reconciliation_weight": 4.5964,
+      "similarity": 0.992,
+      "listing_date": "2026-06-22",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "+1.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282977722",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 971.4,
+      "adjustments_applied": [
+        "Floor level"
+      ]
+    },
+    {
+      "listing_id": "opensooq-282996068",
+      "neighborhood": "Abdoun",
+      "area_m2": 190.0,
+      "original_ppm2": 789.5,
+      "time_adjusted_ppm2": 789.5,
+      "adjusted_ppm2": 800.3,
+      "gross_adjustment": 0.0137,
+      "reconciliation_weight": 4.593,
+      "similarity": 0.957,
+      "listing_date": "2026-06-22",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "+1.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.0%",
           "method": "derived OLS slope",
           "detail": "comp=190.0 -> subject=175"
         }
@@ -437,383 +525,80 @@
       ]
     },
     {
-      "listing_id": "opensooq-282282874",
+      "listing_id": "opensooq2-282228748",
       "neighborhood": "Abdoun",
-      "area_m2": 148.0,
-      "original_ppm2": 1077.7,
-      "time_adjusted_ppm2": 1077.7,
-      "adjusted_ppm2": 1076.0,
-      "gross_adjustment": 0.0015,
-      "reconciliation_weight": 4.7839,
-      "similarity": 0.627,
-      "listing_date": "2026-06-08",
+      "area_m2": 140.0,
+      "original_ppm2": 1071.4,
+      "time_adjusted_ppm2": 1071.4,
+      "adjusted_ppm2": 1085.5,
+      "gross_adjustment": 0.0132,
+      "reconciliation_weight": 4.5174,
+      "similarity": 0.901,
+      "listing_date": "2026-06-07",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-0.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=148.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282282874",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 1077.7,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-282283228",
-      "neighborhood": "Abdoun",
-      "area_m2": 173.0,
-      "original_ppm2": 913.3,
-      "time_adjusted_ppm2": 913.3,
-      "adjusted_ppm2": 907.8,
-      "gross_adjustment": 0.006,
-      "reconciliation_weight": 4.6803,
-      "similarity": 0.685,
-      "listing_date": "2026-06-08",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-0.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=173.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282283228",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 913.3,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "bayut-99741",
-      "neighborhood": "Abdoun",
-      "area_m2": 125.0,
-      "original_ppm2": 1160.0,
-      "time_adjusted_ppm2": 1160.0,
-      "adjusted_ppm2": 1170.3,
-      "gross_adjustment": 0.0089,
-      "reconciliation_weight": 4.6506,
-      "similarity": 0.87,
-      "listing_date": "2026-06-14",
-      "adjustments": [
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=125.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "Bayut",
-        "url": "https://www.bayut.jo/en/property/details-99741.html",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 1160.0,
-      "adjustments_applied": [
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "bayut-98781",
-      "neighborhood": "Abdoun",
-      "area_m2": 230.0,
-      "original_ppm2": 782.6,
-      "time_adjusted_ppm2": 782.6,
-      "adjusted_ppm2": 774.9,
-      "gross_adjustment": 0.0098,
-      "reconciliation_weight": 4.6014,
-      "similarity": 0.855,
-      "listing_date": "2026-06-09",
-      "adjustments": [
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-1.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=230.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "Bayut",
-        "url": "https://www.bayut.jo/en/property/details-98781.html",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 782.6,
-      "adjustments_applied": [
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-283670820",
-      "neighborhood": "Abdoun",
-      "area_m2": 250.0,
-      "original_ppm2": 1280.0,
-      "time_adjusted_ppm2": 1280.0,
-      "adjusted_ppm2": 1360.4,
-      "gross_adjustment": 0.0628,
-      "reconciliation_weight": 3.8005,
-      "similarity": 0.529,
-      "listing_date": "2026-07-06",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-0.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+8.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-1.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=250.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283670820",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 1280.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-283664290",
-      "neighborhood": "Abdoun",
-      "area_m2": 250.0,
-      "original_ppm2": 1680.0,
-      "time_adjusted_ppm2": 1680.0,
-      "adjusted_ppm2": 1796.2,
-      "gross_adjustment": 0.0692,
-      "reconciliation_weight": 3.7106,
-      "similarity": 0.676,
-      "listing_date": "2026-07-06",
-      "adjustments": [
-        {
-          "factor": "Building age",
-          "adjustment": "+8.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-1.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=250.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283664290",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 1680.0,
-      "adjustments_applied": [
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-283669748",
-      "neighborhood": "Abdoun",
-      "area_m2": 150.0,
-      "original_ppm2": 900.0,
-      "time_adjusted_ppm2": 900.0,
-      "adjusted_ppm2": 972.6,
-      "gross_adjustment": 0.0806,
-      "reconciliation_weight": 3.5589,
-      "similarity": 0.647,
-      "listing_date": "2026-07-06",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-0.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+8.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.4%",
-          "method": "derived OLS slope",
-          "detail": "comp=150.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283669748",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 900.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-283686164",
-      "neighborhood": "Abdoun",
-      "area_m2": 100.0,
-      "original_ppm2": 1500.0,
-      "time_adjusted_ppm2": 1500.0,
-      "adjusted_ppm2": 1216.9,
-      "gross_adjustment": 0.1887,
-      "reconciliation_weight": 2.5692,
-      "similarity": 0.823,
-      "listing_date": "2026-07-06",
-      "adjustments": [
-        {
-          "factor": "Furnishing",
-          "adjustment": "-20.0%",
-          "method": "derived median differential",
-          "detail": "comp=semi -> subject=no"
-        },
-        {
-          "factor": "Floor level",
-          "adjustment": "-0.2%",
+          "adjustment": "+1.4%",
           "method": "derived OLS slope",
           "detail": "comp=2 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.3%",
+          "adjustment": "-0.0%",
           "method": "derived OLS slope",
-          "detail": "comp=100.0 -> subject=175"
+          "detail": "comp=140.0 -> subject=175"
         }
       ],
       "source": {
         "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283686164",
-        "capture_date": "2026-07-07"
+        "url": "https://jo.opensooq.com/en/search/282228748",
+        "capture_date": "2026-07-08"
       },
-      "seller_type": "private",
-      "price_per_m2": 1500.0,
+      "seller_type": "agent",
+      "price_per_m2": 1071.4,
       "adjustments_applied": [
-        "Furnishing",
         "Floor level",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq-283686138",
+      "listing_id": "opensooq2-282995644",
       "neighborhood": "Abdoun",
-      "area_m2": 125.0,
-      "original_ppm2": 1240.0,
-      "time_adjusted_ppm2": 1240.0,
-      "adjusted_ppm2": 1003.1,
-      "gross_adjustment": 0.1911,
-      "reconciliation_weight": 2.5539,
-      "similarity": 0.735,
-      "listing_date": "2026-07-06",
+      "area_m2": 160.0,
+      "original_ppm2": 1250.0,
+      "time_adjusted_ppm2": 1250.0,
+      "adjusted_ppm2": 1208.7,
+      "gross_adjustment": 0.033,
+      "reconciliation_weight": 4.2121,
+      "similarity": 0.957,
+      "listing_date": "2026-06-22",
       "adjustments": [
         {
           "factor": "Furnishing",
-          "adjustment": "-20.0%",
+          "adjustment": "-4.6%",
           "method": "derived median differential",
-          "detail": "comp=semi -> subject=no"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=125.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283686138",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 1240.0,
-      "adjustments_applied": [
-        "Furnishing",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-283679294",
-      "neighborhood": "Abdoun",
-      "area_m2": 100.0,
-      "original_ppm2": 1550.0,
-      "time_adjusted_ppm2": 1550.0,
-      "adjusted_ppm2": 1250.9,
-      "gross_adjustment": 0.193,
-      "reconciliation_weight": 2.5415,
-      "similarity": 0.529,
-      "listing_date": "2026-07-06",
-      "adjustments": [
-        {
-          "factor": "Furnishing",
-          "adjustment": "-20.0%",
-          "method": "derived median differential",
-          "detail": "comp=semi -> subject=no"
+          "detail": "comp=full -> subject=no"
         },
         {
           "factor": "Floor level",
-          "adjustment": "-0.6%",
+          "adjustment": "+1.4%",
           "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
+          "detail": "comp=2 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.3%",
+          "adjustment": "-0.0%",
           "method": "derived OLS slope",
-          "detail": "comp=100.0 -> subject=175"
+          "detail": "comp=160.0 -> subject=175"
         }
       ],
       "source": {
         "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283679294",
-        "capture_date": "2026-07-07"
+        "url": "https://jo.opensooq.com/en/search/282995644",
+        "capture_date": "2026-07-08"
       },
-      "seller_type": "private",
-      "price_per_m2": 1550.0,
+      "seller_type": "agent",
+      "price_per_m2": 1250.0,
       "adjustments_applied": [
         "Furnishing",
         "Floor level",
@@ -821,55 +606,222 @@
       ]
     },
     {
-      "listing_id": "opensooq-275626969",
+      "listing_id": "opensooq2-282876778",
+      "neighborhood": "Abdoun",
+      "area_m2": 145.0,
+      "original_ppm2": 931.0,
+      "time_adjusted_ppm2": 931.0,
+      "adjusted_ppm2": 900.1,
+      "gross_adjustment": 0.0332,
+      "reconciliation_weight": 4.1986,
+      "similarity": 0.92,
+      "listing_date": "2026-06-20",
+      "adjustments": [
+        {
+          "factor": "Furnishing",
+          "adjustment": "-4.6%",
+          "method": "derived median differential",
+          "detail": "comp=full -> subject=no"
+        },
+        {
+          "factor": "Floor level",
+          "adjustment": "+1.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=145.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282876778",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 931.0,
+      "adjustments_applied": [
+        "Furnishing",
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-282200276",
+      "neighborhood": "Abdoun",
+      "area_m2": 222.0,
+      "original_ppm2": 720.7,
+      "time_adjusted_ppm2": 720.7,
+      "adjusted_ppm2": 687.6,
+      "gross_adjustment": 0.0459,
+      "reconciliation_weight": 3.9111,
+      "similarity": 0.873,
+      "listing_date": "2026-06-06",
+      "adjustments": [
+        {
+          "factor": "Furnishing",
+          "adjustment": "-4.6%",
+          "method": "derived median differential",
+          "detail": "comp=full -> subject=no"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=222.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282200276",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 720.7,
+      "adjustments_applied": [
+        "Furnishing",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-283021642",
       "neighborhood": "Abdoun",
       "area_m2": 150.0,
-      "original_ppm2": 1053.3,
-      "time_adjusted_ppm2": 1053.3,
-      "adjusted_ppm2": 1177.7,
-      "gross_adjustment": 0.1181,
-      "reconciliation_weight": 2.4645,
-      "similarity": 0.552,
-      "listing_date": "2026-01-12",
+      "original_ppm2": 1000.0,
+      "time_adjusted_ppm2": 1000.0,
+      "adjusted_ppm2": 813.3,
+      "gross_adjustment": 0.1867,
+      "reconciliation_weight": 2.5411,
+      "similarity": 0.934,
+      "listing_date": "2026-06-23",
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-0.6%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
+          "factor": "Furnishing",
+          "adjustment": "-20.0%",
+          "method": "derived median differential",
+          "detail": "comp=semi -> subject=no"
         },
         {
-          "factor": "Building age",
-          "adjustment": "+12.0%",
+          "factor": "Floor level",
+          "adjustment": "+1.4%",
           "method": "derived OLS slope",
-          "detail": "comp=7 -> subject=0"
+          "detail": "comp=2 -> subject=3"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+0.4%",
+          "adjustment": "-0.0%",
           "method": "derived OLS slope",
           "detail": "comp=150.0 -> subject=175"
         }
       ],
       "source": {
         "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/275626969",
-        "capture_date": "2026-07-07"
+        "url": "https://jo.opensooq.com/en/search/283021642",
+        "capture_date": "2026-07-08"
       },
-      "seller_type": "private",
-      "price_per_m2": 1053.3,
+      "seller_type": "agent",
+      "price_per_m2": 1000.0,
       "adjustments_applied": [
+        "Furnishing",
         "Floor level",
-        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-283021822",
+      "neighborhood": "Abdoun",
+      "area_m2": 124.0,
+      "original_ppm2": 1693.5,
+      "time_adjusted_ppm2": 1693.5,
+      "adjusted_ppm2": 1376.9,
+      "gross_adjustment": 0.187,
+      "reconciliation_weight": 2.5393,
+      "similarity": 0.872,
+      "listing_date": "2026-06-23",
+      "adjustments": [
+        {
+          "factor": "Furnishing",
+          "adjustment": "-20.0%",
+          "method": "derived median differential",
+          "detail": "comp=semi -> subject=no"
+        },
+        {
+          "factor": "Floor level",
+          "adjustment": "+1.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=124.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283021822",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 1693.5,
+      "adjustments_applied": [
+        "Furnishing",
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-283087000",
+      "neighborhood": "Abdoun",
+      "area_m2": 130.0,
+      "original_ppm2": 500.0,
+      "time_adjusted_ppm2": 500.0,
+      "adjusted_ppm2": 399.8,
+      "gross_adjustment": 0.2005,
+      "reconciliation_weight": 2.457,
+      "similarity": 0.887,
+      "listing_date": "2026-06-24",
+      "adjustments": [
+        {
+          "factor": "Furnishing",
+          "adjustment": "-20.0%",
+          "method": "derived median differential",
+          "detail": "comp=semi -> subject=no"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=130.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283087000",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 500.0,
+      "adjustments_applied": [
+        "Furnishing",
         "Size (per m²)"
       ]
     }
   ],
   "risk_factors": [
     {
-      "factor": "No material risks",
-      "severity": "low",
-      "detail": "Methods broadly agree."
+      "factor": "High price dispersion",
+      "severity": "medium",
+      "detail": "Adjusted comps vary 35% — the submarket is heterogeneous."
+    },
+    {
+      "factor": "Valuation methods diverge",
+      "severity": "medium",
+      "detail": "Comparison, cost and income approaches disagree (PDF: divergence is informative)."
     },
     {
       "factor": "No cost-approach floor",
@@ -900,39 +852,42 @@
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 649.6,
+      "recommended_price_jd_m2": 596.8,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 991.2,
+      "recommended_price_jd_m2": 918.1,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 1332.8,
+      "recommended_price_jd_m2": 1376.4,
       "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.48). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a luxury apartment in Abdoun (~175 m²), the recommended launch price is 991 JD/m², within a defensible range of 650–1333 JD/m² (confidence: H, 0.76; 80% interval 650–1333). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: income ceiling ≈ 1027. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.48) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Methods broadly agree.",
+  "narrative": "For a luxury apartment in Abdoun (~175 m²), the recommended launch price is 918 JD/m², within a defensible range of 597–1376 JD/m² (confidence: M, 0.59; 80% interval 597–1239). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~1071 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: income ceiling ≈ 1376. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.48) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Adjusted comps vary 35% — the submarket is heterogeneous.",
   "computed_date": "2026-07-07",
   "method_values": {
-    "comparison_asking": 1101.3,
-    "comparison": 991.2,
+    "comparison_asking": 1020.1,
+    "comparison_comp_draw": 824.8,
+    "submarket_anchor_ppm2": 1071.4,
+    "comparison": 918.1,
     "cost_floor": null,
-    "income_ceiling": 1026.7,
+    "income_ceiling": 1376.4,
     "development_score": 0.48,
     "confidence_components": {
       "data_density": 1.0,
-      "dispersion": 0.289,
-      "recency": 0.953,
-      "method_agreement": 0.941,
+      "dispersion": 0.0,
+      "recency": 0.971,
+      "method_agreement": 0.334,
       "source_quality": 0.6
     },
     "selection_notes": [
       "78 near-duplicate cross-posting(s) collapsed (same beds, area & price/m2 within 1%)",
-      "460 same-submarket apartment listings; 20 within 18 months",
-      "12 comps selected (ranked by similarity)"
+      "775 same-submarket apartment listings; 332 within 18 months",
+      "12 comps selected (ranked by similarity)",
+      "reconciled to submarket robust median 1071 JD/m² (n=853 same-type sales) via inverse-variance weighting (anchor λ=0.97) — guards against an unrepresentative comp shortlist"
     ],
     "derived_premiums": [
       {
@@ -948,12 +903,24 @@
         "notes": "baseline=luxury; citywide fallback — submarket sample insufficient"
       },
       {
-        "factor": "Furnishing: semi vs no",
-        "derived_premium": 0.3918,
-        "method": "paired median differential (n_semi=12, n_no=17)",
+        "factor": "Furnishing: full vs no",
+        "derived_premium": 0.0464,
+        "method": "paired median differential (n_full=49, n_no=118)",
         "source": "listings (portal asking prices)",
-        "confidence": "High",
-        "sample_size": 29,
+        "confidence": "Medium",
+        "sample_size": 167,
+        "computed_date": "2026-07-07",
+        "neighborhood": "Abdoun",
+        "property_type": "apartment",
+        "notes": "baseline=no"
+      },
+      {
+        "factor": "Furnishing: semi vs no",
+        "derived_premium": 0.3311,
+        "method": "paired median differential (n_semi=36, n_no=118)",
+        "source": "listings (portal asking prices)",
+        "confidence": "Medium",
+        "sample_size": 154,
         "computed_date": "2026-07-07",
         "neighborhood": "Abdoun",
         "property_type": "apartment",
@@ -961,11 +928,11 @@
       },
       {
         "factor": "Floor level",
-        "derived_premium": -0.00212,
-        "method": "OLS slope of price/m² vs floor_level (n=43)",
+        "derived_premium": 0.01353,
+        "method": "OLS slope of price/m² vs floor_level (n=196)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 43,
+        "sample_size": 196,
         "computed_date": "2026-07-07",
         "neighborhood": "Abdoun",
         "property_type": "apartment",
@@ -973,7 +940,7 @@
       },
       {
         "factor": "Building age",
-        "derived_premium": -0.02752,
+        "derived_premium": -0.02774,
         "method": "OLS slope of price/m² vs building_age_years (n=50)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
@@ -985,11 +952,11 @@
       },
       {
         "factor": "Size (per m²)",
-        "derived_premium": 0.00018,
-        "method": "OLS slope of price/m² vs area_m2 (n=538)",
+        "derived_premium": -1e-05,
+        "method": "OLS slope of price/m² vs area_m2 (n=853)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 538,
+        "sample_size": 853,
         "computed_date": "2026-07-07",
         "neighborhood": "Abdoun",
         "property_type": "apartment",

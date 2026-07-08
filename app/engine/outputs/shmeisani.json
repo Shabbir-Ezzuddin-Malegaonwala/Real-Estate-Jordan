@@ -2,15 +2,15 @@
   "location_id": "demo-shmeisani",
   "neighborhood": "Shmeisani",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 332.3,
-  "recommended_price_jd_m2": 511.3,
-  "premium_price_jd_m2": 690.3,
+  "min_safe_price_jd_m2": 526.4,
+  "recommended_price_jd_m2": 695.7,
+  "premium_price_jd_m2": 865.0,
   "confidence": {
     "label": "H",
-    "numeric": 0.705,
+    "numeric": 0.755,
     "interval_jd_m2": [
-      332.3,
-      690.3
+      526.4,
+      865.0
     ]
   },
   "evidence_objects": [
@@ -24,11 +24,6 @@
       ],
       "sources": [
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283076116",
-          "capture_date": "2026-07-07"
-        },
-        {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-82871.html",
           "capture_date": "2026-07-07"
@@ -40,12 +35,12 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282583834",
+          "url": "https://jo.opensooq.com/en/search/282977210",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977210",
+          "url": "https://jo.opensooq.com/en/search/282583834",
           "capture_date": "2026-07-07"
         },
         {
@@ -61,6 +56,11 @@
         {
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283202958",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282780532",
           "capture_date": "2026-07-07"
         }
       ],
@@ -69,7 +69,7 @@
     },
     {
       "factor": "Floor level",
-      "adjustment": "-8.2% per unit",
+      "adjustment": "-8.3% per unit",
       "confidence": "Medium",
       "method": "OLS slope of price/m² vs floor_level (n=29)",
       "datasets": [
@@ -77,11 +77,6 @@
       ],
       "sources": [
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283076116",
-          "capture_date": "2026-07-07"
-        },
-        {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-82871.html",
           "capture_date": "2026-07-07"
@@ -93,12 +88,12 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282583834",
+          "url": "https://jo.opensooq.com/en/search/282977210",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977210",
+          "url": "https://jo.opensooq.com/en/search/282583834",
           "capture_date": "2026-07-07"
         },
         {
@@ -115,14 +110,19 @@
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283202958",
           "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282780532",
+          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of floor level moves price/m² by -8.2% (finish-controlled regression); subject value = 3."
+      "explanation": "Each unit of floor level moves price/m² by -8.3% (finish-controlled regression); subject value = 3."
     },
     {
       "factor": "Building age",
-      "adjustment": "-2.2% per unit",
+      "adjustment": "-2.3% per unit",
       "confidence": "Medium",
       "method": "OLS slope of price/m² vs building_age_years (n=32)",
       "datasets": [
@@ -130,11 +130,6 @@
       ],
       "sources": [
         {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283076116",
-          "capture_date": "2026-07-07"
-        },
-        {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-82871.html",
           "capture_date": "2026-07-07"
@@ -146,12 +141,12 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282583834",
+          "url": "https://jo.opensooq.com/en/search/282977210",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977210",
+          "url": "https://jo.opensooq.com/en/search/282583834",
           "capture_date": "2026-07-07"
         },
         {
@@ -168,25 +163,25 @@
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283202958",
           "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282780532",
+          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of building age moves price/m² by -2.2% (finish-controlled regression); subject value = 0."
+      "explanation": "Each unit of building age moves price/m² by -2.3% (finish-controlled regression); subject value = 0."
     },
     {
       "factor": "Size (per m²)",
       "adjustment": "-0.0% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs area_m2 (n=93)",
+      "method": "OLS slope of price/m² vs area_m2 (n=155)",
       "datasets": [
         "listings"
       ],
       "sources": [
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283076116",
-          "capture_date": "2026-07-07"
-        },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-82871.html",
@@ -199,12 +194,12 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282583834",
+          "url": "https://jo.opensooq.com/en/search/282977210",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977210",
+          "url": "https://jo.opensooq.com/en/search/282583834",
           "capture_date": "2026-07-07"
         },
         {
@@ -220,6 +215,11 @@
         {
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283202958",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282780532",
           "capture_date": "2026-07-07"
         }
       ],
@@ -246,9 +246,9 @@
     },
     {
       "factor": "Income approach ceiling",
-      "adjustment": "638 JD/m²",
+      "adjustment": "774 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (107.1%, citywide rents vs sales)",
+      "method": "income approach: annual rent ÷ derived market yield (79.3%, citywide rents vs sales)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -260,22 +260,17 @@
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (107.1%). Above ≈ 638 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (79.3%). Above ≈ 774 JD/m² the unit stops clearing to investors."
     },
     {
       "factor": "Market composition (context)",
       "adjustment": "context — not a price adjustment",
       "confidence": "High",
-      "method": "seller-type share of the 12 comps",
+      "method": "seller-type share of the 11 comps",
       "datasets": [
         "listings"
       ],
       "sources": [
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283076116",
-          "capture_date": "2026-07-07"
-        },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-82871.html",
@@ -288,12 +283,12 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282583834",
+          "url": "https://jo.opensooq.com/en/search/282977210",
           "capture_date": "2026-07-07"
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977210",
+          "url": "https://jo.opensooq.com/en/search/282583834",
           "capture_date": "2026-07-07"
         },
         {
@@ -310,10 +305,15 @@
           "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/283202958",
           "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282780532",
+          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Of the comparables driving this estimate, 50% private-listed, 50% agent-listed — a predominantly private-seller comp set. Provided as market texture; it does not move the price."
+      "explanation": "Of the comparables driving this estimate, 55% agent-listed, 45% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
     },
     {
       "factor": "Neighborhood spatial context",
@@ -382,57 +382,20 @@
   ],
   "comparables": [
     {
-      "listing_id": "opensooq-283076116",
-      "neighborhood": "Shmeisani",
-      "area_m2": 175.0,
-      "original_ppm2": 360.0,
-      "time_adjusted_ppm2": 360.0,
-      "adjusted_ppm2": 360.0,
-      "gross_adjustment": 0.0,
-      "reconciliation_weight": 4.9198,
-      "similarity": 0.699,
-      "listing_date": "2026-06-24",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-12.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=0 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+12.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=20 -> subject=0"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283076116",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 360.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age"
-      ]
-    },
-    {
       "listing_id": "bayut-82871",
       "neighborhood": "Shmeisani",
       "area_m2": 165.0,
       "original_ppm2": 454.5,
       "time_adjusted_ppm2": 454.5,
-      "adjusted_ppm2": 453.1,
-      "gross_adjustment": 0.0032,
-      "reconciliation_weight": 4.7562,
+      "adjusted_ppm2": 454.0,
+      "gross_adjustment": 0.0012,
+      "reconciliation_weight": 4.8045,
       "similarity": 0.815,
       "listing_date": "2026-06-10",
       "adjustments": [
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.3%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
           "detail": "comp=165.0 -> subject=175"
         }
@@ -454,9 +417,9 @@
       "area_m2": 210.0,
       "original_ppm2": 571.4,
       "time_adjusted_ppm2": 571.4,
-      "adjusted_ppm2": 578.9,
-      "gross_adjustment": 0.0131,
-      "reconciliation_weight": 4.6176,
+      "adjusted_ppm2": 575.7,
+      "gross_adjustment": 0.0075,
+      "reconciliation_weight": 4.7421,
       "similarity": 0.911,
       "listing_date": "2026-06-24",
       "adjustments": [
@@ -468,7 +431,7 @@
         },
         {
           "factor": "Floor level",
-          "adjustment": "+8.2%",
+          "adjustment": "+8.3%",
           "method": "derived OLS slope",
           "detail": "comp=4 -> subject=3"
         },
@@ -480,7 +443,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.1%",
+          "adjustment": "+0.4%",
           "method": "derived OLS slope",
           "detail": "comp=210.0 -> subject=175"
         }
@@ -500,64 +463,20 @@
       ]
     },
     {
-      "listing_id": "opensooq-282583834",
-      "neighborhood": "Shmeisani",
-      "area_m2": 152.0,
-      "original_ppm2": 473.7,
-      "time_adjusted_ppm2": 473.7,
-      "adjusted_ppm2": 488.3,
-      "gross_adjustment": 0.0308,
-      "reconciliation_weight": 4.2096,
-      "similarity": 0.933,
-      "listing_date": "2026-06-14",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-8.2%",
-          "method": "derived OLS slope",
-          "detail": "comp=2 -> subject=3"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+12.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=20 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.7%",
-          "method": "derived OLS slope",
-          "detail": "comp=152.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282583834",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "private",
-      "price_per_m2": 473.7,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
       "listing_id": "opensooq-282977210",
       "neighborhood": "Shmeisani",
       "area_m2": 160.0,
       "original_ppm2": 431.2,
       "time_adjusted_ppm2": 431.2,
-      "adjusted_ppm2": 445.7,
-      "gross_adjustment": 0.0334,
-      "reconciliation_weight": 4.2052,
+      "adjusted_ppm2": 446.3,
+      "gross_adjustment": 0.0349,
+      "reconciliation_weight": 4.1782,
       "similarity": 0.957,
       "listing_date": "2026-06-22",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "-8.2%",
+          "adjustment": "-8.3%",
           "method": "derived OLS slope",
           "detail": "comp=2 -> subject=3"
         },
@@ -569,7 +488,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.5%",
+          "adjustment": "-0.2%",
           "method": "derived OLS slope",
           "detail": "comp=160.0 -> subject=175"
         }
@@ -588,14 +507,58 @@
       ]
     },
     {
+      "listing_id": "opensooq-282583834",
+      "neighborhood": "Shmeisani",
+      "area_m2": 152.0,
+      "original_ppm2": 473.7,
+      "time_adjusted_ppm2": 473.7,
+      "adjusted_ppm2": 489.8,
+      "gross_adjustment": 0.0339,
+      "reconciliation_weight": 4.1531,
+      "similarity": 0.933,
+      "listing_date": "2026-06-14",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-8.3%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=20 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.3%",
+          "method": "derived OLS slope",
+          "detail": "comp=152.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282583834",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "price_per_m2": 473.7,
+      "adjustments_applied": [
+        "Floor level",
+        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
       "listing_id": "opensooq-283076596",
       "neighborhood": "Shmeisani",
       "area_m2": 160.0,
       "original_ppm2": 781.2,
       "time_adjusted_ppm2": 781.2,
-      "adjusted_ppm2": 810.9,
-      "gross_adjustment": 0.038,
-      "reconciliation_weight": 4.1345,
+      "adjusted_ppm2": 812.1,
+      "gross_adjustment": 0.0395,
+      "reconciliation_weight": 4.1084,
       "similarity": 0.958,
       "listing_date": "2026-06-24",
       "adjustments": [
@@ -607,7 +570,7 @@
         },
         {
           "factor": "Floor level",
-          "adjustment": "-8.2%",
+          "adjustment": "-8.3%",
           "method": "derived OLS slope",
           "detail": "comp=2 -> subject=3"
         },
@@ -619,7 +582,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.5%",
+          "adjustment": "-0.2%",
           "method": "derived OLS slope",
           "detail": "comp=160.0 -> subject=175"
         }
@@ -644,9 +607,9 @@
       "area_m2": 168.0,
       "original_ppm2": 535.7,
       "time_adjusted_ppm2": 535.7,
-      "adjusted_ppm2": 557.5,
-      "gross_adjustment": 0.0406,
-      "reconciliation_weight": 4.0899,
+      "adjusted_ppm2": 557.4,
+      "gross_adjustment": 0.0405,
+      "reconciliation_weight": 4.092,
       "similarity": 0.976,
       "listing_date": "2026-06-24",
       "adjustments": [
@@ -658,7 +621,7 @@
         },
         {
           "factor": "Floor level",
-          "adjustment": "-8.2%",
+          "adjustment": "-8.3%",
           "method": "derived OLS slope",
           "detail": "comp=2 -> subject=3"
         },
@@ -670,7 +633,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.2%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
           "detail": "comp=168.0 -> subject=175"
         }
@@ -695,9 +658,9 @@
       "area_m2": 103.0,
       "original_ppm2": 776.7,
       "time_adjusted_ppm2": 776.7,
-      "adjusted_ppm2": 696.4,
-      "gross_adjustment": 0.1033,
-      "reconciliation_weight": 3.2559,
+      "adjusted_ppm2": 707.9,
+      "gross_adjustment": 0.0886,
+      "reconciliation_weight": 3.4217,
       "similarity": 0.825,
       "listing_date": "2026-06-27",
       "adjustments": [
@@ -715,7 +678,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-2.3%",
+          "adjustment": "-0.9%",
           "method": "derived OLS slope",
           "detail": "comp=103.0 -> subject=175"
         }
@@ -739,9 +702,9 @@
       "area_m2": 170.0,
       "original_ppm2": 470.6,
       "time_adjusted_ppm2": 470.6,
-      "adjusted_ppm2": 526.3,
-      "gross_adjustment": 0.1184,
-      "reconciliation_weight": 3.0672,
+      "adjusted_ppm2": 526.8,
+      "gross_adjustment": 0.1194,
+      "reconciliation_weight": 3.0574,
       "similarity": 0.978,
       "listing_date": "2026-06-18",
       "adjustments": [
@@ -753,7 +716,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.2%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
           "detail": "comp=170.0 -> subject=175"
         }
@@ -776,9 +739,9 @@
       "area_m2": 170.0,
       "original_ppm2": 588.2,
       "time_adjusted_ppm2": 588.2,
-      "adjusted_ppm2": 660.6,
-      "gross_adjustment": 0.123,
-      "reconciliation_weight": 3.0428,
+      "adjusted_ppm2": 661.2,
+      "gross_adjustment": 0.124,
+      "reconciliation_weight": 3.0332,
       "similarity": 0.981,
       "listing_date": "2026-06-23",
       "adjustments": [
@@ -796,7 +759,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.2%",
+          "adjustment": "-0.1%",
           "method": "derived OLS slope",
           "detail": "comp=170.0 -> subject=175"
         }
@@ -815,14 +778,35 @@
       ]
     },
     {
+      "listing_id": "eureka-fb95e86c-73ad-4954-8976-f0663c1f801f",
+      "neighborhood": "Shmeisani",
+      "area_m2": 175.0,
+      "original_ppm2": 800.0,
+      "time_adjusted_ppm2": 800.0,
+      "adjusted_ppm2": 800.0,
+      "gross_adjustment": 0,
+      "reconciliation_weight": 3.0,
+      "similarity": 0.706,
+      "listing_date": null,
+      "adjustments": [],
+      "source": {
+        "name": "EurekaJo",
+        "url": "https://eurekajo.com/Realestates/Details/fb95e86c-73ad-4954-8976-f0663c1f801f",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "unknown",
+      "price_per_m2": 800.0,
+      "adjustments_applied": []
+    },
+    {
       "listing_id": "opensooq-281497298",
       "neighborhood": "Shmeisani",
       "area_m2": 226.0,
       "original_ppm2": 526.5,
       "time_adjusted_ppm2": 526.5,
-      "adjusted_ppm2": 598.4,
-      "gross_adjustment": 0.1365,
-      "reconciliation_weight": 2.8027,
+      "adjusted_ppm2": 593.0,
+      "gross_adjustment": 0.1261,
+      "reconciliation_weight": 2.8922,
       "similarity": 0.855,
       "listing_date": "2026-05-21",
       "adjustments": [
@@ -834,7 +818,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+1.7%",
+          "adjustment": "+0.6%",
           "method": "derived OLS slope",
           "detail": "comp=226.0 -> subject=175"
         }
@@ -857,15 +841,15 @@
       "area_m2": 135.0,
       "original_ppm2": 725.9,
       "time_adjusted_ppm2": 725.9,
-      "adjusted_ppm2": 863.0,
-      "gross_adjustment": 0.1888,
-      "reconciliation_weight": 2.5627,
+      "adjusted_ppm2": 870.0,
+      "gross_adjustment": 0.1985,
+      "reconciliation_weight": 2.5002,
       "similarity": 0.904,
       "listing_date": "2026-07-04",
       "adjustments": [
         {
           "factor": "Floor level",
-          "adjustment": "+8.2%",
+          "adjustment": "+8.3%",
           "method": "derived OLS slope",
           "detail": "comp=4 -> subject=3"
         },
@@ -877,7 +861,7 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-1.3%",
+          "adjustment": "-0.5%",
           "method": "derived OLS slope",
           "detail": "comp=135.0 -> subject=175"
         }
@@ -931,39 +915,42 @@
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 332.3,
+      "recommended_price_jd_m2": 526.4,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 511.3,
+      "recommended_price_jd_m2": 695.7,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 690.3,
+      "recommended_price_jd_m2": 865.0,
       "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.48). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a luxury apartment in Shmeisani (~175 m²), the recommended launch price is 511 JD/m², within a defensible range of 332–690 JD/m² (confidence: H, 0.70; 80% interval 332–690). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: income ceiling ≈ 638. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.48) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Methods broadly agree.",
+  "narrative": "For a luxury apartment in Shmeisani (~175 m²), the recommended launch price is 696 JD/m², within a defensible range of 526–865 JD/m² (confidence: H, 0.76; 80% interval 526–865). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~773 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: income ceiling ≈ 774. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.48) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Methods broadly agree.",
   "computed_date": "2026-07-07",
   "method_values": {
-    "comparison_asking": 568.1,
-    "comparison": 511.3,
+    "comparison_asking": 773.0,
+    "comparison_comp_draw": 608.3,
+    "submarket_anchor_ppm2": 773.2,
+    "comparison": 695.7,
     "cost_floor": null,
-    "income_ceiling": 638.2,
+    "income_ceiling": 774.2,
     "development_score": 0.48,
     "confidence_components": {
       "data_density": 1.0,
-      "dispersion": 0.269,
-      "recency": 0.968,
-      "method_agreement": 0.632,
+      "dispersion": 0.337,
+      "recency": 0.967,
+      "method_agreement": 0.822,
       "source_quality": 0.6
     },
     "selection_notes": [
       "4 near-duplicate cross-posting(s) collapsed (same beds, area & price/m2 within 1%)",
-      "89 same-submarket apartment listings; 27 within 18 months",
-      "12 comps selected (ranked by similarity)"
+      "151 same-submarket apartment listings; 89 within 18 months",
+      "12 comps selected (ranked by similarity)",
+      "reconciled to submarket robust median 773 JD/m² (n=155 same-type sales) via inverse-variance weighting (anchor λ=0.84) — guards against an unrepresentative comp shortlist"
     ],
     "derived_premiums": [
       {
@@ -1004,7 +991,7 @@
       },
       {
         "factor": "Floor level",
-        "derived_premium": -0.08174,
+        "derived_premium": -0.08329,
         "method": "OLS slope of price/m² vs floor_level (n=29)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
@@ -1016,7 +1003,7 @@
       },
       {
         "factor": "Building age",
-        "derived_premium": -0.02223,
+        "derived_premium": -0.02265,
         "method": "OLS slope of price/m² vs building_age_years (n=32)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
@@ -1028,11 +1015,11 @@
       },
       {
         "factor": "Size (per m²)",
-        "derived_premium": -0.00032,
-        "method": "OLS slope of price/m² vs area_m2 (n=93)",
+        "derived_premium": -0.00012,
+        "method": "OLS slope of price/m² vs area_m2 (n=155)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 93,
+        "sample_size": 155,
         "computed_date": "2026-07-07",
         "neighborhood": "Shmeisani",
         "property_type": "apartment",

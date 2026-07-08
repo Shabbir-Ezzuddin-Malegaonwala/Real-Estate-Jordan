@@ -47,4 +47,4 @@ def recommend(subject: Subject, data_bundle: DataBundle,
              for listing, sim in scored]
     comps.sort(key=lambda c: c.reconciliation_weight, reverse=True)
 
-    return recommendation.assemble(subject, data_bundle, comps, premiums, notes, as_of)
+    return recommendation.assemble(subject, data_bundle, comps, premiums, notes, as_of, pool)
