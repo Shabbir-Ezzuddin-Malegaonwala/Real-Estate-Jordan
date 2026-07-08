@@ -19,19 +19,23 @@ from app.engine.models import Subject
 
 DB = "db/jordan_national.sqlite"
 OUT = Path("app/web/public/engine_output.json")
+MAP_NAMES = Path("data/processed/map_neighborhoods.txt")
 AS_OF = date(2026, 7, 8)
 
-# secondary-city anchors we always include (if present) to show national reach
+# secondary-city anchors — included to demonstrate national reach in the charts
 SECONDARY = ["Irbid", "Zarqa", "Aqaba", "Madaba", "Salt", "Jerash"]
 
 
 def main() -> None:
     bundle = load_bundle_from_sqlite(DB, as_of=AS_OF)
     cnt = Counter(l.neighborhood for l in bundle.sales() if l.property_type == "apartment")
-    top_amman = [n for n, _ in cnt.most_common(14)]
+
+    # Price EXACTLY the submarkets drawn on the map (map_neighborhoods.txt) so every
+    # clickable circle has a recommendation, plus the secondary-city anchors.
+    map_names = MAP_NAMES.read_text(encoding="utf-8").splitlines() if MAP_NAMES.exists() else []
     names, seen = [], set()
-    for n in top_amman + SECONDARY:
-        if n and n not in seen and cnt.get(n, 0) >= 8:
+    for n in [x.strip() for x in map_names if x.strip()] + SECONDARY:
+        if n and n not in seen and cnt.get(n, 0) >= 5:
             seen.add(n)
             names.append(n)
 

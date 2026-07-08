@@ -45,7 +45,9 @@ def _income_ceiling(bundle: DataBundle, subject: Subject):
                          if l.neighborhood.strip().lower() == n and l.property_type == t], rf)
     all_rent = _clean([l.price_per_m2 for l in bundle.rentals() if l.property_type == t], rf)
     all_sale = _clean([l.price_per_m2 for l in bundle.sales() if l.property_type == t], sf)
-    if not local_rent:
+    # Too few local rents -> the median is noise and the ceiling explodes; skip the
+    # income cross-check honestly rather than emit an implausible premium band.
+    if len(local_rent) < config.MIN_LOCAL_RENT_COMPS:
         return None, None, None, None
 
     annual_local = median(local_rent) * 12
