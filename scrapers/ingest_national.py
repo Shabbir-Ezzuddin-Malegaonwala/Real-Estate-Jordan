@@ -402,6 +402,14 @@ def main() -> None:
                 if not lid or lid.endswith("_"):
                     dropped_bad += 1
                     continue
+                # Known junk fallback coordinate (eastern-desert default some portals
+                # assign to un-geocoded secondary-city listings) -> treat as ungeocoded.
+                try:
+                    if (abs(float(r["lat"]) - 30.5852) < 0.01
+                            and abs(float(r["lng"]) - 36.2384) < 0.01):
+                        r["lat"] = r["lng"] = ""
+                except (ValueError, KeyError):
+                    pass
                 if not r["neighborhood"]:
                     r["neighborhood"] = r.get("district") or "Unknown"
                 # City-level pooling for secondary governorates (Amman keeps submarkets).
