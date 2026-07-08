@@ -44,39 +44,65 @@ def circle(lat: float, lon: float, r_km: float, n: int = 28) -> list[list[float]
     return ring
 
 
-def build_neighborhoods() -> list[str]:
-    pts: dict[str, list[tuple[float, float]]] = defaultdict(list)
-    for r in csv.DictReader(open(LISTINGS, encoding="utf-8-sig")):
-        if r["property_type"] == "apartment" and r["district"] == "Amman" and r["lat"] and r["lng"]:
-            try:
-                lat, lon = float(r["lat"]), float(r["lng"])
-            except ValueError:
-                continue
-            if AMMAN_BBOX[0] < lat < AMMAN_BBOX[1] and AMMAN_BBOX[2] < lon < AMMAN_BBOX[3]:
-                pts[r["neighborhood"]].append((lat, lon))
-    good = {n: v for n, v in pts.items() if len(v) >= MIN_GEOCODED}
-    top = sorted(good.items(), key=lambda kv: -len(kv[1]))[:TOP_N]
+def _feature(name: str, lat: float, lon: float, r_km: float, count: int, kind: str) -> dict:
+    return {
+        "type": "Feature",
+        "properties": {
+            "neighborhood": name, "name_ar": "", "source": "approximate_circle",
+            "approximate": "True", "centered_on": "listing_median",
+            "radius_km": str(r_km), "listing_count": count, "kind": kind,
+        },
+        "geometry": {"type": "Polygon", "coordinates": [circle(lat, lon, r_km)]},
+    }
 
-    feats = []
-    names = []
-    for name, v in top:
-        lat = st.median([p[0] for p in v])
-        lon = st.median([p[1] for p in v])
-        feats.append({
-            "type": "Feature",
-            "properties": {
-                "neighborhood": name, "name_ar": "", "source": "approximate_circle",
-                "approximate": "True", "centered_on": "listing_median",
-                "radius_km": str(RADIUS_KM), "listing_count": len(v),
-            },
-            "geometry": {"type": "Polygon", "coordinates": [circle(lat, lon, RADIUS_KM)]},
-        })
+
+def build_neighborhoods() -> list[str]:
+    """Amman = submarket circles; every other governorate = one city-level circle.
+
+    Result is a nationwide map: fine detail in Amman (where the geocoded data is
+    dense) plus a clickable circle for each secondary city the engine can price.
+    """
+    amman_pts: dict[str, list[tuple[float, float]]] = defaultdict(list)
+    city_pts: dict[str, list[tuple[float, float]]] = defaultdict(list)
+    for r in csv.DictReader(open(LISTINGS, encoding="utf-8-sig")):
+        if r["property_type"] != "apartment" or not r["lat"] or not r["lng"]:
+            continue
+        try:
+            lat, lon = float(r["lat"]), float(r["lng"])
+        except ValueError:
+            continue
+        if not (29.0 < lat < 33.5 and 34.8 < lon < 39.5):  # Jordan bbox sanity
+            continue
+        if r["district"] == "Amman":
+            if AMMAN_BBOX[0] < lat < AMMAN_BBOX[1] and AMMAN_BBOX[2] < lon < AMMAN_BBOX[3]:
+                amman_pts[r["neighborhood"]].append((lat, lon))
+        elif r["district"]:
+            city_pts[r["district"]].append((lat, lon))
+
+    feats, names = [], []
+
+    # Amman submarkets (small circles)
+    good = {n: v for n, v in amman_pts.items() if len(v) >= MIN_GEOCODED}
+    for name, v in sorted(good.items(), key=lambda kv: -len(kv[1]))[:TOP_N]:
+        feats.append(_feature(name, st.median([p[0] for p in v]),
+                              st.median([p[1] for p in v]), RADIUS_KM, len(v), "amman_submarket"))
         names.append(name)
+
+    # Secondary cities (larger circles, >=8 geocoded to place a centroid)
+    n_city = 0
+    for city, v in sorted(city_pts.items(), key=lambda kv: -len(kv[1])):
+        if len(v) >= 8:
+            feats.append(_feature(city, st.median([p[0] for p in v]),
+                                  st.median([p[1] for p in v]), 3.0, len(v), "city"))
+            names.append(city)
+            n_city += 1
+
     (OUT_DATA / "neighborhoods.geojson").write_text(
         json.dumps({"type": "FeatureCollection", "features": feats}, ensure_ascii=False),
         encoding="utf-8")
     NAMES_OUT.write_text("\n".join(names), encoding="utf-8")
-    print(f"neighborhoods.geojson: {len(feats)} Amman submarkets (was 5)")
+    print(f"neighborhoods.geojson: {len(names)} regions "
+          f"({len(names)-n_city} Amman submarkets + {n_city} cities) — was 5")
     return names
 
 
@@ -109,7 +135,7 @@ def build_pois() -> None:
             lat, lon = float(r["lat"]), float(r["lon"])
         except ValueError:
             continue
-        if not (AMMAN_BBOX[0] < lat < AMMAN_BBOX[1] and AMMAN_BBOX[2] < lon < AMMAN_BBOX[3]):
+        if not (29.0 < lat < 33.5 and 34.8 < lon < 39.5):  # nationwide (Jordan bbox)
             continue
         feats.append({
             "type": "Feature",

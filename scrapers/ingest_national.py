@@ -341,6 +341,34 @@ def from_4321():
         )
 
 
+# Governorate/city name canonicalization. Outside Amman the geocoded data is too
+# sparse for submarket circles, so we pool each secondary city under one canonical
+# name and price it at CITY level (Amman keeps submarket granularity).
+_CITY_ALIASES = {
+    "amman": "Amman",
+    "salt": "Al Salt", "al salt": "Al Salt", "balqa": "Al Salt", "al balqa": "Al Salt", "alsalt": "Al Salt",
+    "irbid": "Irbid", "ramtha": "Irbid", "ar ramtha": "Irbid",
+    "zarqa": "Zarqa", "az zarqa": "Zarqa",
+    "aqaba": "Aqaba", "madaba": "Madaba", "jerash": "Jerash", "jarash": "Jerash",
+    "mafraq": "Mafraq", "al mafraq": "Mafraq",
+    "karak": "Karak", "al karak": "Karak",
+    "ajlun": "Ajloun", "ajloun": "Ajloun",
+    "maan": "Ma'an", "ma'an": "Ma'an", "ma`an": "Ma'an",
+    "tafielah": "Tafilah", "tafila": "Tafilah", "tafilah": "Tafilah", "at tafilah": "Tafilah",
+    "al ghor": "Jordan Valley", "ghor": "Jordan Valley", "jordan valley": "Jordan Valley",
+    "dead sea": "Jordan Valley",
+}
+
+
+def canon_city(d: str) -> str:
+    d = (d or "").strip()
+    if not d:
+        return ""
+    if re.search(r"[؀-ۿ]", d):
+        return d
+    return _CITY_ALIASES.get(d.lower(), d.title())
+
+
 SOURCES = [
     ("Bayut", from_bayut),
     ("OpenSooq-sale", lambda: from_opensooq("for-sale.csv", "sale")),
@@ -376,6 +404,10 @@ def main() -> None:
                     continue
                 if not r["neighborhood"]:
                     r["neighborhood"] = r.get("district") or "Unknown"
+                # City-level pooling for secondary governorates (Amman keeps submarkets).
+                r["district"] = canon_city(r["district"])
+                if r["district"] and r["district"] != "Amman":
+                    r["neighborhood"] = r["district"]
                 normalize_rent_monthly(r)
                 if lid in seen:
                     dropped_dup += 1

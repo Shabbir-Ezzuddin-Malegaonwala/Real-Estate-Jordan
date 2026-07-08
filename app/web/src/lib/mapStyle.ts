@@ -27,9 +27,10 @@ export const CARTO_DARK: StyleSpecification = {
   ],
 };
 
-// Amman submarkets — framed to fit the full set of covered neighborhoods.
-export const AMMAN_CENTER: [number, number] = [35.884, 31.98];
-export const AMMAN_ZOOM = 11.4;
+// National framing — opens on Amman (the dense core) but zoom-out reveals the
+// whole country and the secondary-city circles. Kept the export names stable.
+export const AMMAN_CENTER: [number, number] = [35.94, 31.72];
+export const AMMAN_ZOOM = 8.1;
 
 export const POI_COLORS: Record<string, string> = {
   mosque: "#8b93a4",
