@@ -23,7 +23,9 @@ from app.engine.data import DataBundle, load_bundle_from_sqlite
 from app.engine.models import Subject
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_re.sqlite"))
+# Production DB is the national build (56,854 listings). The 854-row jordan_re.sqlite
+# is the enriched PILOT, kept for reference only — see db/README.md. Override with JORDAN_RE_DB.
+_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_national.sqlite"))
 
 _ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:4173",
                     "http://127.0.0.1:5173", "http://127.0.0.1:4173"]

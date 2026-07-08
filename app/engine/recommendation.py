@@ -262,9 +262,10 @@ def _narrative(subject, recommended, min_safe, premium, conf, comps,
         f"For a {subject.finish_quality if subject.finish_quality != 'unknown' else ''} "
         f"{subject.property_type} in {subject.neighborhood}"
         + (f" (~{subject.area_m2:.0f} m²)" if subject.area_m2 else "")
-        + f", the recommended launch price is {recommended:.0f} JD/m², within a defensible "
-        f"range of {min_safe:.0f}–{premium:.0f} JD/m² (confidence: {conf.label}, "
-        f"{conf.numeric:.2f}; 80% interval {conf.interval_low_ppm2:.0f}–{conf.interval_high_ppm2:.0f})."
+        + f", the recommended launch-price ESTIMATE is {recommended:.0f} JD/m², within an "
+        f"evidence-anchored range of {min_safe:.0f}–{premium:.0f} JD/m² (confidence: {conf.label}, "
+        f"{conf.numeric:.2f}; evidence-dispersion band {conf.interval_low_ppm2:.0f}–{conf.interval_high_ppm2:.0f}, "
+        f"uncalibrated — not yet validated against realized transactions)."
     )
     lines.append(
         f"This is anchored on {len(comps)} comparable listing(s), each normalised to the "
