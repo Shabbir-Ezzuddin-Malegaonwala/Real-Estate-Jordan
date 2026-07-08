@@ -66,3 +66,6 @@ deliverables/*.bak
 # Excel/Office lock & temp files
 ~$*
 *.tmp
+
+# raw OSM Overpass cache (regenerable via scrapers/osm_jordan_poi.py; huge)
+data/raw/osm/jordan/
