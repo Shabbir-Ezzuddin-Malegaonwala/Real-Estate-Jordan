@@ -2,80 +2,32 @@
   "location_id": null,
   "neighborhood": "Khalda",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 360.9,
-  "recommended_price_jd_m2": 555.2,
-  "premium_price_jd_m2": 749.5,
+  "min_safe_price_jd_m2": 368.9,
+  "recommended_price_jd_m2": 567.6,
+  "premium_price_jd_m2": 766.2,
   "confidence": {
     "label": "M",
-    "numeric": 0.606,
+    "numeric": 0.598,
     "interval_jd_m2": [
-      360.9,
-      749.5
+      368.9,
+      766.2
     ]
   },
   "evidence_objects": [
     {
-      "factor": "Finish quality (high)",
-      "adjustment": "-20.9%",
-      "confidence": "Low",
-      "method": "paired median differential (n_high=79, n_luxury=1826)",
-      "datasets": [
-        "listings"
-      ],
-      "sources": [
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-99604.html",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-91712.html",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282803674",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/70b717f7-77b2-44b2-88f2-80c56d730fc7",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/8cd3688f-7c56-4203-8753-d9bb8ae39fe1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5dc5b2d1-bcbb-46af-815e-5718538096e2",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/c369cdb0-993f-4ea8-8589-9672ee52ecf3",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/3cd415d5-3281-4ff9-9e50-65f7b7439759",
-          "capture_date": "2026-07-07"
-        }
-      ],
-      "category": "current_state",
-      "explanation": "Subject's finish quality ('high') lists -20.9% vs the typical unit in Khalda, from matched-pair evidence."
-    },
-    {
       "factor": "Floor level",
       "adjustment": "-7.9% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs floor_level (n=199)",
+      "method": "OLS slope of price/m² vs floor_level (n=145)",
       "datasets": [
         "listings"
       ],
       "sources": [
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103225.html",
+          "capture_date": "2026-07-06"
+        },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-99604.html",
@@ -88,32 +40,27 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283028554",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282803674",
           "capture_date": "2026-07-06"
         },
         {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282841742",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/8daa1efb-ba0b-4e64-ac84-e58f467cc19b",
+          "capture_date": "2026-07-07"
+        },
+        {
           "name": "EurekaJo",
           "url": "https://eurekajo.com/Realestates/Details/70b717f7-77b2-44b2-88f2-80c56d730fc7",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/8cd3688f-7c56-4203-8753-d9bb8ae39fe1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5dc5b2d1-bcbb-46af-815e-5718538096e2",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/c369cdb0-993f-4ea8-8589-9672ee52ecf3",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/3cd415d5-3281-4ff9-9e50-65f7b7439759",
           "capture_date": "2026-07-07"
         }
       ],
@@ -122,13 +69,18 @@
     },
     {
       "factor": "Building age",
-      "adjustment": "-1.5% per unit",
+      "adjustment": "-1.4% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs building_age_years (n=137)",
+      "method": "OLS slope of price/m² vs building_age_years (n=130)",
       "datasets": [
         "listings"
       ],
       "sources": [
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103225.html",
+          "capture_date": "2026-07-06"
+        },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-99604.html",
@@ -141,47 +93,47 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283028554",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282803674",
           "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282841742",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/8daa1efb-ba0b-4e64-ac84-e58f467cc19b",
+          "capture_date": "2026-07-07"
         },
         {
           "name": "EurekaJo",
           "url": "https://eurekajo.com/Realestates/Details/70b717f7-77b2-44b2-88f2-80c56d730fc7",
           "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/8cd3688f-7c56-4203-8753-d9bb8ae39fe1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5dc5b2d1-bcbb-46af-815e-5718538096e2",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/c369cdb0-993f-4ea8-8589-9672ee52ecf3",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/3cd415d5-3281-4ff9-9e50-65f7b7439759",
-          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of building age moves price/m² by -1.5% (finish-controlled regression); subject value = 0."
+      "explanation": "Each unit of building age moves price/m² by -1.4% (finish-controlled regression); subject value = 0."
     },
     {
       "factor": "Size (per m²)",
       "adjustment": "+0.0% per unit",
       "confidence": "Medium",
-      "method": "OLS slope of price/m² vs area_m2 (n=1161)",
+      "method": "OLS slope of price/m² vs area_m2 (n=885)",
       "datasets": [
         "listings"
       ],
       "sources": [
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103225.html",
+          "capture_date": "2026-07-06"
+        },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-99604.html",
@@ -194,32 +146,27 @@
         },
         {
           "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283028554",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
           "url": "https://jo.opensooq.com/en/search/282803674",
           "capture_date": "2026-07-06"
         },
         {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282841742",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/8daa1efb-ba0b-4e64-ac84-e58f467cc19b",
+          "capture_date": "2026-07-07"
+        },
+        {
           "name": "EurekaJo",
           "url": "https://eurekajo.com/Realestates/Details/70b717f7-77b2-44b2-88f2-80c56d730fc7",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/8cd3688f-7c56-4203-8753-d9bb8ae39fe1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5dc5b2d1-bcbb-46af-815e-5718538096e2",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/c369cdb0-993f-4ea8-8589-9672ee52ecf3",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/3cd415d5-3281-4ff9-9e50-65f7b7439759",
           "capture_date": "2026-07-07"
         }
       ],
@@ -264,9 +211,9 @@
     },
     {
       "factor": "Income approach ceiling",
-      "adjustment": "482 JD/m²",
+      "adjustment": "504 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (8.9%, citywide rents vs sales)",
+      "method": "income approach: annual rent ÷ derived market yield (8.7%, citywide rents vs sales)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -278,7 +225,60 @@
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (8.9%). Above ≈ 482 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (8.7%). Above ≈ 504 JD/m² the unit stops clearing to investors."
+    },
+    {
+      "factor": "Market composition (context)",
+      "adjustment": "context — not a price adjustment",
+      "confidence": "High",
+      "method": "seller-type share of the 3 comps",
+      "datasets": [
+        "listings"
+      ],
+      "sources": [
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103225.html",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-99604.html",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-91712.html",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283028554",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282803674",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282841742",
+          "capture_date": "2026-07-06"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/8daa1efb-ba0b-4e64-ac84-e58f467cc19b",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/70b717f7-77b2-44b2-88f2-80c56d730fc7",
+          "capture_date": "2026-07-07"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Of the comparables driving this estimate, 100% agent-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
     },
     {
       "factor": "Affluence (night-lights)",
@@ -355,14 +355,44 @@
   ],
   "comparables": [
     {
+      "listing_id": "bayut_103225",
+      "neighborhood": "Khalda",
+      "area_m2": 186.0,
+      "original_ppm2": 618.3,
+      "time_adjusted_ppm2": 618.3,
+      "adjusted_ppm2": 617.2,
+      "gross_adjustment": 0.0018,
+      "reconciliation_weight": 4.8647,
+      "similarity": 0.819,
+      "listing_date": "2026-06-23",
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=186.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Bayut",
+        "url": "https://www.bayut.jo/en/property/details-103225.html",
+        "capture_date": "2026-07-06"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 618.3,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
       "listing_id": "bayut_99604",
       "neighborhood": "Khalda",
       "area_m2": 170.0,
       "original_ppm2": 735.3,
       "time_adjusted_ppm2": 735.3,
-      "adjusted_ppm2": 736.0,
-      "gross_adjustment": 0.001,
-      "reconciliation_weight": 4.8226,
+      "adjusted_ppm2": 735.9,
+      "gross_adjustment": 0.0008,
+      "reconciliation_weight": 4.8264,
       "similarity": 0.828,
       "listing_date": "2026-06-13",
       "adjustments": [
@@ -390,9 +420,9 @@
       "area_m2": 180.0,
       "original_ppm2": 861.1,
       "time_adjusted_ppm2": 861.1,
-      "adjusted_ppm2": 860.3,
-      "gross_adjustment": 0.001,
-      "reconciliation_weight": 4.798,
+      "adjusted_ppm2": 860.4,
+      "gross_adjustment": 0.0008,
+      "reconciliation_weight": 4.8018,
       "similarity": 0.825,
       "listing_date": "2026-06-09",
       "adjustments": [
@@ -415,14 +445,58 @@
       ]
     },
     {
+      "listing_id": "opensooq_283028554",
+      "neighborhood": "Khalda",
+      "area_m2": 190.0,
+      "original_ppm2": 736.8,
+      "time_adjusted_ppm2": 736.8,
+      "adjusted_ppm2": 765.3,
+      "gross_adjustment": 0.0387,
+      "reconciliation_weight": 2.5138,
+      "similarity": 0.818,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-7.9%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=10 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=190.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283028554",
+        "capture_date": "2026-07-06"
+      },
+      "seller_type": "unknown",
+      "price_per_m2": 736.8,
+      "adjustments_applied": [
+        "Floor level",
+        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
       "listing_id": "opensooq_282803674",
       "neighborhood": "Khalda",
       "area_m2": 174.0,
       "original_ppm2": 488.5,
       "time_adjusted_ppm2": 488.5,
-      "adjusted_ppm2": 508.5,
-      "gross_adjustment": 0.0409,
-      "reconciliation_weight": 2.4911,
+      "adjusted_ppm2": 508.7,
+      "gross_adjustment": 0.0412,
+      "reconciliation_weight": 2.4872,
       "similarity": 0.851,
       "listing_date": null,
       "adjustments": [
@@ -459,6 +533,87 @@
       ]
     },
     {
+      "listing_id": "opensooq_282841742",
+      "neighborhood": "Khalda",
+      "area_m2": 163.0,
+      "original_ppm2": 552.1,
+      "time_adjusted_ppm2": 552.1,
+      "adjusted_ppm2": 575.9,
+      "gross_adjustment": 0.043,
+      "reconciliation_weight": 2.4692,
+      "similarity": 0.825,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-7.9%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=20 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=163.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282841742",
+        "capture_date": "2026-07-06"
+      },
+      "seller_type": "unknown",
+      "price_per_m2": 552.1,
+      "adjustments_applied": [
+        "Floor level",
+        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "eureka_8daa1efb-ba0b-4e64-ac84-e58f467cc19b",
+      "neighborhood": "Khalda",
+      "area_m2": 163.0,
+      "original_ppm2": 441.7,
+      "time_adjusted_ppm2": 441.7,
+      "adjusted_ppm2": 407.7,
+      "gross_adjustment": 0.077,
+      "reconciliation_weight": 2.166,
+      "similarity": 0.825,
+      "listing_date": null,
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-7.9%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=163.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "EurekaJo",
+        "url": "https://eurekajo.com/Realestates/Details/8daa1efb-ba0b-4e64-ac84-e58f467cc19b",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "unknown",
+      "price_per_m2": 441.7,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
       "listing_id": "eureka_70b717f7-77b2-44b2-88f2-80c56d730fc7",
       "neighborhood": "Khalda",
       "area_m2": 164.0,
@@ -466,7 +621,7 @@
       "time_adjusted_ppm2": 548.8,
       "adjusted_ppm2": 506.4,
       "gross_adjustment": 0.0772,
-      "reconciliation_weight": 2.1643,
+      "reconciliation_weight": 2.1648,
       "similarity": 0.827,
       "listing_date": null,
       "adjustments": [
@@ -501,9 +656,9 @@
       "area_m2": 165.0,
       "original_ppm2": 787.9,
       "time_adjusted_ppm2": 787.9,
-      "adjusted_ppm2": 726.9,
-      "gross_adjustment": 0.0774,
-      "reconciliation_weight": 2.1628,
+      "adjusted_ppm2": 727.0,
+      "gross_adjustment": 0.0773,
+      "reconciliation_weight": 2.1635,
       "similarity": 0.829,
       "listing_date": null,
       "adjustments": [
@@ -538,9 +693,9 @@
       "area_m2": 175.0,
       "original_ppm2": 474.3,
       "time_adjusted_ppm2": 474.3,
-      "adjusted_ppm2": 436.7,
-      "gross_adjustment": 0.0793,
-      "reconciliation_weight": 2.148,
+      "adjusted_ppm2": 436.9,
+      "gross_adjustment": 0.0789,
+      "reconciliation_weight": 2.1511,
       "similarity": 0.853,
       "listing_date": null,
       "adjustments": [
@@ -563,81 +718,14 @@
       ]
     },
     {
-      "listing_id": "eureka_c369cdb0-993f-4ea8-8589-9672ee52ecf3",
-      "neighborhood": "Khalda",
-      "area_m2": 175.0,
-      "original_ppm2": 474.3,
-      "time_adjusted_ppm2": 474.3,
-      "adjusted_ppm2": 436.7,
-      "gross_adjustment": 0.0793,
-      "reconciliation_weight": 2.148,
-      "similarity": 0.853,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-7.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/c369cdb0-993f-4ea8-8589-9672ee52ecf3",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "price_per_m2": 474.3,
-      "adjustments_applied": [
-        "Floor level"
-      ]
-    },
-    {
-      "listing_id": "eureka_3cd415d5-3281-4ff9-9e50-65f7b7439759",
-      "neighborhood": "Khalda",
-      "area_m2": 180.0,
-      "original_ppm2": 583.3,
-      "time_adjusted_ppm2": 583.3,
-      "adjusted_ppm2": 536.5,
-      "gross_adjustment": 0.0803,
-      "reconciliation_weight": 2.1407,
-      "similarity": 0.841,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-7.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.1%",
-          "method": "derived OLS slope",
-          "detail": "comp=180.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/3cd415d5-3281-4ff9-9e50-65f7b7439759",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "price_per_m2": 583.3,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
       "listing_id": "eureka_21533f03-457b-4b78-8bc3-e47d77eab0b3",
       "neighborhood": "Khalda",
       "area_m2": 180.0,
       "original_ppm2": 500.0,
       "time_adjusted_ppm2": 500.0,
-      "adjusted_ppm2": 459.9,
-      "gross_adjustment": 0.0803,
-      "reconciliation_weight": 2.1407,
+      "adjusted_ppm2": 460.1,
+      "gross_adjustment": 0.0797,
+      "reconciliation_weight": 2.145,
       "similarity": 0.841,
       "listing_date": null,
       "adjustments": [
@@ -667,15 +755,15 @@
       ]
     },
     {
-      "listing_id": "eureka_012609ce-85b9-47b9-995e-54c88b38ced9",
+      "listing_id": "eureka_f5890886-c062-44e9-ada4-28ed6f5cdc70",
       "neighborhood": "Khalda",
-      "area_m2": 180.0,
-      "original_ppm2": 666.7,
-      "time_adjusted_ppm2": 666.7,
-      "adjusted_ppm2": 613.1,
-      "gross_adjustment": 0.0803,
-      "reconciliation_weight": 2.1407,
-      "similarity": 0.841,
+      "area_m2": 184.0,
+      "original_ppm2": 625.0,
+      "time_adjusted_ppm2": 625.0,
+      "adjusted_ppm2": 574.8,
+      "gross_adjustment": 0.0804,
+      "reconciliation_weight": 2.1401,
+      "similarity": 0.832,
       "listing_date": null,
       "adjustments": [
         {
@@ -688,86 +776,12 @@
           "factor": "Size (per m²)",
           "adjustment": "-0.1%",
           "method": "derived OLS slope",
-          "detail": "comp=180.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/012609ce-85b9-47b9-995e-54c88b38ced9",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "price_per_m2": 666.7,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "eureka_f5890886-c062-44e9-ada4-28ed6f5cdc70",
-      "neighborhood": "Khalda",
-      "area_m2": 184.0,
-      "original_ppm2": 625.0,
-      "time_adjusted_ppm2": 625.0,
-      "adjusted_ppm2": 574.3,
-      "gross_adjustment": 0.0811,
-      "reconciliation_weight": 2.1348,
-      "similarity": 0.832,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-7.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.2%",
-          "method": "derived OLS slope",
           "detail": "comp=184.0 -> subject=175"
         }
       ],
       "source": {
         "name": "EurekaJo",
         "url": "https://eurekajo.com/Realestates/Details/f5890886-c062-44e9-ada4-28ed6f5cdc70",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "price_per_m2": 625.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "eureka_e8f1f618-a48c-4b0a-a8e1-cdcdec4ff8c3",
-      "neighborhood": "Khalda",
-      "area_m2": 184.0,
-      "original_ppm2": 625.0,
-      "time_adjusted_ppm2": 625.0,
-      "adjusted_ppm2": 574.3,
-      "gross_adjustment": 0.0811,
-      "reconciliation_weight": 2.1348,
-      "similarity": 0.832,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-7.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.2%",
-          "method": "derived OLS slope",
-          "detail": "comp=184.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/e8f1f618-a48c-4b0a-a8e1-cdcdec4ff8c3",
         "capture_date": "2026-07-07"
       },
       "seller_type": "unknown",
@@ -787,7 +801,7 @@
     {
       "factor": "Investor ceiling below price",
       "severity": "medium",
-      "detail": "Income ceiling (482) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+      "detail": "Income ceiling (504) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
     },
     {
       "factor": "Valuation methods diverge",
@@ -798,6 +812,11 @@
       "factor": "Parking premium not derivable",
       "severity": "low",
       "detail": "Listings are almost entirely 'covered' parking with too few usable 'open'/'none' rows to form a paired differential — parking is not adjusted."
+    },
+    {
+      "factor": "Some attribute premiums limited",
+      "severity": "low",
+      "detail": "Finish quality too sparse to derive even citywide — not adjusted."
     },
     {
       "factor": "Price index not current",
@@ -813,47 +832,47 @@
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 360.9,
+      "recommended_price_jd_m2": 368.9,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 555.2,
+      "recommended_price_jd_m2": 567.6,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 749.5,
+      "recommended_price_jd_m2": 766.2,
       "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.0). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a high apartment in Khalda (~175 m²), the recommended launch-price ESTIMATE is 555 JD/m², within an evidence-anchored range of 361–750 JD/m² (confidence: M, 0.61; evidence-dispersion band 361–750, uncalibrated — not yet validated against realized transactions). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: cost floor ≈ 155, income ceiling ≈ 482. Convergence supports the estimate; divergence is captured in the risks. Key risk: furnishing not supplied — those premiums could not be applied.",
+  "narrative": "For a high apartment in Khalda (~175 m²), the recommended launch-price ESTIMATE is 568 JD/m², within an evidence-anchored range of 369–766 JD/m² (confidence: M, 0.60; evidence-dispersion band 369–766, uncalibrated — not yet validated against realized transactions). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: cost floor ≈ 155, income ceiling ≈ 504. Convergence supports the estimate; divergence is captured in the risks. Key risk: furnishing not supplied — those premiums could not be applied.",
   "computed_date": "2026-07-08",
   "method_values": {
-    "comparison_asking": 616.9,
-    "comparison": 555.2,
+    "comparison_asking": 630.7,
+    "comparison": 567.6,
     "cost_floor": 154.9,
-    "income_ceiling": 482.0,
+    "income_ceiling": 504.2,
     "development_score": 0.0,
     "confidence_components": {
       "data_density": 1.0,
-      "dispersion": 0.347,
-      "recency": 0.95,
+      "dispersion": 0.307,
+      "recency": 0.957,
       "method_agreement": 0.0,
       "source_quality": 0.6
     },
     "selection_notes": [
-      "1161 same-submarket apartment listings; 609 within 18 months",
+      "885 same-submarket apartment listings; 444 within 18 months",
       "12 comps selected (ranked by similarity)"
     ],
     "derived_premiums": [
       {
         "factor": "View: city vs none",
-        "derived_premium": 0.0889,
-        "method": "paired median differential (n_city=162, n_none=846)",
+        "derived_premium": 0.1335,
+        "method": "paired median differential (n_city=111, n_none=648)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 1008,
+        "sample_size": 759,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -861,11 +880,11 @@
       },
       {
         "factor": "View: garden vs none",
-        "derived_premium": 0.3859,
-        "method": "paired median differential (n_garden=11, n_none=846)",
+        "derived_premium": 0.5214,
+        "method": "paired median differential (n_garden=8, n_none=648)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 857,
+        "sample_size": 656,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -873,35 +892,23 @@
       },
       {
         "factor": "Elevator: n vs y",
-        "derived_premium": -0.235,
-        "method": "paired median differential (n_n=7, n_y=165)",
+        "derived_premium": -0.2367,
+        "method": "paired median differential (n_n=7, n_y=152)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 172,
+        "sample_size": 159,
         "computed_date": "2026-07-08",
         "neighborhood": "citywide",
         "property_type": "apartment",
         "notes": "baseline=y; citywide fallback — submarket sample insufficient"
       },
       {
-        "factor": "Finish quality: high vs luxury",
-        "derived_premium": -0.2093,
-        "method": "paired median differential (n_high=79, n_luxury=1826)",
-        "source": "listings (portal asking prices)",
-        "confidence": "Low",
-        "sample_size": 1905,
-        "computed_date": "2026-07-08",
-        "neighborhood": "citywide",
-        "property_type": "apartment",
-        "notes": "baseline=luxury; citywide fallback — submarket sample insufficient"
-      },
-      {
         "factor": "Furnishing: full vs no",
-        "derived_premium": 0.1238,
-        "method": "paired median differential (n_full=82, n_no=190)",
+        "derived_premium": 0.1241,
+        "method": "paired median differential (n_full=68, n_no=161)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 272,
+        "sample_size": 229,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -909,11 +916,11 @@
       },
       {
         "factor": "Furnishing: semi vs no",
-        "derived_premium": -0.0328,
-        "method": "paired median differential (n_semi=11, n_no=190)",
+        "derived_premium": -0.0172,
+        "method": "paired median differential (n_semi=11, n_no=161)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 201,
+        "sample_size": 172,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -921,11 +928,11 @@
       },
       {
         "factor": "Floor level",
-        "derived_premium": -0.07933,
-        "method": "OLS slope of price/m² vs floor_level (n=199)",
+        "derived_premium": -0.07892,
+        "method": "OLS slope of price/m² vs floor_level (n=145)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 199,
+        "sample_size": 145,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -933,11 +940,11 @@
       },
       {
         "factor": "Building age",
-        "derived_premium": -0.01508,
-        "method": "OLS slope of price/m² vs building_age_years (n=137)",
+        "derived_premium": -0.0141,
+        "method": "OLS slope of price/m² vs building_age_years (n=130)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 137,
+        "sample_size": 130,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -945,11 +952,11 @@
       },
       {
         "factor": "Size (per m²)",
-        "derived_premium": 0.00019,
-        "method": "OLS slope of price/m² vs area_m2 (n=1161)",
+        "derived_premium": 0.00016,
+        "method": "OLS slope of price/m² vs area_m2 (n=885)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 1161,
+        "sample_size": 885,
         "computed_date": "2026-07-08",
         "neighborhood": "Khalda",
         "property_type": "apartment",
@@ -960,9 +967,9 @@
   "provenance": {
     "data_source_file": "db/jordan_national.sqlite",
     "listings_source_csv": "data\\processed\\listings_national_20260708.csv",
-    "listings_row_count": 56854,
-    "listings_snapshot_hash": "bf527c6d2da4e050",
-    "engine_git_sha": "b0aa0cd",
+    "listings_row_count": 52792,
+    "listings_snapshot_hash": "dbca8785ebfdda4f",
+    "engine_git_sha": "5285831",
     "generated_at": "2026-07-08"
   }
 }

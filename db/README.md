@@ -10,8 +10,9 @@ This project has **two** SQLite databases. Do not confuse them.
 ## Rebuild the production DB
 
 ```bash
-python scrapers/ingest_national.py         # 6 portals -> canonical listings CSV
-python scrapers/enrich_from_text.py        # mine descriptions -> view/finish/floor/parking (C2)
+python scrapers/ingest_national.py         # 6 portals -> canonical listings CSV (Arabic neighborhoods translated)
+python scrapers/dedup_listings.py          # remove cross-portal relistings (M4)
+python scrapers/enrich_from_text.py        # mine descriptions -> view/floor/parking (C2; finish NOT mined)
 python scrapers/enrich_spatial.py          # DEM/VIIRS/GHS-POP/OSM -> spatial features (Phase 2)
 python scrapers/dos_costs.py               # DOS -> construction cost floor
 python db/init_db.py  --db db/jordan_national.sqlite

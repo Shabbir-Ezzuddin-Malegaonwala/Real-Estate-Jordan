@@ -74,13 +74,60 @@ _ARABIC: dict[str, str] = {
     "الصويفية": "Sweifieh",
     "الجاردنز - شارع وصفي التل": "Al Gardens", "الجاردنز": "Al Gardens",
     "الشميساني": "Shmeisani",
-    "الدوار السابع": "7th Circle",
-    "الدوار السادس": "6th Circle",
+    "الدوار الأول": "1st Circle", "الدوار الاول": "1st Circle",
+    "الدوار الثاني": "2nd Circle",
+    "الدوار الثالث": "3rd Circle",
+    "الدوار الرابع": "4th Circle",
     "الدوار الخامس": "5th Circle",
+    "الدوار السادس": "6th Circle",
+    "الدوار السابع": "7th Circle",
+    "الدوار الثامن": "8th Circle",
     "ضاحية الامير راشد - الروابي": "Dahiet Al Ameer Rashed",
+    "ضاحية الامير علي": "Dahiet Al Ameer Ali",
+    "ضاحية اﻷمير حسن": "Dahiet Al Ameer Hasan", "ضاحية الامير حسن": "Dahiet Al Ameer Hasan",
+    "ضاحية الاستقلال": "Dahiet Al Istiqlal",
     "دابوق": "Dabouq",
     "الكرسي": "Al Kursi",
     "طبربور": "Tabarboor",
+    # --- full EurekaJo Arabic coverage (translation cleanup) ---
+    "الظهير": "Al Dhaher",
+    "ناعور": "Naour",
+    "حي الياسمين": "Daheit Al Yasmeen",
+    "طريق المطار": "Airport Road",
+    "البيادر": "Al Bayader",
+    "جبل عمان": "Jabal Amman",
+    "جبل الحسين": "Jabal Al Hussein",
+    "حي الصحابة": "Hay Al Sahaba",
+    "الجندويل": "Al Jandaweel",
+    "صويلح": "Sweileh",
+    "ابو نصير": "Abu Nsair", "أبو نصير": "Abu Nsair",
+    "عرجان": "Arjan",
+    "المدينة الرياضية": "Sports City",
+    "العبدلي": "Abdali",
+    "اللويبدة": "Al Weibdeh", "جبل اللويبدة": "Al Weibdeh",
+    "رجم عميش": "Rajum Omeish",
+    "حي المقابلين": "Al Muqabalain", "المقابلين": "Al Muqabalain",
+    "الرونق": "Al Rawnaq",
+    "ياجوز": "Yajouz",
+    "وادي صقرة - شارع عرار": "Wadi Saqra", "وادي صقرة": "Wadi Saqra",
+    "ابو السوس": "Abu Al Sous",
+    "صافوط": "Safout",
+    "ام الكندم": "Um Al Kundum",
+    "عمان - وسط البلد": "Downtown Amman", "وسط البلد": "Downtown Amman",
+    "منطقة بدر الجديدة": "Badr Al Jadeedah", "بدر الجديدة": "Badr Al Jadeedah",
+    "اليادودة": "Al Yadudah",
+    "الذراع": "Al Thiraa",
+    "الاخضر - نزال": "Nazzal", "نزال": "Nazzal",
+    "الحمر": "Al Hummar",
+    "الفحيص": "Fuheis",
+    "عمان - شارع الاردن": "Jordan Street", "شارع الاردن": "Jordan Street",
+    "جبل النزهة": "Jabal Al Nuzha", "النزهة": "Al Nuzha",
+    "رغدان": "Raghadan",
+    "ابو حامد - موبص": "Abu Hamid",
+    "الاشرفية": "Ashrafieh",
+    # generic 'somewhere in Amman' placeholders -> city-level Amman pool
+    "محافظة - العاصمة": "Amman", "مدينة عمان": "Amman",
+    "عمان الغربية - غرب عمان": "West Amman", "غرب عمان": "West Amman",
 }
 
 
@@ -106,10 +153,12 @@ def canon(raw: str) -> str:
         return ""
     if raw in _ARABIC:
         return _ARABIC[raw]
-    # arabic string with a " - " qualifier: try the head segment
+    # Arabic string with a " - " qualifier (e.g. "عمان - وسط البلد"): try each segment,
+    # skipping the generic city/governorate prefix, so the specific area wins.
     if re.search(r"[؀-ۿ]", raw):
-        head = re.split(r"\s*-\s*", raw)[0].strip()
-        if head in _ARABIC:
-            return _ARABIC[head]
+        segs = [s.strip() for s in re.split(r"\s*-\s*", raw) if s.strip()]
+        for seg in segs:
+            if seg in _ARABIC:
+                return _ARABIC[seg]
         return raw  # unmapped Arabic: keep as-is
     return _KEYMAP.get(_key(raw), raw)

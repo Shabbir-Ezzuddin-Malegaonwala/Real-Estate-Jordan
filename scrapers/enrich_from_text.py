@@ -46,9 +46,12 @@ def extract_parking(t: str) -> str | None:
 
 # --- finish ----------------------------------------------------------------
 def extract_finish(t: str) -> str | None:
-    if re.search(r"super deluxe|super-deluxe|luxur|فاخر|فخم|سوبر ديلوكس|سوبر ديلكس", t):
+    # "luxury" reserved for strong, specific signals — generic "luxury/فاخر" is marketing
+    # boilerplate applied across all tiers, so it maps to "high" instead (review: finish
+    # label was luxury-inflated, producing perverse premiums).
+    if re.search(r"super deluxe|super-deluxe|ultra[- ]?luxur|سوبر ديلوكس|سوبر ديلكس", t):
         return "luxury"
-    if re.search(r"deluxe|high[- ]?end|high spec|ديلوكس|ديلكس|تشطيب ممتاز", t):
+    if re.search(r"deluxe|high[- ]?end|high spec|luxur|فاخر|فخم|ديلوكس|ديلكس|تشطيب ممتاز", t):
         return "high"
     if re.search(r"semi[- ]?finish|core (and|&) shell|unfinished|on bones|عظم|على العظم|نص تشطيب|نصف تشطيب", t):
         return "basic"
@@ -124,7 +127,10 @@ def main() -> None:
 
         fill("view", extract_view(t, has_text))
         fill("parking", extract_parking(t))
-        fill("finish_quality", extract_finish(t))
+        # finish_quality is NOT mined from description text: "luxury/فاخر" is marketing
+        # boilerplate that anti-correlates with price in this data (produced perverse
+        # premiums). Finish is kept only where a portal exposes a real field (4321Property's
+        # finish_grade, mapped in ingest_national.py).
         fill("elevator", extract_elevator(t))
         fill("furnishing", extract_furnishing(t))
         fill("floor_level", extract_floor(t))

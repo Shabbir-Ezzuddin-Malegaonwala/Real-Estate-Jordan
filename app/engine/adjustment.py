@@ -160,9 +160,37 @@ class PremiumSet:
         self.categorical: dict[str, dict[str, float]] = {}
         self.continuous: dict[str, float] = {}
         self.records: list[DerivedPremium] = []
+        self.suppressed: list[str] = []   # premiums dropped by the plausibility gate (M1)
 
     def as_records(self) -> list[dict]:
         return [r.to_dict() for r in self.records]
+
+
+# Economic priors (review M1). Ordinal quality tiers must be monotone non-decreasing in
+# price; age must not raise value. A derived premium violating its prior is a small-sample /
+# noisy-label artifact (e.g. text-mined "luxury" over-applied as marketing) — we DROP it
+# rather than ship an economically perverse adjustment.
+_FINISH_RANK = {"basic": 0, "standard": 1, "high": 2, "luxury": 3}
+
+
+def _apply_plausibility_gate(ps: "PremiumSet") -> None:
+    sched = ps.categorical.get("finish_quality")
+    if sched:
+        pts = sorted((_FINISH_RANK[k], v) for k, v in sched.items() if k in _FINISH_RANK)
+        if len(pts) >= 2 and any(pts[i][1] > pts[i + 1][1] + 1e-9 for i in range(len(pts) - 1)):
+            ps.categorical.pop("finish_quality")
+            ps.records = [r for r in ps.records if r.factor != "Finish quality"]
+            ps.suppressed.append(
+                "Finish quality — derived schedule was non-monotonic across tiers "
+                "(higher tier priced below a lower one), economically implausible on the "
+                "noisy text-mined label; not applied.")
+    age = ps.continuous.get("building_age_years")
+    if age is not None and age > 0:
+        ps.continuous.pop("building_age_years")
+        ps.records = [r for r in ps.records if r.factor != "Building age"]
+        ps.suppressed.append(
+            "Building age — derived slope was positive (age raising value); economically "
+            "implausible ceteris paribus, not applied.")
 
 
 _DOWNGRADE = {"High": "Medium", "Medium": "Low", "Low": "Low"}
@@ -202,6 +230,7 @@ def derive_premiums(pool: list[Listing], subject: Subject, as_of: date,
         if rec is not None:
             ps.continuous[attr] = frac
             ps.records.append(rec)
+    _apply_plausibility_gate(ps)   # M1: drop economically perverse premiums
     return ps
 
 
