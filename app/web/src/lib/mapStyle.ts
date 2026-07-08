@@ -27,9 +27,9 @@ export const CARTO_DARK: StyleSpecification = {
   ],
 };
 
-// Amman premium submarkets — view framing.
-export const AMMAN_CENTER: [number, number] = [35.855, 31.97];
-export const AMMAN_ZOOM = 12.2;
+// Amman submarkets — framed to fit the full set of covered neighborhoods.
+export const AMMAN_CENTER: [number, number] = [35.884, 31.98];
+export const AMMAN_ZOOM = 11.4;
 
 export const POI_COLORS: Record<string, string> = {
   mosque: "#8b93a4",

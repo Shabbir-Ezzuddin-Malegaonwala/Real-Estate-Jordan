@@ -22,7 +22,9 @@ from pathlib import Path
 
 LISTINGS = Path("data/processed/listings_national_20260708.csv")
 OSM_POIS = Path("D:/Rubikon Labs/Project on Jordan/Data/OSM_Geofabrik_Jordan/csv/pois.csv")
-OUT_DATA = Path("app/web/public/data")
+# Pipeline source-of-truth: the frontend's prepare-data.mjs copies these from
+# data/processed/ -> app/web/public/data/ on every dev/build.
+OUT_DATA = Path("data/processed")
 NAMES_OUT = Path("data/processed/map_neighborhoods.txt")
 
 TOP_N = 36            # how many Amman submarkets to draw

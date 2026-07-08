@@ -18,7 +18,8 @@ from app.engine.data import load_bundle_from_sqlite
 from app.engine.models import Subject
 
 DB = "db/jordan_national.sqlite"
-OUT = Path("app/web/public/engine_output.json")
+# Pipeline source-of-truth: prepare-data.mjs copies this -> public/engine_output.json.
+OUT = Path("app/engine/sample_output.json")
 MAP_NAMES = Path("data/processed/map_neighborhoods.txt")
 AS_OF = date(2026, 7, 8)
 
