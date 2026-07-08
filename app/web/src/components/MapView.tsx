@@ -7,9 +7,11 @@ import type {
   RoadProps,
   ZoningProps,
   RecommendationBundle,
+  OpportunityScore,
 } from "../types";
 import {
   themeStyle,
+  addBasemap,
   AMMAN_CENTER,
   AMMAN_ZOOM,
   POI_COLORS,
@@ -25,9 +27,46 @@ interface Geo {
   pois: FeatureCollection<Point, PoiProps>;
   roads: FeatureCollection<LineString, RoadProps>;
   zoning: FeatureCollection<Polygon, ZoningProps>;
+  voronoi?: FeatureCollection<Polygon>;
 }
 
 const EMPTY: FeatureCollection = { type: "FeatureCollection", features: [] };
+
+// Area name lives under different keys across sources (neighbourhood polygons vs
+// a Voronoi tessellation) — resolve any of them.
+function areaNameOf(props: Record<string, unknown> | null): string | null {
+  if (!props) return null;
+  const v = props.neighborhood ?? props.area ?? props.name;
+  return typeof v === "string" ? v : null;
+}
+
+// Joins opportunity scores onto whichever polygon surface we have, stamping
+// `__opp` (score) and `__lown` (low-data flag) per feature so the choropleth
+// paint is source-agnostic. Low-n cells are muted, not hidden — they stay on the
+// gap-free surface but recede so a 4-listing cell never headlines as opportunity.
+function oppFeatureCollection(
+  base: FeatureCollection<Polygon>,
+  opportunity: OpportunityScore[],
+): FeatureCollection {
+  const info = new Map(opportunity.map((o) => [o.area, o]));
+  return {
+    type: "FeatureCollection",
+    features: base.features.map((f) => {
+      const name = areaNameOf(f.properties as Record<string, unknown>);
+      const o = name != null ? info.get(name) : undefined;
+      return {
+        type: "Feature",
+        geometry: f.geometry,
+        properties: {
+          ...(f.properties as object),
+          __area: name ?? "",
+          __opp: o ? o.score : -1,
+          __lown: o?.low_data ? 1 : 0,
+        },
+      };
+    }),
+  };
+}
 
 export function MapView({
   geo,
@@ -37,6 +76,8 @@ export function MapView({
   onOutside,
   layers,
   theme,
+  opportunity,
+  showOpportunity,
 }: {
   geo: Geo;
   bundle: RecommendationBundle;
@@ -45,6 +86,8 @@ export function MapView({
   onOutside: () => void;
   layers: LayerState;
   theme: Theme;
+  opportunity: OpportunityScore[];
+  showOpportunity: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -61,6 +104,10 @@ export function MapView({
   layersRef.current = layers;
   const themeRef = useRef(theme);
   themeRef.current = theme;
+  const oppRef = useRef(opportunity);
+  oppRef.current = opportunity;
+  const showOppRef = useRef(showOpportunity);
+  showOppRef.current = showOpportunity;
   const markersRef = useRef<HTMLElement[]>([]);
 
   // Init once — geo is loaded before this component mounts, so it is stable.
@@ -79,28 +126,42 @@ export function MapView({
     map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
     mapRef.current = map;
 
-    map.on("load", () => {
+    // Idempotent layer install. The basemap raster tiles/glyphs are external; if
+    // that CDN is unreachable the "load" event can stall (tiles are a "required
+    // resource"). So we also install once the style JSON is parsed — the vector
+    // analytical layers (roads, POIs, opportunity choropleth) then render over
+    // the background colour without waiting on tiles. Guards make double-call safe.
+    const initLayers = () => {
+      if (readyRef.current) return;
       const pal = mapPalette(themeRef.current);
-      installLayers(map, geo, pal);
+      installLayers(map, geo, pal, themeRef.current);
       addNbhdMarkers(map, geo, pal, markersRef);
       readyRef.current = true;
       applySelection(map, selectedRef.current, bundleRef.current);
       applyVisibility(map, layersRef.current, geo, pal);
-    });
+      applyOpportunity(map, geo, oppRef.current, showOppRef.current);
+    };
+    map.on("load", initLayers);
+    const fallback = window.setTimeout(() => {
+      if (!readyRef.current && map.isStyleLoaded()) initLayers();
+    }, 1500);
 
     // Neighborhood selection — click inside a polygon selects it; clicking
     // outside all five polygons is an honest "no coverage here" signal. Layer-
     // scoped handlers persist across setStyle, so they are bound once here.
     map.on("click", (e) => {
       if (!readyRef.current) return;
-      const hits = map.queryRenderedFeatures(e.point, { layers: ["nbhd-fill"] });
-      if (hits.length > 0) {
-        onSelectRef.current((hits[0].properties as NeighborhoodProps).neighborhood);
+      const clickable = ["nbhd-fill"];
+      if (map.getLayer("opp-fill")) clickable.unshift("opp-fill");
+      const hits = map.queryRenderedFeatures(e.point, { layers: clickable });
+      const name = hits.length > 0 ? areaNameOf(hits[0].properties as Record<string, unknown>) : null;
+      if (name) {
+        onSelectRef.current(name);
       } else {
         onOutsideRef.current();
       }
     });
-    for (const lyr of ["nbhd-fill", "poi", "cmp-pts", "future-pts"]) {
+    for (const lyr of ["opp-fill", "nbhd-fill", "poi", "cmp-pts", "future-pts"]) {
       map.on("mouseenter", lyr, () => (map.getCanvas().style.cursor = "pointer"));
       map.on("mouseleave", lyr, () => (map.getCanvas().style.cursor = ""));
     }
@@ -134,6 +195,7 @@ export function MapView({
     });
 
     return () => {
+      window.clearTimeout(fallback);
       map.remove();
       mapRef.current = null;
       markersRef.current = [];
@@ -156,6 +218,13 @@ export function MapView({
     applyVisibility(map, layers, geo, mapPalette(theme));
   }, [layers, geo, theme]);
 
+  // Opportunity choropleth — recolour on new scores or toggle.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !readyRef.current) return;
+    applyOpportunity(map, geo, opportunity, showOpportunity);
+  }, [opportunity, showOpportunity, geo]);
+
   // Theme swap — setStyle drops all sources/layers; re-add them on style.load.
   // Markers are DOM overlays that survive setStyle, so they are only restyled.
   // Selection + view are preserved (refs), so nothing the user set is lost.
@@ -170,10 +239,11 @@ export function MapView({
     // which the style.load handler below re-adds deterministically.
     map.setStyle(themeStyle(theme), { diff: false });
     map.once("style.load", () => {
-      installLayers(map, geo, pal);
+      installLayers(map, geo, pal, theme);
       for (const el of markersRef.current) el.style.cssText = markerCss(pal);
       applySelection(map, selectedRef.current, bundleRef.current);
       applyVisibility(map, layersRef.current, geo, pal);
+      applyOpportunity(map, geo, oppRef.current, showOppRef.current);
       readyRef.current = true;
     });
   }, [theme, geo]);
@@ -183,9 +253,77 @@ export function MapView({
 
 // ---------------------------------------------------------------------------
 
-function installLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
+function installLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette, theme: Theme) {
+  addBasemap(map, theme);
   addBaseLayers(map, geo, pal);
+  addOpportunityLayer(map);
   addNbhdSourceLayers(map, geo, pal);
+}
+
+// Opportunity choropleth over the Voronoi tessellation when present, else the
+// approximate neighbourhood polygons. Data-driven on the stamped `__opp` score;
+// features with no score (< 0) render transparent. Inserted beneath "poi" so POI
+// dots and neighbourhood outlines stay legible on top.
+function addOpportunityLayer(map: maplibregl.Map) {
+  if (map.getSource("opp")) return;
+  map.addSource("opp", { type: "geojson", data: EMPTY });
+  map.addLayer(
+    {
+      id: "opp-fill",
+      type: "fill",
+      source: "opp",
+      layout: { visibility: "none" },
+      paint: {
+        "fill-color": [
+          "case",
+          ["<", ["to-number", ["get", "__opp"]], 0],
+          "rgba(0,0,0,0)",
+          [
+            "step",
+            ["to-number", ["get", "__opp"]],
+            "#b06a5f",
+            25, "#c98a5f",
+            40, "#e6a94b",
+            52, "#c9a75f",
+            66, "#5fa47f",
+            78, "#3f8f63",
+          ],
+        ],
+        // Low-n cells recede (confidence-as-opacity); trustworthy high-n areas pop.
+        "fill-opacity": ["case", ["==", ["get", "__lown"], 1], 0.12, 0.5],
+        "fill-outline-color": "rgba(255,255,255,0.15)",
+      },
+    },
+    "poi",
+  );
+  // Selection outline for the clicked cell (works for all 290, incl. context).
+  map.addLayer(
+    {
+      id: "opp-sel",
+      type: "line",
+      source: "opp",
+      filter: ["==", ["get", "__area"], "__none__"],
+      paint: { "line-color": "#e6a94b", "line-width": 2.4, "line-opacity": 0.95 },
+    },
+    "poi",
+  );
+}
+
+// Joins live scores onto the polygon surface and toggles the choropleth. Called
+// on load, on opportunity/visibility change, and after a theme reload.
+function applyOpportunity(
+  map: maplibregl.Map,
+  geo: Geo,
+  opportunity: OpportunityScore[],
+  show: boolean,
+) {
+  const src = map.getSource("opp") as maplibregl.GeoJSONSource | undefined;
+  if (!src) return;
+  const surface = geo.voronoi ?? geo.neighborhoods;
+  src.setData(oppFeatureCollection(surface, opportunity));
+  if (map.getLayer("opp-fill")) {
+    map.setLayoutProperty("opp-fill", "visibility", show ? "visible" : "none");
+  }
 }
 
 // The 3.4 MB OSM land-use layer is added lazily on first toggle — keeping it out
@@ -378,6 +516,9 @@ function addBaseLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
 }
 
 function applySelection(map: maplibregl.Map, selected: string | null, bundle: RecommendationBundle) {
+  if (map.getLayer("opp-sel")) {
+    map.setFilter("opp-sel", ["==", ["get", "__area"], selected ?? "__none__"]);
+  }
   if (!map.getLayer("nbhd-sel")) return;
   map.setFilter("nbhd-sel", ["==", ["get", "neighborhood"], selected ?? "__none__"]);
 

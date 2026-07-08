@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { RecommendationBundle, RecommendationResult } from "./types";
+import type {
+  AreaEntry,
+  OpportunityScore,
+  RecommendationBundle,
+  RecommendationResult,
+  Role,
+} from "./types";
 import { loadGeo, loadRecommendations, poiCategoryCounts, type GeoLayers } from "./lib/loadData";
 import {
   checkHealth,
@@ -8,22 +14,22 @@ import {
   type NeighborhoodMeta,
   type SubjectInput,
 } from "./lib/api";
+import { fetchAreas, fetchOpportunity } from "./lib/intel";
 import { adaptApiRecommendation } from "./lib/adaptEngine";
+import { useRole, ROLE_META } from "./lib/role";
 import { MapView } from "./components/MapView";
 import { LayerControl, type LayerState } from "./components/LayerControl";
 import { MarketCharts } from "./components/MarketCharts";
-import { SubjectForm } from "./components/SubjectForm";
-import { SearchBox } from "./components/SearchBox";
+import { AreaSearch } from "./components/AreaSearch";
 import { Toast } from "./components/Toast";
-import { PriceBands } from "./components/PriceBands";
-import { AdjustmentWaterfall } from "./components/AdjustmentWaterfall";
-import { EvidenceSection } from "./components/EvidenceSection";
-import { Comparables } from "./components/Comparables";
-import { RiskAndNarrative } from "./components/RiskAndNarrative";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { HelpPanel } from "./components/HelpPanel";
+import { RoleSelector } from "./components/RoleSelector";
+import { OpportunityLegend } from "./components/OpportunityLegend";
+import { BuilderWorkspace } from "./components/workspaces/BuilderWorkspace";
+import { AgentWorkspace } from "./components/workspaces/AgentWorkspace";
+import { BuyerWorkspace } from "./components/workspaces/BuyerWorkspace";
 import { useTheme } from "./lib/theme";
-import { shortDate } from "./lib/format";
 
 type ApiStatus = "checking" | "online" | "offline";
 
@@ -35,51 +41,56 @@ const DEFAULT_LAYERS: LayerState = {
   roads: true,
 };
 
-const COVERED = "Abdoun, Dabouq, Sweifieh, Khalda, Shmeisani";
-
-function metaFromBundle(b: RecommendationBundle): Record<string, NeighborhoodMeta> {
-  const out: Record<string, NeighborhoodMeta> = {};
-  for (const [nb, r] of Object.entries(b.results)) {
-    out[nb] = {
-      name: nb,
-      centroid_lat: r.centroid?.[1] ?? 0,
-      centroid_lng: r.centroid?.[0] ?? 0,
-      listing_count: r.comps_considered ?? 0,
-      median_price_per_m2: r.base_value_jd_m2 ?? 0,
+// Builds the searchable/selectable area list from covered engine submarkets +
+// portal meta. Extended by GET /areas when that endpoint lands.
+function areasFromBundle(
+  bundle: RecommendationBundle,
+  meta: Record<string, NeighborhoodMeta>,
+): AreaEntry[] {
+  return Object.values(bundle.results).map((r) => {
+    const m = meta[r.neighborhood];
+    return {
+      name: r.neighborhood,
+      name_ar: r.name_ar,
+      covered: true,
+      context: false,
+      listing_count: m?.listing_count ?? r.comps_considered,
+      sale_listing_count: (m as { sale_listing_count?: number })?.sale_listing_count,
+      median_price_per_m2: m?.median_price_per_m2 ?? r.base_value_jd_m2,
+      centroid_lat: r.centroid?.[1],
+      centroid_lng: r.centroid?.[0],
     };
-  }
-  return out;
+  });
 }
 
 export default function App() {
+  const { role, setRole, clearRole } = useRole();
+  const { theme, toggle: toggleTheme } = useTheme();
+
   const [geo, setGeo] = useState<GeoLayers | null>(null);
   const [bundle, setBundle] = useState<RecommendationBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [layers, setLayers] = useState<LayerState>(DEFAULT_LAYERS);
 
   const [apiStatus, setApiStatusState] = useState<ApiStatus>("checking");
-  const [meta, setMeta] = useState<Record<string, NeighborhoodMeta>>({});
-  const [subject, setSubject] = useState<SubjectInput | null>(null);
+  const [areas, setAreas] = useState<AreaEntry[]>([]);
+  const [opportunity, setOpportunity] = useState<OpportunityScore[]>([]);
+  const [selectedArea, setSelectedArea] = useState<AreaEntry | null>(null);
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [computing, setComputing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [showHint, setShowHint] = useState(true);
-
-  const { theme, toggle: toggleTheme } = useTheme();
 
   const apiStatusRef = useRef<ApiStatus>("checking");
   const bundleRef = useRef<RecommendationBundle | null>(null);
-  const timer = useRef<number>();
 
   const setApiStatus = (s: ApiStatus) => {
     apiStatusRef.current = s;
     setApiStatusState(s);
   };
 
-  // The single compute path. Online → POST /recommend; offline → the precomputed
-  // engine result for the neighbourhood. Reads status/bundle from refs so it stays
-  // stable and callable from event handlers.
+  // Single compute path — unchanged engine wiring: online → POST /recommend;
+  // offline → the precomputed engine result for the submarket.
   const recompute = useCallback(async (subj: SubjectInput) => {
     const b = bundleRef.current;
     const centroid = b?.results[subj.neighborhood]?.centroid ?? null;
@@ -93,9 +104,7 @@ export default function App() {
       } else {
         const pre = b?.results[subj.neighborhood];
         setResult(
-          pre
-            ? { ...pre, source_note: "Offline — showing precomputed defaults (API unreachable)." }
-            : null,
+          pre ? { ...pre, source_note: "Offline — showing precomputed defaults (API unreachable)." } : null,
         );
       }
     } catch (e) {
@@ -114,46 +123,29 @@ export default function App() {
     }
   }, []);
 
-  const schedule = useCallback(
-    (subj: SubjectInput) => {
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(() => recompute(subj), 400);
+  const selectArea = useCallback(
+    (area: AreaEntry) => {
+      setSelectedArea(area);
+      if (area.covered) {
+        recompute({ neighborhood: area.name, area_m2: 175 });
+      } else {
+        setResult(null);
+      }
     },
     [recompute],
   );
 
-  // Field edits: update subject + debounced recompute.
-  const patch = useCallback(
-    (p: Partial<SubjectInput>) =>
-      setSubject((prev) => {
-        if (!prev) return prev;
-        const next = { ...prev, ...p };
-        schedule(next);
-        return next;
-      }),
-    [schedule],
-  );
-
-  // Neighbourhood change (form select, search, map click, market bar): immediate.
-  const selectNeighborhood = useCallback(
-    (nb: string) => {
-      setShowHint(false);
-      setSubject((prev) => {
-        const next: SubjectInput = { ...(prev ?? { area_m2: 175 }), neighborhood: nb };
-        window.clearTimeout(timer.current);
-        recompute(next);
-        return next;
-      });
+  const selectByName = useCallback(
+    (name: string) => {
+      const a = areas.find((x) => x.name === name) ?? {
+        name,
+        covered: !!bundleRef.current?.results[name],
+        context: !bundleRef.current?.results[name],
+      };
+      selectArea(a);
     },
-    [recompute],
+    [areas, selectArea],
   );
-
-  const analyze = useCallback(() => {
-    if (subject) {
-      window.clearTimeout(timer.current);
-      recompute(subject);
-    }
-  }, [recompute, subject]);
 
   useEffect(() => {
     let alive = true;
@@ -164,47 +156,35 @@ export default function App() {
         setGeo(g);
         setBundle(b);
         bundleRef.current = b;
-        setMeta(metaFromBundle(b));
 
-        const def =
-          Object.values(b.results).find((r) => r.is_live)?.neighborhood ??
-          Object.keys(b.results)[0];
-        const initSubject: SubjectInput = {
-          neighborhood: def,
-          area_m2: 175,
-          view: "unknown",
-          parking: "unknown",
-          finish_quality: "unknown",
-        };
-        setSubject(initSubject);
-
+        let meta: Record<string, NeighborhoodMeta> = {};
         const ok = await checkHealth();
         if (!alive) return;
         setApiStatus(ok ? "online" : "offline");
         if (ok) {
           try {
             const list = await fetchNeighborhoods();
-            if (alive) {
-              setMeta((m) => {
-                const next = { ...m };
-                for (const n of list) next[n.name] = n;
-                return next;
-              });
-            }
+            for (const n of list) meta[n.name] = n;
           } catch {
-            // /neighborhoods optional — coverage falls back to bundle-derived meta
+            meta = {};
           }
         }
-        if (alive) recompute(initSubject);
+
+        const fallbackAreas = areasFromBundle(b, meta);
+        const liveAreas = await fetchAreas(fallbackAreas);
+        if (!alive) return;
+        setAreas(liveAreas);
+
+        const opp = await fetchOpportunity(liveAreas, g.opportunityHeatmap);
+        if (alive) setOpportunity(opp);
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : String(e));
       }
     })();
     return () => {
       alive = false;
-      window.clearTimeout(timer.current);
     };
-  }, [recompute]);
+  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -213,13 +193,17 @@ export default function App() {
   }, [toast]);
 
   const poiCounts = useMemo(() => (geo ? poiCategoryCounts(geo.pois) : {}), [geo]);
+  const selectedOpp = useMemo(
+    () => opportunity.find((o) => o.area === selectedArea?.name) ?? null,
+    [opportunity, selectedArea],
+  );
 
+  if (!role) return <RoleSelector onPick={setRole} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
-  if (!geo || !bundle || !subject)
-    return <Splash title="Loading Amman intelligence…" detail="Reading map layers and engine output." />;
+  if (!geo || !bundle) return <Splash title="Loading Amman intelligence…" detail="Reading map layers and engine output." />;
 
-  const neighborhoods = Object.keys(bundle.results);
-  const selected = subject.neighborhood;
+  const showOpportunity = role === "builder";
+  const selected = selectedArea?.name ?? null;
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-base text-ink">
@@ -227,35 +211,32 @@ export default function App() {
         geo={geo}
         bundle={bundle}
         selected={selected}
-        onSelect={selectNeighborhood}
-        onOutside={() =>
-          setToast(`No data for this location — select a covered submarket (${COVERED}).`)
-        }
+        onSelect={selectByName}
+        onOutside={() => setToast("No structured data for this location yet — pick a covered area or search.")}
         layers={layers}
         theme={theme}
+        opportunity={opportunity}
+        showOpportunity={showOpportunity}
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">
         <LayerControl state={layers} onToggle={(k) => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
-        <MarketCharts
-          bundle={bundle}
-          poiCounts={poiCounts}
-          selected={selected}
-          onSelect={selectNeighborhood}
-        />
-        {showHint && !toast && <MapHint onDismiss={() => setShowHint(false)} />}
+        {showOpportunity && <OpportunityLegend />}
+        <MarketCharts bundle={bundle} poiCounts={poiCounts} selected={selected} onSelect={selectByName} />
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       </div>
 
       <aside
         className="scroll-thin absolute inset-y-0 left-0 z-20 flex w-[440px] max-w-[92vw] flex-col overflow-y-auto border-r border-line bg-surface/95 backdrop-blur-sm"
-        aria-label="Analysis panel"
+        aria-label="Workspace panel"
       >
         <header className="sticky top-0 z-30 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <div className="label-eyebrow">Amman Real Estate</div>
-              <div className="text-[15px] font-semibold tracking-tight text-ink">Analyst Terminal</div>
+              <div className="label-eyebrow">Jordan Real Estate Intelligence</div>
+              <div className="text-[15px] font-semibold tracking-tight text-ink">
+                {ROLE_META[role].label} workspace
+              </div>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <ApiBadge status={apiStatus} />
@@ -263,7 +244,6 @@ export default function App() {
                 type="button"
                 onClick={() => setHelpOpen(true)}
                 aria-label="How to use this tool"
-                title="How to use this tool"
                 className="grid h-7 w-7 place-items-center rounded-[3px] border border-line bg-panel text-[13px] font-semibold text-ink-dim transition-colors hover:border-cyan-dim hover:text-ink"
               >
                 ?
@@ -271,22 +251,17 @@ export default function App() {
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
             </div>
           </div>
+          <RoleSwitcher role={role} onPick={setRole} onClear={clearRole} />
         </header>
 
-        <SearchBox neighborhoods={neighborhoods} meta={meta} onPick={selectNeighborhood} />
-        <SubjectForm
-          subject={subject}
-          neighborhoods={neighborhoods}
-          onPatch={patch}
-          onNeighborhood={selectNeighborhood}
-          onAnalyze={analyze}
-          computing={computing}
-        />
+        <AreaSearch areas={areas} onPick={selectArea} />
 
-        {result ? (
-          <Analysis r={result} computing={computing} />
-        ) : (
-          <EmptyState />
+        {role === "builder" && (
+          <BuilderWorkspace area={selectedArea} result={result} opportunity={selectedOpp} computing={computing} />
+        )}
+        {role === "agent" && <AgentWorkspace area={selectedArea} result={result} computing={computing} />}
+        {role === "buyer" && (
+          <BuyerWorkspace area={selectedArea} result={result} opportunity={selectedOpp} computing={computing} />
         )}
 
         <footer className="mt-auto border-t border-line px-4 py-3 text-2xs leading-relaxed text-ink-mute">
@@ -299,62 +274,34 @@ export default function App() {
   );
 }
 
-// First-load nudge, positioned over the visible map area (right of the 440px
-// panel). Dismisses itself once the user picks a submarket.
-function MapHint({ onDismiss }: { onDismiss: () => void }) {
+function RoleSwitcher({ role, onPick, onClear }: { role: Role; onPick: (r: Role) => void; onClear: () => void }) {
+  const roles: Role[] = ["builder", "agent", "buyer"];
   return (
-    <div className="pointer-events-auto absolute top-4 left-[calc(50%+220px)] z-20 hidden -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-panel/95 px-3 py-1.5 shadow-2xl backdrop-blur-sm lg:flex">
-      <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-accent" aria-hidden />
-      <span className="text-2xs text-ink-dim">Click a submarket or use the form to begin</span>
+    <div className="mt-2.5 flex items-center gap-1" role="tablist" aria-label="Workspace role">
+      {roles.map((r) => (
+        <button
+          key={r}
+          type="button"
+          role="tab"
+          aria-selected={r === role}
+          onClick={() => onPick(r)}
+          className={`rounded-[3px] border px-2.5 py-1 text-2xs font-medium transition-colors ${
+            r === role
+              ? "border-accent/60 bg-accent/[0.12] text-accent"
+              : "border-line bg-panel text-ink-mute hover:text-ink"
+          }`}
+        >
+          {ROLE_META[r].label}
+        </button>
+      ))}
       <button
         type="button"
-        onClick={onDismiss}
-        aria-label="Dismiss hint"
-        className="ml-1 text-ink-mute transition-colors hover:text-ink"
+        onClick={onClear}
+        aria-label="Change role from the start screen"
+        className="ml-auto text-2xs text-ink-faint transition-colors hover:text-ink-dim"
       >
-        ✕
+        reset
       </button>
-    </div>
-  );
-}
-
-function Analysis({ r, computing }: { r: RecommendationResult; computing: boolean }) {
-  const future = r.evidence_objects.filter((e) => e.category === "future_signal");
-  return (
-    <div className={`pb-2 transition-opacity ${computing ? "opacity-50" : "opacity-100"}`}>
-      <div className="border-b border-line-soft px-4 py-3">
-        <div className="flex items-center gap-2">
-          <h2 className="truncate text-[18px] font-semibold text-ink">{r.neighborhood}</h2>
-          {r.name_ar && <span className="text-[15px] text-ink-mute">{r.name_ar}</span>}
-        </div>
-        <div className="mt-0.5 text-2xs text-ink-mute">
-          {r.tier ? `${r.tier} · ` : ""}
-          {r.property_type}
-          {r.as_of ? ` · as of ${shortDate(r.as_of)}` : ""}
-        </div>
-        {r.source_note && (
-          <p className="mt-1.5 text-2xs italic leading-relaxed text-ink-faint">{r.source_note}</p>
-        )}
-      </div>
-
-      <SectionDivider label="Current state — today's justified range" />
-      <PriceBands r={r} />
-      <AdjustmentWaterfall r={r} />
-
-      <SectionDivider label="Future signals — appreciation narrative" tone="future" />
-      {future.length > 0 ? (
-        <EvidenceSection
-          title="Future Signals"
-          eyebrow="positioning, not applied to today's band"
-          tone="future"
-          items={future}
-        />
-      ) : (
-        <AwaitingData note="No infrastructure, policy, or news signals collected for this submarket yet — the Future Signals pipeline is pending (v1). The premium tier rests on the current-state comparison band." />
-      )}
-
-      <Comparables items={r.comparables} />
-      <RiskAndNarrative risks={r.risk_factors} narrative={r.narrative} />
     </div>
   );
 }
@@ -379,46 +326,10 @@ function ApiBadge({ status }: { status: ApiStatus }) {
   );
 }
 
-function SectionDivider({ label, tone }: { label: string; tone?: "current" | "future" }) {
-  return (
-    <div className="flex items-center gap-2 px-4 pt-5">
-      <span
-        className={`inline-block h-3 w-[3px] rounded-full ${tone === "future" ? "bg-cyan" : "bg-accent"}`}
-      />
-      <span className="label-eyebrow">{label}</span>
-    </div>
-  );
-}
-
-function AwaitingData({ note }: { note: string }) {
-  return (
-    <div className="px-4 pt-2">
-      <div className="card border-dashed p-3">
-        <div className="text-2xs font-medium uppercase tracking-wide text-ink-mute">Awaiting data</div>
-        <p className="mt-1 text-2xs leading-relaxed text-ink-dim">{note}</p>
-      </div>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-      <div className="text-[13px] font-medium text-ink-dim">Enter a subject property</div>
-      <p className="mt-1 max-w-[240px] text-2xs leading-relaxed text-ink-mute">
-        Pick a submarket and size above, or click a neighbourhood on the map, to compute an
-        evidence-backed launch price.
-      </p>
-    </div>
-  );
-}
-
 function Splash({ title, detail, tone }: { title: string; detail: string; tone?: "error" }) {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-base px-6 text-center">
-      <div className={`text-[14px] font-semibold ${tone === "error" ? "text-neg" : "text-ink"}`}>
-        {title}
-      </div>
+      <div className={`text-[14px] font-semibold ${tone === "error" ? "text-neg" : "text-ink"}`}>{title}</div>
       <p className="mt-1.5 max-w-[380px] text-2xs leading-relaxed text-ink-mute">{detail}</p>
     </div>
   );

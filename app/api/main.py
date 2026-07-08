@@ -7,23 +7,61 @@ stays in app.engine — this module only validates input and serialises output.
 
 from __future__ import annotations
 
+import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from statistics import median
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from app.engine import recommend
+from app.engine import builder, opportunity, recommend, scenario
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
 from app.engine.data import DataBundle, load_bundle_from_sqlite
 from app.engine.models import Subject
+from app.engine.opportunity import OPPORTUNITY_WEIGHTS
+from app.engine.stats import median as _median_stat
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_re.sqlite"))
+
+# The engine's human text uses typographic/math symbols (JD/m², →, ×, ≤, ≈, en/em-dash). Those are
+# valid UTF-8 on the wire, but a consumer that decodes the body as latin-1 (no charset was declared)
+# turns them into mojibake (Â², Ã—, â†'). Normalising to plain ASCII at the serialisation boundary
+# makes every response byte < 128 — immune to any transport/decoder — and reads cleaner for an API.
+# Applied once here (default_response_class) so it covers every endpoint, incl. the recommend
+# narrative/evidence, without touching the engine's text.
+_ASCII_MAP = str.maketrans({
+    "²": "2", "³": "3", "×": "x", "÷": "/", "−": "-", "–": "-", "—": "-",
+    "→": "->", "←": "<-", "↑": "^", "↓": "v", "≤": "<=", "≥": ">=", "≈": "~",
+    "±": "+/-", "°": " deg", "Σ": "Sigma", "λ": "lambda", "§": "sec",
+    "’": "'", "‘": "'", "“": '"', "”": '"', "…": "...", " ": " ",
+})
+
+
+def _asciify(obj: Any) -> Any:
+    if isinstance(obj, str):
+        return obj.translate(_ASCII_MAP)
+    if isinstance(obj, dict):
+        return {k: _asciify(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_asciify(v) for v in obj]
+    return obj
+
+
+class AsciiJSONResponse(JSONResponse):
+    """JSON with a pure-ASCII body: known symbols mapped to readable ASCII, anything else escaped
+    (`ensure_ascii=True`) so no raw byte > 127 ever reaches a mis-configured decoder."""
+
+    media_type = "application/json; charset=utf-8"
+
+    def render(self, content: Any) -> bytes:
+        return json.dumps(_asciify(content), ensure_ascii=True, allow_nan=False,
+                          separators=(",", ":")).encode("utf-8")
 
 _ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:4173",
                     "http://127.0.0.1:5173", "http://127.0.0.1:4173"]
@@ -94,7 +132,8 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Jordan Real Estate Intelligence API", version="1.0", lifespan=lifespan)
+app = FastAPI(title="Jordan Real Estate Intelligence API", version="1.0", lifespan=lifespan,
+              default_response_class=AsciiJSONResponse)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
@@ -119,12 +158,16 @@ class RecommendRequest(BaseModel):
     finish_quality: Optional[Literal["basic", "standard", "high",
                                      "luxury", "unknown"]] = None
     elevator: Optional[Literal["y", "n", "u", "unknown"]] = None
+    apply_height_view_premium: bool = False
+
+
+# Fields on RecommendRequest that are NOT engine Subject attributes.
+_NON_SUBJECT_FIELDS = {"neighborhood", "property_type", "area_m2", "bathrooms",
+                       "total_floors", "apply_height_view_premium", "overrides"}
 
 
 def _subject_from(req: RecommendRequest, neighborhood: str) -> Subject:
-    supplied = req.model_dump(exclude_none=True,
-                              exclude={"neighborhood", "property_type", "area_m2",
-                                       "bathrooms", "total_floors"})
+    supplied = req.model_dump(exclude_none=True, exclude=_NON_SUBJECT_FIELDS)
     return Subject(neighborhood=neighborhood, property_type=req.property_type,
                    area_m2=req.area_m2, **supplied)
 
@@ -150,6 +193,8 @@ def post_recommend(req: RecommendRequest):
             status_code=422,
             detail=f"No data for {req.neighborhood}; covered: {cov.names()}")
     result = recommend(_subject_from(req, canonical), app.state.bundle)
+    if req.apply_height_view_premium:
+        result = builder.apply_height_view_premium(result, req.floor_level, req.total_floors)
     return result.to_dict()
 
 
@@ -187,3 +232,132 @@ def _comparable_view(l) -> dict:
         "listing_date": l.listing_date.isoformat() if l.listing_date else None,
         "source": {"name": l.source_name, "url": l.listing_url},
     }
+
+
+# ---------------------------------------------------------------------------
+# Intelligence-platform endpoints (decision layer over the pricing engine)
+# ---------------------------------------------------------------------------
+
+
+class ScenarioOverrides(BaseModel):
+    """What-if levers. Engine-native ones re-run the Subject; the rest transform the evidence
+    (cost floor, future-signal timeline, evidence age) in documented ways — never a manual price."""
+
+    target_floor: Optional[int] = Field(None, ge=0)
+    floors: Optional[int] = Field(None, ge=1)
+    finish_quality: Optional[Literal["basic", "standard", "high", "luxury", "unknown"]] = None
+    parking: Optional[Literal["none", "open", "covered", "unknown"]] = None
+    view: Optional[Literal["none", "sea", "city", "garden",
+                           "mountain", "panoramic", "unknown"]] = None
+    bedrooms: Optional[int] = Field(None, ge=0)
+    building_age_years: Optional[int] = Field(None, ge=0)
+    construction_cost_delta_pct: Optional[float] = Field(None, ge=-90, le=300)
+    metro_delay_years: Optional[int] = Field(None, ge=0, le=30)
+    launch_delay_months: Optional[int] = Field(None, ge=0, le=120)
+    apply_height_view_premium: bool = False
+
+
+class ScenarioRequest(RecommendRequest):
+    overrides: ScenarioOverrides = Field(default_factory=ScenarioOverrides)
+
+
+@app.post("/scenario")
+def post_scenario(req: ScenarioRequest):
+    cov: Coverage = app.state.coverage
+    canonical = cov.resolve(req.neighborhood)
+    if canonical is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"No data for {req.neighborhood}; covered: {cov.names()}")
+    base_subject = _subject_from(req, canonical)
+    overrides = req.overrides.model_dump(exclude_none=True)
+    return scenario.simulate(base_subject, app.state.bundle, overrides,
+                             as_of=app.state.bundle.as_of, base_total_floors=req.total_floors)
+
+
+class ResidualRequest(BaseModel):
+    neighborhood: str = Field(..., min_length=1)
+    buildable_area_m2: float = Field(..., gt=0)
+    property_type: Literal["apartment", "villa", "land", "commercial"] = "apartment"
+    finish_quality: Optional[Literal["basic", "standard", "high",
+                                     "luxury", "unknown"]] = None
+    gdv_per_m2: Optional[float] = Field(None, gt=0)
+    construction_cost_per_m2: Optional[float] = Field(None, gt=0)
+    finance_pct: float = Field(builder.FINANCE_PCT_DEFAULT, ge=0, le=1)
+    professional_fees_pct: float = Field(builder.PROFESSIONAL_FEES_PCT_DEFAULT, ge=0, le=1)
+    developer_profit_pct: float = Field(builder.DEVELOPER_PROFIT_PCT_DEFAULT, ge=0, le=1)
+
+
+@app.post("/residual-land-value")
+def post_residual_land_value(req: ResidualRequest):
+    cov: Coverage = app.state.coverage
+    bundle: DataBundle = app.state.bundle
+    canonical = cov.resolve(req.neighborhood)
+    if canonical is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"No data for {req.neighborhood}; covered: {cov.names()}")
+
+    gdv = req.gdv_per_m2
+    gdv_source = None
+    gdv_defaulted = gdv is None
+    if gdv_defaulted:
+        subj = Subject(neighborhood=canonical, property_type=req.property_type, area_m2=175,
+                       finish_quality=req.finish_quality or "unknown")
+        rec = recommend(subj, bundle)
+        if rec.recommended_price_jd_m2 <= 0:
+            raise HTTPException(
+                status_code=422,
+                detail=("gdv_per_m2 not supplied and the engine cannot price "
+                        f"{canonical} — provide gdv_per_m2 explicitly"))
+        gdv = rec.recommended_price_jd_m2
+        gdv_source = {"name": "Decision Engine recommended price/m²",
+                      "url": "internal://engine/recommend", "capture_date": rec.computed_date}
+
+    cost = req.construction_cost_per_m2
+    cost_source = None
+    cost_defaulted = cost is None
+    if cost_defaulted:
+        mids = [c.midpoint for c in bundle.cost_benchmarks if c.midpoint]
+        default_cost = _median_stat(mids) if mids else None
+        if not default_cost:
+            raise HTTPException(
+                status_code=422,
+                detail=("construction_cost_per_m2 not supplied and no cost benchmark is "
+                        "available — provide construction_cost_per_m2 explicitly"))
+        cost = default_cost
+        cost_source = {"name": "cost_benchmarks (median of available midpoints)",
+                       "url": "internal://cost_benchmarks", "capture_date": bundle.as_of.isoformat()}
+
+    result = builder.residual_land_value(
+        buildable_area_m2=req.buildable_area_m2, gdv_per_m2=gdv, construction_cost_per_m2=cost,
+        finance_pct=req.finance_pct, professional_fees_pct=req.professional_fees_pct,
+        developer_profit_pct=req.developer_profit_pct, gdv_source=gdv_source,
+        cost_source=cost_source, gdv_defaulted=gdv_defaulted, cost_defaulted=cost_defaulted)
+    return {"neighborhood": canonical, **result}
+
+
+@app.get("/opportunity")
+def get_opportunity():
+    cov: Coverage = app.state.coverage
+    bundle: DataBundle = app.state.bundle
+    areas = cov.names()
+    scores = opportunity.opportunity_scores(bundle, areas, bundle.as_of, cov.centroids)
+    return {
+        "version": "v1-heuristic",
+        "note": ("Composite = documented, tunable weights over five derived components. "
+                 "A null component is dropped and its weight redistributed. Scores are "
+                 "relative to the covered set (min-max), for a map heatmap."),
+        "weights": OPPORTUNITY_WEIGHTS,
+        "as_of": bundle.as_of.isoformat(),
+        "areas": scores,
+    }
+
+
+@app.get("/areas")
+def get_areas():
+    cov: Coverage = app.state.coverage
+    bundle: DataBundle = app.state.bundle
+    catalog = opportunity.area_catalog(bundle, set(cov.names()), cov.centroids)
+    return {"covered_count": sum(1 for a in catalog if a["covered"]),
+            "total_count": len(catalog), "areas": catalog}

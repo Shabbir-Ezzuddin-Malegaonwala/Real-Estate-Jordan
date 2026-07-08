@@ -41,11 +41,14 @@ def main() -> int:
         "Engine suites (pytest)",
         [py, "-m", "pytest", "-q",
          os.path.join("tests", "test_engine_edge_cases.py"),
+         os.path.join("tests", "test_engine_intel.py"),
          os.path.join("app", "engine", "test_pipeline.py")])
 
     results["api edge"] = _run(
         "API suite (pytest — skips if API down)",
-        [py, "-m", "pytest", "-q", os.path.join("tests", "test_api_edge_cases.py")])
+        [py, "-m", "pytest", "-q",
+         os.path.join("tests", "test_api_edge_cases.py"),
+         os.path.join("tests", "test_intel_endpoints.py")])
 
     results["e2e frontend"] = _run(
         "E2E frontend (playwright — skips if web/browser absent)",

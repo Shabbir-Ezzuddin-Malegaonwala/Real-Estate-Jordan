@@ -103,6 +103,12 @@ CONFIDENCE_WEIGHTS = {
 CONFIDENCE_H_THRESHOLD = 0.70
 CONFIDENCE_M_THRESHOLD = 0.45
 
+# Future-signal saturation for the decomposed-confidence "future_signals" component: the
+# development score (Σ proximity×timeline×source_trust, evidence.future_signal_evidence) at or
+# above which the future story counts as fully evidenced (maps to 100/100). A reliability-scale
+# knob, NOT a price weight — the score itself is derived from collected evidence_items at runtime.
+FUTURE_SIGNAL_SATURATION = 3.0
+
 # Confidence-interval half-width floor/ceiling as a fraction of the point estimate.
 # The actual width is data-driven (weighted comp dispersion); these only bound it so a
 # freak-tight or freak-wide sample never produces an absurd range.

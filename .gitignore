@@ -58,3 +58,7 @@ data/raw/friend/listings_abujudom.csv
 data/raw/dls_vpn/*.pdf
 data/raw/dls_vpn/pages/
 data/raw/dls_vpn/_dl*.log
+
+# temp/backup deliverable artifacts
+deliverables/*.NEW.xlsx
+deliverables/*.bak

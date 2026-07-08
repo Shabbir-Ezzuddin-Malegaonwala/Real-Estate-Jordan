@@ -55,7 +55,8 @@ class HappyPath(unittest.TestCase):
         d = self.result.to_dict()
         self.assertTrue(_REQUIRED_KEYS.issubset(d.keys()),
                         f"missing: {_REQUIRED_KEYS - set(d.keys())}")
-        self.assertEqual(set(d["confidence"].keys()), {"label", "numeric", "interval_jd_m2"})
+        # `components` is an additive extension (decomposed confidence); require the core keys.
+        self.assertTrue({"label", "numeric", "interval_jd_m2"}.issubset(d["confidence"].keys()))
 
     def test_risk_factors_are_structured_objects(self):
         for rk in self.result.risk_factors:

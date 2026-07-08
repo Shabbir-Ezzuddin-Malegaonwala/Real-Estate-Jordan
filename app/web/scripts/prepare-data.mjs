@@ -16,7 +16,16 @@ const publicData = resolve(webRoot, "public", "data");
 
 mkdirSync(publicData, { recursive: true });
 
-const geo = ["neighborhoods.geojson", "poi.geojson", "roads.geojson", "zoning.geojson"];
+const geo = [
+  "neighborhoods.geojson",
+  "poi.geojson",
+  "roads.geojson",
+  "zoning.geojson",
+  // Gap-free Voronoi surface (290 cells) + baked opportunity heatmap. Optional —
+  // the app falls back to the 5 approximate circles if these are absent.
+  "neighborhoods_voronoi.geojson",
+  "opportunity_heatmap.geojson",
+];
 let copied = 0;
 for (const f of geo) {
   const src = resolve(processed, f);

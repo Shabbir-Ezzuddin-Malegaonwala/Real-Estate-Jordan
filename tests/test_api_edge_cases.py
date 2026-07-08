@@ -201,7 +201,8 @@ class ResponseSchema(unittest.TestCase):
 
     def test_confidence_is_nested_and_bounded(self):
         c = self.body["confidence"]
-        self.assertEqual(set(c.keys()), {"label", "numeric", "interval_jd_m2"})
+        # `components` (decomposed confidence) is an additive extension of the contract.
+        self.assertTrue({"label", "numeric", "interval_jd_m2"}.issubset(c.keys()))
         self.assertIn(c["label"], ("H", "M", "L"))
         self.assertTrue(0.0 <= c["numeric"] <= 1.0)
         lo, hi = c["interval_jd_m2"]

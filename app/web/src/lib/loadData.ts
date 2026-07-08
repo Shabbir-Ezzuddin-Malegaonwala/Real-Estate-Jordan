@@ -26,16 +26,31 @@ export interface GeoLayers {
   pois: FeatureCollection<Point, PoiProps>;
   roads: FeatureCollection<LineString, RoadProps>;
   zoning: FeatureCollection<Polygon, ZoningProps>;
+  // Gap-free Voronoi tessellation of every area we hold (from the geo agent).
+  // Optional: when absent, the opportunity choropleth falls back to the
+  // approximate neighbourhood polygons so the map still colours by opportunity.
+  voronoi?: FeatureCollection<Polygon>;
+  // Same 290 cells + baked opportunity score/components/raw-inputs per cell.
+  opportunityHeatmap?: FeatureCollection<Polygon>;
 }
 
 export async function loadGeo(): Promise<GeoLayers> {
-  const [neighborhoods, pois, roads, zoning] = await Promise.all([
+  const [neighborhoods, pois, roads, zoning, voronoi, opportunityHeatmap] = await Promise.all([
     getJson<FeatureCollection<Polygon, NeighborhoodProps>>("/data/neighborhoods.geojson"),
     getJson<FeatureCollection<Point, PoiProps>>("/data/poi.geojson"),
     getJson<FeatureCollection<LineString, RoadProps>>("/data/roads.geojson"),
     getJson<FeatureCollection<Polygon, ZoningProps>>("/data/zoning.geojson"),
+    getJson<FeatureCollection<Polygon>>("/data/neighborhoods_voronoi.geojson").catch(() => null),
+    getJson<FeatureCollection<Polygon>>("/data/opportunity_heatmap.geojson").catch(() => null),
   ]);
-  return { neighborhoods, pois, roads, zoning };
+  return {
+    neighborhoods,
+    pois,
+    roads,
+    zoning,
+    voronoi: voronoi ?? undefined,
+    opportunityHeatmap: opportunityHeatmap ?? undefined,
+  };
 }
 
 function isBundle(x: unknown): x is RecommendationBundle {

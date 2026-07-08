@@ -1,7 +1,6 @@
 import type { StyleSpecification } from "maplibre-gl";
 import type { Theme } from "./theme";
 
-const GLYPHS = "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf";
 const ATTRIB =
   '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>';
 
@@ -12,35 +11,35 @@ const cartoTiles = (variant: "dark_all" | "light_all") => [
   `https://d.basemaps.cartocdn.com/${variant}/{z}/{x}/{y}@2x.png`,
 ];
 
-// Free, key-less raster basemaps (CARTO, OSM data). If tile fetching is blocked
-// the vector layers still render over the solid background color, so the
-// analytical layers remain fully functional in either theme.
+// Background-only base style — NO external required resources, so MapLibre's
+// "load" fires immediately even when the tile/glyph CDN is unreachable. The
+// CARTO raster basemap is attached afterwards as a best-effort bottom layer
+// (see addBasemap); if its tiles are blocked the analytical vector layers still
+// render over the background colour and the map stays fully functional.
 export const CARTO_DARK: StyleSpecification = {
   version: 8,
-  glyphs: GLYPHS,
-  sources: {
-    carto: { type: "raster", tiles: cartoTiles("dark_all"), tileSize: 256, attribution: ATTRIB },
-  },
-  layers: [
-    { id: "bg", type: "background", paint: { "background-color": "#0a0d12" } },
-    { id: "carto", type: "raster", source: "carto", paint: { "raster-opacity": 0.82 } },
-  ],
+  sources: {},
+  layers: [{ id: "bg", type: "background", paint: { "background-color": "#0a0d12" } }],
 };
 
 export const CARTO_LIGHT: StyleSpecification = {
   version: 8,
-  glyphs: GLYPHS,
-  sources: {
-    carto: { type: "raster", tiles: cartoTiles("light_all"), tileSize: 256, attribution: ATTRIB },
-  },
-  layers: [
-    { id: "bg", type: "background", paint: { "background-color": "#eef1f5" } },
-    { id: "carto", type: "raster", source: "carto", paint: { "raster-opacity": 1 } },
-  ],
+  sources: {},
+  layers: [{ id: "bg", type: "background", paint: { "background-color": "#eef1f5" } }],
 };
 
 export const themeStyle = (theme: Theme): StyleSpecification =>
   theme === "light" ? CARTO_LIGHT : CARTO_DARK;
+
+// Attaches the raster basemap above the background, below all vector layers.
+// Best-effort: tile failures are silent and never block the rest of the map.
+export function addBasemap(map: import("maplibre-gl").Map, theme: Theme): void {
+  if (map.getSource("carto")) return;
+  const variant = theme === "light" ? "light_all" : "dark_all";
+  map.addSource("carto", { type: "raster", tiles: cartoTiles(variant), tileSize: 256, attribution: ATTRIB });
+  // No beforeId → sits directly above "bg" and below every vector layer.
+  map.addLayer({ id: "carto", type: "raster", source: "carto", paint: { "raster-opacity": theme === "light" ? 1 : 0.82 } });
+}
 
 // Amman premium submarkets — view framing.
 export const AMMAN_CENTER: [number, number] = [35.855, 31.97];
@@ -84,6 +83,17 @@ const ZONING_LIGHT: Record<string, string> = {
   cemetery: "#eaeaf0",
   construction: "#f1ebe0",
 };
+
+// Opportunity choropleth ramp — muted so it reads as a data surface, not a
+// heat poster. Low → amber-red, mid → amber, high → green (higher = build here).
+export function opportunityColor(score: number): string {
+  if (score >= 78) return "#3f8f63";
+  if (score >= 66) return "#5fa47f";
+  if (score >= 52) return "#c9a75f";
+  if (score >= 40) return "#e6a94b";
+  if (score >= 25) return "#c98a5f";
+  return "#b06a5f";
+}
 
 export interface MapPalette {
   roadMotorway: string;

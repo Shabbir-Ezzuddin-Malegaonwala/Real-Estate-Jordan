@@ -145,6 +145,10 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
     premium = max(premium, recommended)
 
     future_objs, dev_score = evidence.future_signal_evidence(bundle.evidence_items, subject)
+    gov = {"index_present": bundle.price_index.has(),
+           "index_current": index_is_current(bundle.price_index, as_of),
+           "has_cost_floor": cost_floor is not None}
+    conf_components = confidence.decompose(conf, comps, adjusted_cv, as_of, dev_score, gov)
     evidence_objs = _collect_evidence(subject, bundle, comps, premiums, bench, cost_floor,
                                       income_ceiling, req_yield, income_method, income_meta,
                                       future_objs)
@@ -176,6 +180,7 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
                        "selection_notes": selection_notes,
                        "derived_premiums": premiums.as_records()},
         computed_date=as_of.isoformat(),
+        confidence_components=conf_components,
     )
 
 
