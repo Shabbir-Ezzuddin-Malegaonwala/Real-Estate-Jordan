@@ -16,7 +16,8 @@ from . import config, confidence, evidence
 from .adjustment import index_is_current
 from .data import DataBundle
 from .models import ComparableRecord, Listing, RecommendationResult, Subject
-from .stats import coeff_of_variation, median, robust_keep, weighted_mean, weighted_std
+from .stats import (coeff_of_variation, median, robust_keep, to_monthly_rent,
+                    weighted_mean, weighted_std)
 
 
 def _clean(values: list[float], floor: float) -> list[float]:
@@ -76,18 +77,28 @@ def _income_ceiling(bundle: DataBundle, subject: Subject):
     n = subject.neighborhood.strip().lower()
     t = subject.property_type
     rf, sf = config.MIN_PLAUSIBLE_RENT_PPM2, config.MIN_PLAUSIBLE_SALE_PPM2
-    local_rent = _clean([l.price_per_m2 for l in bundle.rentals()
-                         if l.neighborhood.strip().lower() == n and l.property_type == t], rf)
-    all_rent = _clean([l.price_per_m2 for l in bundle.rentals() if l.property_type == t], rf)
+    cap = config.RENT_MONTHLY_MAX_PPM2
+
+    def monthly_rents(listings: list[Listing]) -> list[float]:
+        vals = [to_monthly_rent(l.price_per_m2, cap) for l in listings]
+        return _clean([v for v in vals if v is not None], rf)
+
+    local_rent = monthly_rents([l for l in bundle.rentals()
+                                if l.neighborhood.strip().lower() == n and l.property_type == t])
+    all_rent = monthly_rents([l for l in bundle.rentals() if l.property_type == t])
     all_sale = _clean([l.price_per_m2 for l in bundle.sales() if l.property_type == t], sf)
+    local_sale = _clean([l.price_per_m2 for l in bundle.sales()
+                         if l.neighborhood.strip().lower() == n and l.property_type == t], sf)
     if not local_rent:
         return None, None, None, None
 
     annual_local = median(local_rent) * 12
+    observed = (annual_local / median(local_sale)) if local_sale and median(local_sale) else None
     if all_rent and all_sale and median(all_sale):
         req_yield = (median(all_rent) * 12) / median(all_sale)
+        obs = f"; this area's observed yield {observed*100:.1f}%" if observed else ""
         method = (f"income approach: annual rent ÷ derived market yield "
-                  f"({req_yield*100:.1f}%, citywide rents vs sales)")
+                  f"({req_yield*100:.1f}%, citywide rents vs sales{obs})")
         conf = "Medium"
         sources = [{"name": "listings (rentals)", "url": "internal://listings",
                     "capture_date": bundle.as_of.isoformat()}]

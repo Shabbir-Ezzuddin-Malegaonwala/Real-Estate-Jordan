@@ -1,4 +1,5 @@
 import type { AreaEntry, OpportunityScore, RecommendationResult } from "../../types";
+import type { AreaAmenities } from "../../lib/poi";
 import type { StepKey } from "../../lib/journey";
 import { shortDate } from "../../lib/format";
 import { OpportunityMeter } from "../OpportunityMeter";
@@ -11,6 +12,7 @@ import { ResidualLandValue } from "../ResidualLandValue";
 import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
 import { Copilot } from "../Copilot";
+import { NearbyAmenities } from "../NearbyAmenities";
 import { WorkspaceHeader, NoStructuredData } from "../workspaces/shared";
 import { FeasibilityStep } from "./FeasibilityStep";
 import { MarketStep } from "./MarketStep";
@@ -22,6 +24,7 @@ export function StepContent({
   area,
   result,
   opportunity,
+  amenities,
   computing,
   generatedAt,
 }: {
@@ -29,6 +32,7 @@ export function StepContent({
   area: AreaEntry | null;
   result: RecommendationResult | null;
   opportunity: OpportunityScore | null;
+  amenities: AreaAmenities | null;
   computing: boolean;
   generatedAt: string;
 }) {
@@ -57,12 +61,18 @@ export function StepContent({
               {opportunity ? <OpportunityMeter opp={opportunity} /> : <Awaiting note="No opportunity score for this area yet." />}
             </section>
             <DecisionReadiness opp={opportunity} result={result} />
+            <NearbyAmenities amenities={amenities} />
           </>
         );
       case "feasibility":
         return <FeasibilityStep area={area} />;
       case "market":
-        return <MarketStep area={area} result={result} opportunity={opportunity} />;
+        return (
+          <>
+            <MarketStep area={area} result={result} opportunity={opportunity} />
+            <NearbyAmenities amenities={amenities} />
+          </>
+        );
       case "economics":
         if (!area) return <StepPrompt label="Economics" hint="Pick an area to compute the max defensible land price." />;
         return covered && result ? (

@@ -5,7 +5,7 @@ import type {
   RecommendationBundle,
   RecommendationResult,
 } from "./types";
-import { loadGeo, loadRecommendations, poiCategoryCounts, type GeoLayers } from "./lib/loadData";
+import { loadGeo, loadRecommendations, poiCategoryCounts, loadAmenities, type GeoLayers } from "./lib/loadData";
 import {
   checkHealth,
   fetchNeighborhoods,
@@ -17,7 +17,8 @@ import { fetchAreas, fetchOpportunity } from "./lib/intel";
 import { adaptApiRecommendation } from "./lib/adaptEngine";
 import { useEntered, type EntryMode, type StepKey } from "./lib/journey";
 import { MapView } from "./components/MapView";
-import { LayerControl, type LayerState } from "./components/LayerControl";
+import { MapLayers, type LayerState } from "./components/MapLayers";
+import { DEFAULT_POI_ON, type AreaAmenities } from "./lib/poi";
 import { MarketCharts } from "./components/MarketCharts";
 import { AreaSearch } from "./components/AreaSearch";
 import { Toast } from "./components/Toast";
@@ -33,7 +34,7 @@ type ApiStatus = "checking" | "online" | "offline";
 
 const DEFAULT_LAYERS: LayerState = {
   zoning: false,
-  pois: true,
+  pois: false, // superseded by the 9 amenity category layers (MapLayers)
   comparables: true,
   future: true,
   roads: true,
@@ -71,6 +72,11 @@ export default function App() {
   const [apiStatus, setApiStatusState] = useState<ApiStatus>("checking");
   const [areas, setAreas] = useState<AreaEntry[]>([]);
   const [opportunity, setOpportunity] = useState<OpportunityScore[]>([]);
+  const [amenities, setAmenities] = useState<Record<string, AreaAmenities>>({});
+  const [poiState, setPoiState] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(DEFAULT_POI_ON.map((k) => [k, true])),
+  );
+  const [layerLoading, setLayerLoading] = useState<Record<string, boolean>>({});
   const [selectedArea, setSelectedArea] = useState<AreaEntry | null>(null);
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [computing, setComputing] = useState(false);
@@ -143,14 +149,21 @@ export default function App() {
     [enter],
   );
 
+  const onTogglePoi = useCallback((k: string) => setPoiState((s) => ({ ...s, [k]: !s[k] })), []);
+  const onLayerLoading = useCallback(
+    (k: string, loading: boolean) => setLayerLoading((s) => ({ ...s, [k]: loading })),
+    [],
+  );
+
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const [g, b] = await Promise.all([loadGeo(), loadRecommendations()]);
+        const [g, b, am] = await Promise.all([loadGeo(), loadRecommendations(), loadAmenities()]);
         if (!alive) return;
         setGeo(g);
         setBundle(b);
+        setAmenities(am);
         bundleRef.current = b;
 
         let meta: Record<string, NeighborhoodMeta> = {};
@@ -191,6 +204,10 @@ export default function App() {
     () => opportunity.find((o) => o.area === selectedArea?.name) ?? null,
     [opportunity, selectedArea],
   );
+  const selectedAmenities = useMemo(
+    () => (selectedArea ? amenities[selectedArea.name] ?? null : null),
+    [amenities, selectedArea],
+  );
 
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
@@ -210,10 +227,18 @@ export default function App() {
         theme={theme}
         opportunity={opportunity}
         showOpportunity
+        poiState={poiState}
+        onLayerLoading={onLayerLoading}
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">
-        <LayerControl state={layers} onToggle={(k) => setLayers((s) => ({ ...s, [k]: !s[k] }))} />
+        <MapLayers
+          state={layers}
+          onToggle={(k) => setLayers((s) => ({ ...s, [k]: !s[k] }))}
+          poiState={poiState}
+          onTogglePoi={onTogglePoi}
+          loading={layerLoading}
+        />
         <OpportunityLegend />
         <MarketCharts bundle={bundle} poiCounts={poiCounts} selected={selected} onSelect={selectByName} />
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
@@ -258,6 +283,7 @@ export default function App() {
           area={selectedArea}
           result={result}
           opportunity={selectedOpp}
+          amenities={selectedAmenities}
           computing={computing}
           generatedAt={bundle.generated_at}
         />

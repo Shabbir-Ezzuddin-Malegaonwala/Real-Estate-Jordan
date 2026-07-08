@@ -1,0 +1,6 @@
+indicator,geography,period,value,unit,evidence_category,language,source_name,source_url,capture_date,collected_by,confidence,notes
+USD/JOD exchange rate,Jordan,2026-07-08,0.709,JOD per USD,macro,en,open.er-api.com,https://open.er-api.com/v6/latest/USD,2026-07-08,macro-pipeline-agent,H,"live fetch (updated Wed, 08 Jul 2026); dinar is a de-facto USD peg ~0.709"
+Gold price 24K,Jordan,2026-07-05,95.3,JOD/gram,macro,en,LivePriceofGold,https://www.livepriceofgold.com/jordan-gold-price.html,2026-07-08,macro-pipeline-agent,M,"24K spot, snapshot from cited page; no free no-key gold API — refresh periodically"
+Gold price 21K,Jordan,2026-07-05,81.52,JOD/gram,macro,en,GoldPricez Jordan,https://goldpricez.com/jo/21k/gram,2026-07-08,macro-pipeline-agent,M,21K is the local Jordanian retail benchmark; snapshot from cited page — refresh periodically
+CBJ policy rate,Jordan,2026-06-18,5.75,%,macro,en,Central Bank of Jordan,https://www.cbj.gov.jo/en/Pages/Maininterestrates,2026-07-08,macro-pipeline-agent,H,Main policy (OMO) rate held at 5.75% on 2026-06-18; rediscount 7.5%; drives mortgage cost
+CPI inflation (YoY),Jordan,2026-05,2.83,% YoY,macro,en,DoS Jordan,https://dosweb.dos.gov.jo/,2026-07-08,macro-pipeline-agent,H,May 2026 YoY (highest since Apr 2023); Jan-May 2026 cumulative 1.88%; rent is top driver

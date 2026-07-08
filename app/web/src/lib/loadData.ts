@@ -137,6 +137,16 @@ export async function loadRecommendations(): Promise<RecommendationBundle> {
   };
 }
 
+// Per-area amenity counts (keyed by neighborhood). Optional — the "What's nearby"
+// panel simply hides if the file is absent.
+export async function loadAmenities(): Promise<Record<string, import("./poi").AreaAmenities>> {
+  try {
+    return await getJson<Record<string, import("./poi").AreaAmenities>>("/data/area_amenities.json");
+  } catch {
+    return {};
+  }
+}
+
 export function poiCategoryCounts(
   pois: FeatureCollection<Geometry, PoiProps>,
 ): Record<string, number> {

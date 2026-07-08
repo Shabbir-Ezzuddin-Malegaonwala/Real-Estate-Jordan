@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import type { FeatureCollection, Point, Polygon, LineString } from "geojson";
 import type {
@@ -20,7 +20,11 @@ import {
 } from "../lib/mapStyle";
 import type { Theme } from "../lib/theme";
 import { jd } from "../lib/format";
-import type { LayerState } from "./LayerControl";
+import type { LayerState } from "./MapLayers";
+import { POI_CATEGORIES, GEO_OVERLAYS } from "../lib/poi";
+import { addLayerFor, setLayerVisible, raisePoiPoints, lyrId, srcId, configFor } from "../lib/mapPoiLayers";
+
+const ALL_POI_KEYS = [...POI_CATEGORIES.map((c) => c.key), ...GEO_OVERLAYS.map((o) => o.key)];
 
 interface Geo {
   neighborhoods: FeatureCollection<Polygon, NeighborhoodProps>;
@@ -78,6 +82,8 @@ export function MapView({
   theme,
   opportunity,
   showOpportunity,
+  poiState,
+  onLayerLoading,
 }: {
   geo: Geo;
   bundle: RecommendationBundle;
@@ -88,6 +94,8 @@ export function MapView({
   theme: Theme;
   opportunity: OpportunityScore[];
   showOpportunity: boolean;
+  poiState: Record<string, boolean>;
+  onLayerLoading?: (key: string, loading: boolean) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -108,7 +116,46 @@ export function MapView({
   oppRef.current = opportunity;
   const showOppRef = useRef(showOpportunity);
   showOppRef.current = showOpportunity;
+  const poiStateRef = useRef(poiState);
+  poiStateRef.current = poiState;
+  const onLayerLoadingRef = useRef(onLayerLoading);
+  onLayerLoadingRef.current = onLayerLoading;
+  // Cache fetched category/overlay geojson so a theme swap re-adds without refetch.
+  const poiDataRef = useRef<Map<string, FeatureCollection>>(new Map());
   const markersRef = useRef<HTMLElement[]>([]);
+
+  // Lazy category/overlay layers: fetch on first toggle-on (cached), then just
+  // flip visibility. Heavy layers (water, 8.4 MB) report a loading state. Reads
+  // refs so it stays stable and is safe to call from map events + effects.
+  const applyPoi = useCallback(async (map: maplibregl.Map) => {
+    const state = poiStateRef.current;
+    for (const key of ALL_POI_KEYS) {
+      if (!state[key]) {
+        setLayerVisible(map, key, false);
+        continue;
+      }
+      if (!map.getSource(srcId(key))) {
+        let data = poiDataRef.current.get(key);
+        if (!data) {
+          const cfg = configFor(key);
+          if (!cfg) continue;
+          onLayerLoadingRef.current?.(key, true);
+          try {
+            const res = await fetch(cfg.file);
+            data = (await res.json()) as FeatureCollection;
+            poiDataRef.current.set(key, data);
+          } catch {
+            onLayerLoadingRef.current?.(key, false);
+            continue;
+          }
+          onLayerLoadingRef.current?.(key, false);
+        }
+        if (!map.getSource(srcId(key))) addLayerFor(map, key, data);
+      }
+      setLayerVisible(map, key, true);
+    }
+    raisePoiPoints(map);
+  }, []);
 
   // Init once — geo is loaded before this component mounts, so it is stable.
   useEffect(() => {
@@ -140,6 +187,7 @@ export function MapView({
       applySelection(map, selectedRef.current, bundleRef.current);
       applyVisibility(map, layersRef.current, geo, pal);
       applyOpportunity(map, geo, oppRef.current, showOppRef.current);
+      void applyPoi(map);
     };
     map.on("load", initLayers);
     const fallback = window.setTimeout(() => {
@@ -151,6 +199,22 @@ export function MapView({
     // scoped handlers persist across setStyle, so they are bound once here.
     map.on("click", (e) => {
       if (!readyRef.current) return;
+      // A POI point click shows its popup and does not re-select the area beneath.
+      const poiLayers = POI_CATEGORIES.map((c) => lyrId(c.key)).filter((id) => map.getLayer(id));
+      if (poiLayers.length > 0) {
+        const poiHit = map.queryRenderedFeatures(e.point, { layers: poiLayers })[0];
+        if (poiHit) {
+          const p = poiHit.properties as Record<string, unknown>;
+          const cfg = configFor(String(p.category ?? ""));
+          const dot = cfg && "color" in cfg ? cfg.color : "#5fb2c9";
+          popup(
+            map,
+            e.lngLat,
+            `<b>${esc(String(p.name || "POI"))}</b><br/><span style="color:${dot}">${esc(String(p.subcategory || p.category))}</span> · <span style="color:#8a94a5">${esc(String(p.neighborhood ?? ""))}</span>`,
+          );
+          return;
+        }
+      }
       const clickable = ["nbhd-fill"];
       if (map.getLayer("opp-fill")) clickable.unshift("opp-fill");
       const hits = map.queryRenderedFeatures(e.point, { layers: clickable });
@@ -225,6 +289,13 @@ export function MapView({
     applyOpportunity(map, geo, opportunity, showOpportunity);
   }, [opportunity, showOpportunity, geo]);
 
+  // POI category + geo-overlay toggles (lazy load on first enable).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !readyRef.current) return;
+    void applyPoi(map);
+  }, [poiState, applyPoi]);
+
   // Theme swap — setStyle drops all sources/layers; re-add them on style.load.
   // Markers are DOM overlays that survive setStyle, so they are only restyled.
   // Selection + view are preserved (refs), so nothing the user set is lost.
@@ -244,6 +315,7 @@ export function MapView({
       applySelection(map, selectedRef.current, bundleRef.current);
       applyVisibility(map, layersRef.current, geo, pal);
       applyOpportunity(map, geo, oppRef.current, showOppRef.current);
+      void applyPoi(map);
       readyRef.current = true;
     });
   }, [theme, geo]);

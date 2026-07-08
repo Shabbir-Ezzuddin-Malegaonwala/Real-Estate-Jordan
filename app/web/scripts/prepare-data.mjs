@@ -3,7 +3,7 @@
 // every dev/build start, so the frontend always reflects the latest pipeline
 // output. If the Decision Engine has emitted sample_output.json, it is copied
 // to public/engine_output.json and the app loads it in place of the mock.
-import { existsSync, mkdirSync, copyFileSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, copyFileSync, statSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,6 +25,19 @@ const geo = [
   // the app falls back to the 5 approximate circles if these are absent.
   "neighborhoods_voronoi.geojson",
   "opportunity_heatmap.geojson",
+  // Nationwide OSM POI layers (toggleable) + geographic features. Sourced from Overpass.
+  "poi_education.geojson",
+  "poi_health.geojson",
+  "poi_shopping.geojson",
+  "poi_food_leisure.geojson",
+  "poi_recreation.geojson",
+  "poi_religious.geojson",
+  "poi_transport.geojson",
+  "poi_services.geojson",
+  "poi_negative.geojson",
+  "water.geojson",
+  "green.geojson",
+  "major_roads.geojson",
 ];
 let copied = 0;
 for (const f of geo) {
@@ -45,6 +58,51 @@ if (existsSync(engineOut)) {
   console.log("  engine_output.json  (real Decision Engine output wired)");
 } else {
   console.log("  engine_output.json not present — app falls back to mock_recommendation.json");
+}
+
+// Minimal CSV parser (RFC-4180 quotes). Enough for the amenities table, which
+// has one quoted free-text `notes` column.
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; } else inQuotes = false;
+      } else field += c;
+    } else if (c === '"') inQuotes = true;
+    else if (c === ",") { row.push(field); field = ""; }
+    else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+    else if (c !== "\r") field += c;
+  }
+  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+// area_amenities.csv → public/data/area_amenities.json, keyed by neighborhood, so
+// the "What's nearby" panel reads it client-side (no backend change).
+const amenitiesCsv = resolve(processed, "area_amenities.csv");
+if (existsSync(amenitiesCsv)) {
+  const rows = parseCsv(readFileSync(amenitiesCsv, "utf8"));
+  const header = rows[0];
+  const numeric = new Set(header.filter((h) => h.endsWith("_n") || h.startsWith("km_")));
+  const out = {};
+  for (const r of rows.slice(1)) {
+    if (r.length < header.length) continue;
+    const rec = {};
+    header.forEach((h, i) => {
+      const v = r[i];
+      rec[h] = numeric.has(h) ? (v === "" ? 0 : Number(v)) : v;
+    });
+    if (rec.neighborhood) out[rec.neighborhood] = rec;
+  }
+  writeFileSync(resolve(publicData, "area_amenities.json"), JSON.stringify(out));
+  console.log(`  area_amenities.json  (${Object.keys(out).length} areas)`);
+} else {
+  console.warn(`  MISSING: ${amenitiesCsv}`);
 }
 
 console.log(`prepare-data: ${copied}/${geo.length} GeoJSON layers ready.`);

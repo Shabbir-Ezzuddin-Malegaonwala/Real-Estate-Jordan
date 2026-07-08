@@ -92,6 +92,14 @@ INDEX_STALE_MONTHS = 15
 # surfaced as low-confidence evidence when used.
 FALLBACK_REQUIRED_GROSS_YIELD = 0.065
 
+# Portal rent quotes mix MONTHLY and ANNUAL asking prices with no period field (Jordanian
+# portals, OpenSooq especially, quote annual rent ~60% of the time). Amman monthly apartment
+# rent tops out around 12-15 JD/m²/month even for luxury; annual quotes land ~12× higher, so
+# the rent/m² distribution is bimodal with a natural valley near here. A raw rent/m² above this
+# cap is read as an annual quote and divided by 12; if still above the cap it is a sale-price
+# contamination and dropped. DOCUMENTED heuristic (histogram valley), not a price weight.
+RENT_MONTHLY_MAX_PPM2 = 15.0
+
 # --- Confidence scoring weights (size the RELIABILITY score, never the price) ---
 CONFIDENCE_WEIGHTS = {
     "data_density": 0.28,       # how many comps
