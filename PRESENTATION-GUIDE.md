@@ -30,13 +30,15 @@ Open the printed URL (**http://localhost:5173**).
 
 ## 2. What you'll see (and how it changed)
 
-- The map now shows **36 clickable, labelled Amman submarkets** (was 5) — Abdoun, Dabouq, Khalda, Sweifieh, Dair Ghbar, Umm Uthaina, 4th–7th Circle, Al Rabiah, Marj Al Hamam, Jubaiha, and more — each a real submarket with **≥15 geocoded listings**.
-- **1,222 amenity dots** (schools, hospitals, malls, mosques, parks, universities, transport).
-- The bottom dock shows the **top-10 submarkets by price** and POI counts.
+- The map is **nationwide** — **42 clickable regions** (was 5): **36 Amman submarkets** (Abdoun, Dabouq, Khalda, Sweifieh, Dair Ghbar, Umm Uthaina, 4th–7th Circle, …) at street granularity, **plus 6 governorate-city circles** (Irbid, Zarqa, Aqaba, Al Salt, Madaba, Jordan Valley). Zoom out to see the whole country; zoom into Amman for submarket detail.
+- **2,595 amenity dots** countrywide (schools, hospitals, malls, mosques, parks, universities, transport).
+- The bottom dock shows the **top-10 regions by price** and POI counts.
+
+> **Why two granularities?** Amman has ~22k geocoded listings, so we price it by submarket. Other governorates are sparser, so we pool each city and price it at **city level** (e.g. Irbid = 391 comps). Honest granularity: fine where the evidence is dense, city-level where it's thinner — the engine prices all 714 neighborhoods on demand regardless.
 
 ## 3. The 3-minute demo flow
 
-1. **Open on the map** — "This is a nationwide reconstruction of the Jordanian market from ~57,000 live portal listings. Each circle is a submarket we have enough evidence to price."
+1. **Open on the map (zoomed to Jordan)** — "This is a nationwide reconstruction of the Jordanian market from ~57,000 live portal listings across all 12 governorates. Each circle is a market we have enough evidence to price — Amman by submarket, other cities at city level." Zoom into Amman to show the submarket density.
 2. **Click Abdoun** (or Dabouq) — the left panel fills: **price band + confidence + adjustment waterfall**.
    - Point at the waterfall: *"The recommended price isn't a guess — it starts from a base of comparable listings, then each adjustment (floor, building age, size) is a number we **measured from the market** (a regression slope with a sample size), not a hardcoded weight. Then we discount asking→transaction, and cross-check against a construction-cost floor and a rental-income ceiling."*
    - Point at the **source chips** on each row: *"Every figure is traceable to the actual listings and the date we captured them."*
@@ -55,7 +57,7 @@ Open the printed URL (**http://localhost:5173**).
 ## 5. If asked about limitations (be upfront — it builds trust)
 
 - Listings are **asking** prices; we apply a documented 5–15% asking→transaction discount (shown on the dashboard).
-- The **map is Amman-focused** (that's the premium market); the engine prices nationwide but map circles cover the top Amman submarkets. Secondary-city map markers are a next step.
+- **Granularity varies by data density** — Amman is priced by submarket (dense geocoded data); other governorates are priced at **city level** (sparser data). Both are on the map; the engine prices any of 714 neighborhoods on demand.
 - **Terrain-view / affluence / density** features (from satellite data) are **built and available but not yet wired into the score** — a Phase-2 upgrade.
 - The **DLS price index** we hold ends 2018-Q4 (needs a fresh pull); time-adjustment self-disables as stale until then.
 
