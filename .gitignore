@@ -62,3 +62,7 @@ data/raw/dls_vpn/_dl*.log
 # temp/backup deliverable artifacts
 deliverables/*.NEW.xlsx
 deliverables/*.bak
+
+# Excel/Office lock & temp files
+~$*
+*.tmp
