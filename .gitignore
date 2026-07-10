@@ -15,6 +15,15 @@ data/research-data/
 *.crdownload
 *.part
 
+# ── Large raw harvested source files from the friend's bundle ──
+# Kept locally (used for normalization + the DEM/geo feature join) but too
+# bulky to commit. The normalized schema-clean listings CSV IS committed.
+data/raw/friend/listings/
+data/raw/friend/geo/
+data/raw/friend/official/
+data/raw/friend/zoning/
+!data/raw/friend/listings_friend_geocoded.csv
+
 # ── Intermediate / backup artifacts ──────────────────────────
 *.preenrich.bak
 *.bak
@@ -38,6 +47,29 @@ data/raw/osm/*.json.cache
 Thumbs.db
 desktop.ini
 
-# National rebuild — large regenerable artifacts (see docs/national-rebuild-report.md)
+# geofeatures raw CSVs (data is in the committed DB)
+data/raw/friend/listing_geofeatures*.csv
+
+# large raw portal CSVs + DLS raw (data is in the committed DB / parsed CSVs)
+data/raw/friend/listings_opensooq_full.csv
+data/raw/friend/listings_eureka.csv
+data/raw/friend/listings_homes.csv
+data/raw/friend/listings_abujudom.csv
+data/raw/dls_vpn/*.pdf
+data/raw/dls_vpn/pages/
+data/raw/dls_vpn/_dl*.log
+
+# temp/backup deliverable artifacts
+deliverables/*.NEW.xlsx
+deliverables/*.bak
+
+# Excel/Office lock & temp files
+~$*
+*.tmp
+
+# raw OSM Overpass cache (regenerable via scrapers/osm_jordan_poi.py; huge)
+data/raw/osm/jordan/
+
+# national-rebuild artifacts (regenerable)
 db/jordan_national.sqlite
 data/processed/listings_national_20260708.csv

@@ -25,6 +25,16 @@ MIN_COMPS_FULL_CONFIDENCE = 8    # at/above this, data density stops penalising 
 TARGET_COMPS = 12                # stop selecting once we have this many strong comps
 MIN_LOCAL_RENT_COMPS = 4         # fewer local rents than this -> skip income ceiling (too noisy)
 
+# --- Near-duplicate collapse (comparable_analysis.collapse_near_duplicates) ---
+# Portal data is heavily cross-syndicated: the SAME physical unit is posted on Bayut,
+# OpenSooq and Facebook (and relisted over time) under different listing_ids. Counting it
+# N times over-weights that price and inflates confidence (QA OBS-3). Real cross-posts in
+# the corpus are near-EXACT (identical bedrooms, area and price); this tight tolerance on
+# BOTH area and price/m² absorbs only rounding/formatting noise, so two genuinely distinct
+# units that merely look similar (e.g. 172 vs 175 m²) are never merged. Rows collapse only
+# when bedrooms are known-and-equal AND both area and price/m² fall within tolerance.
+DEDUP_TOLERANCE = 0.01
+
 # --- Paired-differential derivation (adjustment.py) ---
 MIN_PAIR_GROUP = 3               # need >=3 listings on each side to derive a premium
 MIN_SLOPE_POINTS = 6            # need >=6 (x,y) points to fit a continuous slope
@@ -42,6 +52,16 @@ NET_ADJ_RELIABILITY_FLAG = 0.30  # comps beyond this net adjustment are flagged 
 # Reconciliation weight = recency / (FLOOR + gross_adjustment). A larger floor caps how
 # much a single near-identical comp can dominate the weighted mean (max/min ratio ~3x).
 RECONCILIATION_WEIGHT_FLOOR = 0.20
+
+# --- Submarket-median anchor (recommendation._reconcile_to_submarket) ---
+# The top-N similarity shortlist is a small, high-variance draw. Once the corpus is dense
+# (50k+ portal rows) it can settle on an unrepresentative price pocket and pull the point
+# estimate off the submarket's true centre in EITHER direction. When the pool is a genuine
+# super-set of the selection, the comp value is blended toward the pool's robust median by
+# inverse-variance weighting (each estimate counts as 1/SE² — no price constant). Engage only
+# once the pool is at least twice the selection; below that the comps already ARE the
+# submarket and its median adds nothing.
+ANCHOR_MIN_POOL = 2 * TARGET_COMPS
 
 # --- Ask-to-transaction calibration (DOCUMENTED assumption, client PDF; NOT derived) ---
 # Asking prices sit above transaction prices; the PDF documents a 5-15% gap.
@@ -73,6 +93,14 @@ INDEX_STALE_MONTHS = 15
 # surfaced as low-confidence evidence when used.
 FALLBACK_REQUIRED_GROSS_YIELD = 0.065
 
+# Portal rent quotes mix MONTHLY and ANNUAL asking prices with no period field (Jordanian
+# portals, OpenSooq especially, quote annual rent ~60% of the time). Amman monthly apartment
+# rent tops out around 12-15 JD/m²/month even for luxury; annual quotes land ~12× higher, so
+# the rent/m² distribution is bimodal with a natural valley near here. A raw rent/m² above this
+# cap is read as an annual quote and divided by 12; if still above the cap it is a sale-price
+# contamination and dropped. DOCUMENTED heuristic (histogram valley), not a price weight.
+RENT_MONTHLY_MAX_PPM2 = 15.0
+
 # --- Confidence scoring weights (size the RELIABILITY score, never the price) ---
 CONFIDENCE_WEIGHTS = {
     "data_density": 0.28,       # how many comps
@@ -83,6 +111,12 @@ CONFIDENCE_WEIGHTS = {
 }
 CONFIDENCE_H_THRESHOLD = 0.70
 CONFIDENCE_M_THRESHOLD = 0.45
+
+# Future-signal saturation for the decomposed-confidence "future_signals" component: the
+# development score (Σ proximity×timeline×source_trust, evidence.future_signal_evidence) at or
+# above which the future story counts as fully evidenced (maps to 100/100). A reliability-scale
+# knob, NOT a price weight — the score itself is derived from collected evidence_items at runtime.
+FUTURE_SIGNAL_SATURATION = 3.0
 
 # Confidence-interval half-width floor/ceiling as a fraction of the point estimate.
 # The actual width is data-driven (weighted comp dispersion); these only bound it so a

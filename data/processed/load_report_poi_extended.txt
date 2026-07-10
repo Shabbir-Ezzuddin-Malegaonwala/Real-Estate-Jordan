@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : poi_extended
+source csv    : data\processed\poi_extended.csv
+generated     : 2026-07-08T17:17:29
+------------------------------------------------------------
+rows read     : 9444
+inserted      : 9444
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0

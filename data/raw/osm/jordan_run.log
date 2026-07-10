@@ -1,0 +1,58 @@
+[ok]  governorates: 12 elements via overpass-api.de
+governorates: 12 polygons
+voronoi cells: 290
+[ok]  poi_education: 653 elements via overpass-api.de
+[wait] poi_health: HTTP 429 on overpass-api.de, retry in 8s
+[wait] poi_health: HTTP 429 on overpass-api.de, retry in 32s
+[ok]  poi_health: 632 elements via overpass-api.de
+[ok]  poi_shopping: 599 elements via overpass-api.de
+[wait] poi_food_leisure: HTTP 429 on overpass-api.de, retry in 8s
+[wait] poi_food_leisure: HTTP 429 on overpass-api.de, retry in 32s
+[ok]  poi_food_leisure: 1723 elements via overpass-api.de
+[ok]  poi_recreation: 1471 elements via overpass-api.de
+[wait] poi_religious: HTTP 429 on overpass-api.de, retry in 8s
+[wait] poi_religious: HTTP 429 on overpass-api.de, retry in 32s
+[ok]  poi_religious: 1185 elements via overpass-api.de
+[wait] poi_transport: HTTP 504 on overpass-api.de, retry in 8s
+[ok]  poi_transport: 1933 elements via overpass-api.de
+[wait] poi_services: HTTP 429 on overpass-api.de, retry in 8s
+[ok]  poi_services: 748 elements via overpass-api.de
+[wait] poi_negative: HTTP 429 on overpass-api.de, retry in 8s
+[wait] poi_negative: HTTP 504 on overpass-api.de, retry in 32s
+[ok]  poi_negative: 507 elements via overpass-api.de
+POIs collected: 9444
+[ok]  water: 8690 elements via overpass-api.de
+[wait] green: HTTP 429 on overpass-api.de, retry in 8s
+[wait] green: HTTP 429 on overpass-api.de, retry in 32s
+[ok]  green: 1176 elements via overpass-api.de
+[wait] major_roads: HTTP 504 on overpass-api.de, retry in 8s
+[wait] major_roads: HTTP 504 on overpass-api.de, retry in 32s
+[ok]  major_roads: 3864 elements via overpass-api.de
+water.geojson: 8659 features
+green.geojson: 1095 features
+major_roads.geojson: 3864 features
+poi_education.geojson: 653 points
+poi_health.geojson: 632 points
+poi_shopping.geojson: 599 points
+poi_food_leisure.geojson: 1723 points
+poi_recreation.geojson: 1467 points
+poi_religious.geojson: 1182 points
+poi_transport.geojson: 1933 points
+poi_services.geojson: 748 points
+poi_negative.geojson: 507 points
+poi_extended.csv: 9444 rows
+area_amenities.csv: 290 rows
+summary: Traceback (most recent call last):
+  File "C:\Rubicon\Real-Estate-Jordan\scrapers\osm_jordan_poi.py", line 532, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "C:\Rubicon\Real-Estate-Jordan\scrapers\osm_jordan_poi.py", line 405, in main
+    write_summary(poi_rows, layer_features, amen_rows, road_features)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Rubicon\Real-Estate-Jordan\scrapers\osm_jordan_poi.py", line 528, in write_summary
+    print("summary:", json.dumps(stats, ensure_ascii=False))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 1043-1049: character maps to <undefined>

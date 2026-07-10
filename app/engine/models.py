@@ -6,7 +6,7 @@ The public output (`RecommendationResult`) serialises to the exact shape the
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import date
 from typing import Any, Optional
 
@@ -245,6 +245,9 @@ class RecommendationResult:
     alternative_scenarios: list[dict[str, Any]]
     method_values: dict[str, Any]
     computed_date: str
+    # Product-facing decomposition of the overall confidence (0-100 per component + reason).
+    # Defaulted so the unpriceable/empty paths need not supply it.
+    confidence_components: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         # Shape matches docs/db-contract.md §4 exactly: nested `confidence`; scalars map to
@@ -260,6 +263,7 @@ class RecommendationResult:
                 "label": self.confidence_label,
                 "numeric": self.confidence_numeric,
                 "interval_jd_m2": self.confidence_interval_jd_m2,
+                "components": self.confidence_components,
             },
             "evidence_objects": self.evidence_objects,
             "comparables": self.comparables,

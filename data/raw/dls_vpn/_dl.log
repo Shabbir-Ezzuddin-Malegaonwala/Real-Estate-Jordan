@@ -1,0 +1,29 @@
+curl: (28) Operation too slow. Less than 300 bytes/sec transferred the last 30 seconds
+curl: (28) Operation too slow. Less than 300 bytes/sec transferred the last 30 seconds
+OK  annual_report_2023_AR.pdf  1797004 bytes
+OK  monthly_trading_2026-06_June_AR.pdf  1560026 bytes (attempt 3)
+OK  annual_report_2023_AR.pdf  1797004 bytes (attempt 1)
+OK  annual_report_2018_EN.pdf  884379 bytes (attempt 1)
+curl: (28) Operation too slow. Less than 300 bytes/sec transferred the last 30 seconds
+s
+OK  annual_report_2014_EN.pdf  911241 bytes
+OK  annual_report_2015_EN.pdf  797835 bytes
+=== _dl3 start Wed Jul  8 05:27:20 IST 2026 ===
+curl: (28) Operation too slow. Less than 250 bytes/sec transferred the last 30 seconds
+OK  monthly_trading_2026-05_May_AR.pdf  1521362 bytes (attempt 2)
+OK  monthly_trading_2026-04_April_AR.pdf  1488136 bytes (attempt 1)
+OK  monthly_trading_2026-01_January_AR.pdf  821133 bytes (attempt 1)
+OK  monthly_trading_2025-12_December_AR.pdf  1533440 bytes (attempt 1)
+OK  monthly_trading_2025-11_November_AR.pdf  623073 bytes (attempt 1)
+OK  mortgage_by_governorate_2025_AR.pdf  426989 bytes (attempt 1)
+OK  mortgage_by_governorate_2024_AR.pdf  426648 bytes (attempt 1)
+OK  property_owners_by_gov_gender_2025_AR.pdf  434744 bytes (attempt 1)
+OK  property_owners_by_gov_gender_2024_AR.pdf  420876 bytes (attempt 1)
+OK  annual_report_2013_EN.pdf  1275201 bytes (attempt 1)
+OK  annual_report_2014_EN.pdf  911241 bytes (attempt 1)
+OK  annual_report_2015_EN.pdf  797835 bytes (attempt 1)
+curl: (28) Operation too slow. Less than 250 bytes/sec transferred the last 30 seconds
+curl: (28) Operation too slow. Less than 250 bytes/sec transferred the last 30 seconds
+OK  annual_report_2016_EN.pdf  4501210 bytes (attempt 3)
+OK  annual_report_2017_EN.pdf  790613 bytes (attempt 1)
+ALLDONE3 Wed Jul  8 05:32:20 IST 2026

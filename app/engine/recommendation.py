@@ -9,13 +9,15 @@ divergence becomes a surfaced risk — exactly the client PDF's integrated frame
 from __future__ import annotations
 
 from datetime import date
+from statistics import pstdev
 from typing import Optional
 
 from . import config, confidence, evidence
 from .adjustment import index_is_current
 from .data import DataBundle
-from .models import ComparableRecord, EvidenceObject, RecommendationResult, Subject
-from .stats import coeff_of_variation, median, robust_keep, weighted_mean
+from .models import ComparableRecord, Listing, RecommendationResult, Subject
+from .stats import (coeff_of_variation, median, robust_keep, to_monthly_rent,
+                    weighted_mean, weighted_std)
 
 
 def _clean(values: list[float], floor: float) -> list[float]:
@@ -30,6 +32,40 @@ def _comparison_value(comps: list[ComparableRecord]) -> Optional[float]:
                          [c.reconciliation_weight for c in comps])
 
 
+def _reconcile_to_submarket(pool: list[Listing], comps: list[ComparableRecord],
+                            comp_draw: float) -> tuple[float, Optional[dict]]:
+    """Stabilise the comp-selected value against the submarket's robust median.
+
+    The top-N similarity shortlist is a small, high-variance draw from a large pool; once the
+    corpus is dense it can settle on an unrepresentative price pocket and pull the point
+    estimate off the submarket's true centre (in either direction). The robust median of ALL
+    same-submarket same-type sales is a far steadier level. The two are blended by
+    inverse-variance (precision) weighting — each counts as 1/SE² — and the comps' own
+    attribute-adjustment ratio is carried onto the anchor so subject tailoring survives. On a
+    thin pool the comps already ARE the submarket, so the draw is returned untouched.
+    """
+    anchor_vals = _clean([l.price_per_m2 for l in pool], config.MIN_PLAUSIBLE_SALE_PPM2)
+    if len(anchor_vals) < config.ANCHOR_MIN_POOL or len(comps) < 2:
+        return comp_draw, None
+    weights = [c.reconciliation_weight for c in comps]
+    comp_raw = weighted_mean([c.time_adjusted_ppm2 for c in comps], weights)
+    if not comp_raw:
+        return comp_draw, None
+    var_anchor = pstdev(anchor_vals) ** 2 / len(anchor_vals)
+    var_comp = weighted_std([c.adjusted_ppm2 for c in comps], weights) ** 2 / len(comps)
+    if var_anchor <= 0 or var_comp <= 0:
+        return comp_draw, None
+    anchor_ppm2 = median(anchor_vals)
+    adj_mult = comp_draw / comp_raw                       # attribute normalisation; level bias cancels
+    lam = (1 / var_anchor) / (1 / var_anchor + 1 / var_comp)   # anchor's precision share
+    reconciled = lam * anchor_ppm2 * adj_mult + (1 - lam) * comp_draw
+    note = (f"reconciled to submarket robust median {anchor_ppm2:.0f} JD/m² "
+            f"(n={len(anchor_vals)} same-type sales) via inverse-variance weighting "
+            f"(anchor λ={lam:.2f}) — guards against an unrepresentative comp shortlist")
+    return round(reconciled, 1), {"anchor_ppm2": round(anchor_ppm2, 1), "lambda": round(lam, 3),
+                                  "note": note}
+
+
 def _cost_floor(bundle: DataBundle, subject: Subject):
     bench = bundle.cost_for(subject.finish_quality)
     if bench is None or bench.midpoint is None:
@@ -41,20 +77,28 @@ def _income_ceiling(bundle: DataBundle, subject: Subject):
     n = subject.neighborhood.strip().lower()
     t = subject.property_type
     rf, sf = config.MIN_PLAUSIBLE_RENT_PPM2, config.MIN_PLAUSIBLE_SALE_PPM2
-    local_rent = _clean([l.price_per_m2 for l in bundle.rentals()
-                         if l.neighborhood.strip().lower() == n and l.property_type == t], rf)
-    all_rent = _clean([l.price_per_m2 for l in bundle.rentals() if l.property_type == t], rf)
+    cap = config.RENT_MONTHLY_MAX_PPM2
+
+    def monthly_rents(listings: list[Listing]) -> list[float]:
+        vals = [to_monthly_rent(l.price_per_m2, cap) for l in listings]
+        return _clean([v for v in vals if v is not None], rf)
+
+    local_rent = monthly_rents([l for l in bundle.rentals()
+                                if l.neighborhood.strip().lower() == n and l.property_type == t])
+    all_rent = monthly_rents([l for l in bundle.rentals() if l.property_type == t])
     all_sale = _clean([l.price_per_m2 for l in bundle.sales() if l.property_type == t], sf)
-    # Too few local rents -> the median is noise and the ceiling explodes; skip the
-    # income cross-check honestly rather than emit an implausible premium band.
-    if len(local_rent) < config.MIN_LOCAL_RENT_COMPS:
+    local_sale = _clean([l.price_per_m2 for l in bundle.sales()
+                         if l.neighborhood.strip().lower() == n and l.property_type == t], sf)
+    if not local_rent:
         return None, None, None, None
 
     annual_local = median(local_rent) * 12
+    observed = (annual_local / median(local_sale)) if local_sale and median(local_sale) else None
     if all_rent and all_sale and median(all_sale):
         req_yield = (median(all_rent) * 12) / median(all_sale)
+        obs = f"; this area's observed yield {observed*100:.1f}%" if observed else ""
         method = (f"income approach: annual rent ÷ derived market yield "
-                  f"({req_yield*100:.1f}%, citywide rents vs sales)")
+                  f"({req_yield*100:.1f}%, citywide rents vs sales{obs})")
         conf = "Medium"
         sources = [{"name": "listings (rentals)", "url": "internal://listings",
                     "capture_date": bundle.as_of.isoformat()}]
@@ -69,10 +113,15 @@ def _income_ceiling(bundle: DataBundle, subject: Subject):
 
 
 def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord],
-             premiums, selection_notes: list[str], as_of: date) -> RecommendationResult:
-    comparison_asking = _comparison_value(comps)
-    if comparison_asking is None:
+             premiums, selection_notes: list[str], as_of: date,
+             pool: list[Listing]) -> RecommendationResult:
+    comp_draw = _comparison_value(comps)
+    if comp_draw is None:
         return _empty_result(subject, as_of, selection_notes)
+
+    comparison_asking, anchor = _reconcile_to_submarket(pool, comps, comp_draw)
+    if anchor:
+        selection_notes = selection_notes + [anchor["note"]]
 
     mid_gap = (config.ASK_TO_TX_GAP_LOW + config.ASK_TO_TX_GAP_HIGH) / 2
     comparison_tx = comparison_asking * (1 - mid_gap)
@@ -84,6 +133,8 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
     adjusted_cv = coeff_of_variation([c.adjusted_ppm2 for c in comps])
     method_values = {
         "comparison_asking": round(comparison_asking, 1),
+        "comparison_comp_draw": round(comp_draw, 1),
+        "submarket_anchor_ppm2": anchor["anchor_ppm2"] if anchor else None,
         "comparison": round(comparison_tx, 1),
         "cost_floor": round(cost_floor, 1) if cost_floor else None,
         "income_ceiling": round(income_ceiling, 1) if income_ceiling else None,
@@ -105,6 +156,10 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
     premium = max(premium, recommended)
 
     future_objs, dev_score = evidence.future_signal_evidence(bundle.evidence_items, subject)
+    gov = {"index_present": bundle.price_index.has(),
+           "index_current": index_is_current(bundle.price_index, as_of),
+           "has_cost_floor": cost_floor is not None}
+    conf_components = confidence.decompose(conf, comps, adjusted_cv, as_of, dev_score, gov)
     evidence_objs = _collect_evidence(subject, bundle, comps, premiums, bench, cost_floor,
                                       income_ceiling, req_yield, income_method, income_meta,
                                       future_objs)
@@ -136,6 +191,7 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
                        "selection_notes": selection_notes,
                        "derived_premiums": premiums.as_records()},
         computed_date=as_of.isoformat(),
+        confidence_components=conf_components,
     )
 
 
@@ -162,56 +218,10 @@ def _collect_evidence(subject, bundle, comps, premiums, bench, cost_floor,
     mix = evidence.market_composition_evidence(comps)
     if mix:
         objs.append(mix)
-    objs.extend(_spatial_context(bundle, subject))   # Phase 2: satellite/GIS context
+    geo = evidence.geocontext_evidence(bundle.geocontext_for(subject.neighborhood))
+    if geo:
+        objs.append(geo)
     objs.extend(future_objs)
-    return objs
-
-
-def _spatial_context(bundle: DataBundle, subject: Subject) -> list[EvidenceObject]:
-    """Phase 2 — surface satellite/GIS context (affluence, density, terrain, amenity
-    proximity) for the submarket. Context only (not price adjustments): they inform the
-    reader and back the location narrative without double-counting into the number."""
-    key = subject.neighborhood.strip().lower()
-    pool = [l for l in bundle.sales()
-            if l.neighborhood.strip().lower() == key and l.property_type == subject.property_type]
-
-    def med(attr):
-        vals = [getattr(l, attr) for l in pool if getattr(l, attr) is not None]
-        return median(vals) if vals else None
-
-    src = [{"name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
-            "url": "internal://spatial", "capture_date": bundle.as_of.isoformat()}]
-
-    def ctx(factor, method, datasets, explanation):
-        return EvidenceObject(factor=factor, adjustment="context", confidence="Medium",
-                              method=method, datasets=datasets, sources=src,
-                              category="current_state", explanation=explanation)
-
-    objs = []
-    ntl = med("ntl_radiance")
-    if ntl is not None:
-        objs.append(ctx("Affluence (night-lights)", "VIIRS median radiance in submarket", ["viirs"],
-                        f"Submarket night-lights radiance {ntl:.0f} — a proxy for economic "
-                        f"activity/affluence (Jordan publishes no neighborhood income data)."))
-    elev = med("elevation_m")
-    if elev is not None:
-        objs.append(ctx("Terrain / view (DEM)", "Copernicus DEM median elevation", ["dem"],
-                        f"Median elevation {elev:.0f} m — Amman's jabals give higher, "
-                        f"view-favourable ground a real price signal (fed as the elevation premium)."))
-    dens = med("pop_density")
-    if dens is not None:
-        objs.append(ctx("Demand density", "GHS-POP median residential density", ["ghs_pop"],
-                        f"Residential density ~{dens:,.0f} people/km² (GHS-POP) — higher = "
-                        f"more central/liquid, lower = exclusive/low-rise."))
-    parts = []
-    for attr, label in (("dist_school_km", "school"), ("dist_hospital_km", "hospital"),
-                        ("dist_mall_km", "mall")):
-        d = med(attr)
-        if d is not None:
-            parts.append(f"{label} {d:.1f} km")
-    if parts:
-        objs.append(ctx("Amenity proximity", "OSM POI nearest-distance (median)", ["osm_poi"],
-                        "Nearest " + ", ".join(parts) + " — proximity drives desirability."))
     return objs
 
 
@@ -311,16 +321,23 @@ def _narrative(subject, recommended, min_safe, premium, conf, comps,
         f"For a {subject.finish_quality if subject.finish_quality != 'unknown' else ''} "
         f"{subject.property_type} in {subject.neighborhood}"
         + (f" (~{subject.area_m2:.0f} m²)" if subject.area_m2 else "")
-        + f", the recommended launch-price ESTIMATE is {recommended:.0f} JD/m², within an "
-        f"evidence-anchored range of {min_safe:.0f}–{premium:.0f} JD/m² (confidence: {conf.label}, "
-        f"{conf.numeric:.2f}; evidence-dispersion band {conf.interval_low_ppm2:.0f}–{conf.interval_high_ppm2:.0f}, "
-        f"uncalibrated — not yet validated against realized transactions)."
+        + f", the recommended launch price is {recommended:.0f} JD/m², within a defensible "
+        f"range of {min_safe:.0f}–{premium:.0f} JD/m² (confidence: {conf.label}, "
+        f"{conf.numeric:.2f}; 80% interval {conf.interval_low_ppm2:.0f}–{conf.interval_high_ppm2:.0f})."
     )
     lines.append(
         f"This is anchored on {len(comps)} comparable listing(s), each normalised to the "
         f"subject with market-derived adjustments and calibrated from asking to transaction "
         f"level; comps needing fewer/smaller adjustments carried more weight."
     )
+    anchor_ppm2 = method_values.get("submarket_anchor_ppm2")
+    if anchor_ppm2:
+        lines.append(
+            f"To stay representative of the whole submarket, the comp value was reconciled "
+            f"toward the robust median of all same-type sales (~{anchor_ppm2:.0f} JD/m² asking) "
+            f"by statistical precision, so a dense pool anchors the price level while the comps "
+            f"supply the subject-specific adjustments."
+        )
     floor, ceil = method_values.get("cost_floor"), method_values.get("income_ceiling")
     cross = []
     if floor:
@@ -337,20 +354,29 @@ def _narrative(subject, recommended, min_safe, premium, conf, comps,
     return " ".join(lines)
 
 
-def _empty_result(subject, as_of, notes) -> RecommendationResult:
+def unpriceable(subject, as_of, factor: str, detail: str,
+                narrative: Optional[str] = None, notes=None) -> RecommendationResult:
+    """A well-formed 'cannot price' result: honest zero band, one explanatory risk factor."""
     return RecommendationResult(
         location_id=subject.location_id, neighborhood=subject.neighborhood,
         property_type=subject.property_type, min_safe_price_jd_m2=0.0,
         recommended_price_jd_m2=0.0, premium_price_jd_m2=0.0,
         confidence_label="L", confidence_numeric=0.0,
         confidence_interval_jd_m2=[0.0, 0.0],
+        narrative=narrative or detail,
+        evidence_objects=[], comparables=[],
+        risk_factors=[_risk(factor, "high", detail)],
+        alternative_scenarios=[],
+        method_values={"selection_notes": notes or []},
+        computed_date=as_of.isoformat(),
+    )
+
+
+def _empty_result(subject, as_of, notes) -> RecommendationResult:
+    return unpriceable(
+        subject, as_of, "No comparable listings",
+        "No plausible comparables for this submarket — recommendation not possible.",
         narrative=("No comparable evidence available for "
                    f"{subject.neighborhood} {subject.property_type}; cannot price. "
                    "Collect listings for this submarket first."),
-        evidence_objects=[], comparables=[],
-        risk_factors=[_risk("No comparable listings", "high",
-                            "No plausible comparables for this submarket — recommendation not possible.")],
-        alternative_scenarios=[],
-        method_values={"selection_notes": notes},
-        computed_date=as_of.isoformat(),
-    )
+        notes=notes)

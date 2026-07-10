@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : area_yields
+source csv    : data\processed\area_yields.csv
+generated     : 2026-07-08T17:18:57
+------------------------------------------------------------
+rows read     : 207
+inserted      : 207
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0

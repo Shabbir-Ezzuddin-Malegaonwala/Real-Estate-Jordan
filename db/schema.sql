@@ -136,6 +136,81 @@ CREATE TABLE IF NOT EXISTS poi (
 CREATE INDEX IF NOT EXISTS idx_poi_category     ON poi (category);
 CREATE INDEX IF NOT EXISTS idx_poi_neighborhood ON poi (neighborhood);
 
+-- poi_extended — nationwide OSM points of interest with a richer taxonomy than `poi`.
+-- The frozen `poi` table keeps its 7-category enum for the engine; this table carries the
+-- full map-layer taxonomy (9 broad categories + free-text subcategory) for the whole of
+-- Jordan. Dedup key is the OSM element (osm_type + osm_id, encoded in poi_id).
+CREATE TABLE IF NOT EXISTS poi_extended (
+    poi_id            TEXT PRIMARY KEY,
+    category          TEXT NOT NULL CHECK (category IN ('education','health','shopping','food_leisure','recreation','religious','transport','services','negative','unknown')),
+    subcategory       TEXT NOT NULL,
+    name              TEXT NOT NULL,
+    name_ar           TEXT,
+    lat               REAL,
+    lng               REAL,
+    governorate       TEXT,
+    neighborhood      TEXT,
+    osm_type          TEXT,
+    osm_id            TEXT,
+    evidence_category TEXT NOT NULL CHECK (evidence_category IN ('market','government','gis','infrastructure','macro','portal','builder','news','derived','unknown')),
+    language          TEXT NOT NULL DEFAULT 'unknown' CHECK (language IN ('en','ar','mixed','unknown')),
+    source_name       TEXT NOT NULL,
+    source_url        TEXT NOT NULL,
+    capture_date      TEXT NOT NULL,
+    collected_by      TEXT,
+    confidence        TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes             TEXT,
+    created_at        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_poix_category     ON poi_extended (category);
+CREATE INDEX IF NOT EXISTS idx_poix_subcategory  ON poi_extended (subcategory);
+CREATE INDEX IF NOT EXISTS idx_poix_neighborhood ON poi_extended (neighborhood);
+CREATE INDEX IF NOT EXISTS idx_poix_governorate  ON poi_extended (governorate);
+
+-- area_amenities — per-neighborhood amenity summary (counts by category within the
+-- neighborhood's Voronoi cell + distance to nearest airport and major road). Derived from
+-- poi_extended; powers the left-panel "nearby amenities" display. One row per neighborhood.
+CREATE TABLE IF NOT EXISTS area_amenities (
+    neighborhood     TEXT PRIMARY KEY,
+    governorate      TEXT,
+    centroid_lat     REAL,
+    centroid_lng     REAL,
+    is_covered       INTEGER NOT NULL DEFAULT 0,
+    schools_n        INTEGER NOT NULL DEFAULT 0,
+    universities_n   INTEGER NOT NULL DEFAULT 0,
+    hospitals_n      INTEGER NOT NULL DEFAULT 0,
+    pharmacies_n     INTEGER NOT NULL DEFAULT 0,
+    malls_n          INTEGER NOT NULL DEFAULT 0,
+    supermarkets_n   INTEGER NOT NULL DEFAULT 0,
+    restaurants_n    INTEGER NOT NULL DEFAULT 0,
+    cafes_n          INTEGER NOT NULL DEFAULT 0,
+    hotels_n         INTEGER NOT NULL DEFAULT 0,
+    parks_n          INTEGER NOT NULL DEFAULT 0,
+    playgrounds_n    INTEGER NOT NULL DEFAULT 0,
+    stadiums_n       INTEGER NOT NULL DEFAULT 0,
+    sports_n         INTEGER NOT NULL DEFAULT 0,
+    mosques_n        INTEGER NOT NULL DEFAULT 0,
+    churches_n       INTEGER NOT NULL DEFAULT 0,
+    banks_n          INTEGER NOT NULL DEFAULT 0,
+    atms_n           INTEGER NOT NULL DEFAULT 0,
+    fuel_n           INTEGER NOT NULL DEFAULT 0,
+    transport_n      INTEGER NOT NULL DEFAULT 0,
+    police_n         INTEGER NOT NULL DEFAULT 0,
+    negatives_n      INTEGER NOT NULL DEFAULT 0,
+    total_poi_n      INTEGER NOT NULL DEFAULT 0,
+    nearest_airport  TEXT,
+    km_to_airport    REAL,
+    km_to_highway    REAL,
+    source_name      TEXT NOT NULL,
+    source_url       TEXT NOT NULL,
+    capture_date     TEXT NOT NULL,
+    collected_by     TEXT,
+    confidence       TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes            TEXT,
+    created_at       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_areaamen_governorate ON area_amenities (governorate);
+
 -- districts — neighborhood/admin boundary polygons. Geometry stored as GeoJSON text
 -- (SpatiaLite fallback); centroid_lat/lng give a cheap point for mapping + haversine.
 CREATE TABLE IF NOT EXISTS districts (
@@ -211,6 +286,35 @@ CREATE TABLE IF NOT EXISTS macro_series (
 CREATE INDEX IF NOT EXISTS idx_macro_indicator ON macro_series (indicator);
 CREATE INDEX IF NOT EXISTS idx_macro_geo_period ON macro_series (geography, period);
 
+-- area_yields — per-submarket observed gross rental yield (rent/m² vs sale/m²), derived from
+-- the listings table (robust medians, same plausibility floors as the engine). This is the
+-- DESCRIPTIVE observed yield that powers the "Gross yield %" map layer and the left-panel
+-- income line; it is NOT the engine's required-yield (that stays a citywide market benchmark —
+-- setting the required yield to an area's own realised yield makes the income ceiling degenerate
+-- to that area's sale price). One row per (neighborhood, property_type).
+CREATE TABLE IF NOT EXISTS area_yields (
+    yield_id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    neighborhood       TEXT NOT NULL,
+    property_type      TEXT NOT NULL CHECK (property_type IN ('apartment','villa','land','commercial','unknown')),
+    median_rent_jd_m2  REAL,
+    annual_rent_jd_m2  REAL,
+    median_sale_jd_m2  REAL,
+    gross_yield_pct    REAL,
+    n_rent             INTEGER NOT NULL DEFAULT 0,
+    n_sale             INTEGER NOT NULL DEFAULT 0,
+    evidence_category  TEXT NOT NULL CHECK (evidence_category IN ('market','government','gis','infrastructure','macro','portal','builder','news','derived','unknown')),
+    language           TEXT NOT NULL DEFAULT 'en' CHECK (language IN ('en','ar','mixed','unknown')),
+    source_name        TEXT NOT NULL,
+    source_url         TEXT NOT NULL,
+    capture_date       TEXT NOT NULL,
+    collected_by       TEXT,
+    confidence         TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes              TEXT,
+    created_at         TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (neighborhood, property_type)
+);
+CREATE INDEX IF NOT EXISTS idx_area_yields_nbhd ON area_yields (neighborhood);
+
 -- ===========================================================================
 -- D. SIGNALS / SUPPORTING
 -- ===========================================================================
@@ -280,8 +384,85 @@ CREATE TABLE IF NOT EXISTS cost_benchmarks (
 );
 CREATE INDEX IF NOT EXISTS idx_cost_spec_class ON cost_benchmarks (spec_class);
 
+-- dos_building_cost — DoS quarterly Building-Licenses time series (friend archive, 2004-2026).
+-- Area/cost are authority totals (all building types blended; ~90% of licenses are residential);
+-- Area filed in 000 M2, Cost in 000 JD, so cost_jd_per_m2 = estimated_cost_jd / area_m2.
+-- NOTE: estimated_cost_jd is the licensing authority's *filed estimated cost* — an official
+-- administrative valuation that tends to understate turnkey market build cost; use as a
+-- conservative cost-approach floor. authority ∈ Kingdom (national) / Greater Amman Municipality
+-- (Amman urban) / Municipalities / Joint district committees / Regional authorities.
+CREATE TABLE IF NOT EXISTS dos_building_cost (
+    cost_id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    year                      INTEGER NOT NULL,
+    quarter                   TEXT NOT NULL,
+    authority                 TEXT NOT NULL,
+    building_type             TEXT NOT NULL DEFAULT 'all',
+    license_type              TEXT NOT NULL CHECK (license_type IN ('new','extension','existing')),
+    licenses                  INTEGER,
+    residential_license_share REAL,
+    area_m2                   REAL,
+    estimated_cost_jd         REAL,
+    cost_jd_per_m2            REAL,
+    evidence_category         TEXT NOT NULL CHECK (evidence_category IN ('market','government','gis','infrastructure','macro','portal','builder','news','derived','unknown')),
+    language                  TEXT NOT NULL DEFAULT 'en' CHECK (language IN ('en','ar','mixed','unknown')),
+    source_name               TEXT NOT NULL,
+    source_url                TEXT NOT NULL,
+    capture_date              TEXT NOT NULL,
+    collected_by              TEXT,
+    confidence                TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes                     TEXT,
+    created_at                TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (year, quarter, authority, license_type)
+);
+CREATE INDEX IF NOT EXISTS idx_dosbuild_year ON dos_building_cost (year);
+CREATE INDEX IF NOT EXISTS idx_dosbuild_auth ON dos_building_cost (authority, license_type);
+
 -- ===========================================================================
--- E. ENGINE OUTPUTS (written by the Decision Engine, never collected)
+-- E. GEO / TERRAIN CONTEXT (friend-sourced; NON-PRICED neighborhood context)
+-- ===========================================================================
+-- MASTER-PLAN decision: elevation/population/night-light do NOT correlate with price
+-- (analysis showed ~0, sign-unstable). These tables are QUERYABLE CONTEXT ONLY — an
+-- affluence/density/activity proxy, never a price lever. Columns match the friend CSVs
+-- (data/raw/friend/*.csv) exactly; provenance cites Copernicus DEM / GHS-POP / VIIRS.
+
+-- listing_geofeatures — per-listing terrain + density + night-light sample (open rasters).
+CREATE TABLE IF NOT EXISTS listing_geofeatures (
+    listing_id           TEXT PRIMARY KEY,
+    elevation_m          REAL,
+    slope_deg            REAL,
+    aspect_deg           REAL,
+    aspect_cardinal      TEXT,
+    population_density   REAL,
+    nightlight_intensity REAL,
+    source_name          TEXT NOT NULL,
+    source_url           TEXT NOT NULL,
+    capture_date         TEXT NOT NULL,
+    collected_by         TEXT,
+    confidence           TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    notes                TEXT,
+    created_at           TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- neighborhood_geocontext — one median-summary row per target submarket + a human context
+-- string. Feeds the non-priced "Neighborhood spatial context" evidence chip.
+CREATE TABLE IF NOT EXISTS neighborhood_geocontext (
+    neighborhood              TEXT PRIMARY KEY,
+    median_elevation_m        REAL,
+    elevation_rank            INTEGER,
+    median_population_density REAL,
+    median_nightlight         REAL,
+    dominant_aspect           TEXT,
+    context                   TEXT,
+    source_name               TEXT NOT NULL,
+    source_url                TEXT NOT NULL,
+    capture_date              TEXT NOT NULL,
+    collected_by              TEXT,
+    confidence                TEXT NOT NULL CHECK (confidence IN ('H','M','L','unknown')),
+    created_at                TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ===========================================================================
+-- F. ENGINE OUTPUTS (written by the Decision Engine, never collected)
 -- ===========================================================================
 
 -- derived_premiums — the Adjustment Engine writes every attribute premium here.

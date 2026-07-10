@@ -1,0 +1,36 @@
+neighborhood,metric,value,period,source_name,source_url,capture_date,confidence,notes
+Abdoun,sale_jd_m2,1500-2500,2025,Taj Al Safa,https://tajalsafa.com/best-areas-to-buy-apartments-in-amman-2025-comprehensive-guide,2026-07-07,H,Finished-apartment asking band (2025 comprehensive guide).
+Abdoun,sale_jd_m2,1200,2026,Homes Jordan,https://www.homes-jordan.com/en/blogs/detail/abdoun-apartments-2026-comprehensive-guide-to-real-estate-in-ammans-upscale-district,2026-07-07,H,District average asking for standard luxury units (2026 guide).
+Abdoun,sale_jd_m2,1316,2025-10,Amaken,https://www.amaken.jo/en/property-details/1337/luxury-apartment-for-sale-in-abdoun-7,2026-07-07,H,"Listing point: 300 m2 ground-floor luxury apt at 395,000 JOD."
+Abdoun,sale_jd_m2,1160,2026,Bayut,https://www.bayut.jo/en/amman/3-bedroom-apartments-for-sale-in-abdun/,2026-07-07,H,"Listing point: 125 m2 3-bed at 145,000 JOD."
+Abdoun,sale_jd_m2,813,2026,Bayut,https://www.bayut.jo/en/amman/apartments-for-sale-in-abdun/,2026-07-07,H,"Listing point: 430 m2 3-bed at 350,000 JOD (economies of scale suppress per-m2)."
+Abdoun,sale_jd_m2,850-1200,2026,Jordan Properties (Gemini synthesis),https://jordan-properties.net/properties/abdounterraces/,2026-07-07,M,"Typical band; low 750-800 (older/low floor), high 1800-1850+ ultra-luxury new builds (GAIA 1846, Abdoun Terraces 1803)."
+Abdoun,rent_jd_m2,98-125 (furnished),2026,Amman Apartments,https://ammanapts.co/properties/city/abdoun?page=5,2026-07-07,H,Furnished 2-3 bed points: 115 m2 @13-14k = 113-121; 145 m2 @18k = 124; 200 m2 @25k = 125 JD/m2/yr.
+Abdoun,rent_jd_m2,55-108,2026-02,Amman Apartments,https://ammanapts.co/news/apartment-for-rent-in-amman-2026-rental-market-report,2026-07-07,M,2-bed 100-140 m2 @650-900/mo market estimate.
+Abdoun,rent_monthly,650-900 (2-bed unfurnished),2026-02,Amman Apartments,https://ammanapts.co/news/apartment-for-rent-in-amman-2026-rental-market-report,2026-07-07,H,"Standard 2-bed 100-140 m2; annual 7,800-10,800 JOD. Min Abdoun rent quoted 9,000/yr by Homes Jordan."
+Dabouq,sale_jd_m2,1300-2200,2025,Taj Al Safa,https://tajalsafa.com/best-areas-to-buy-apartments-in-amman-2025-comprehensive-guide,2026-07-07,H,Finished-apartment asking band (2025 guide); among most expensive built-area in Jordan.
+Dabouq,sale_jd_m2,1100,2026,Edraj Real Estate,https://www.edraj.com/sale/luxurious-395-sqm-flats-sale-dabouq,2026-07-07,H,"New-build point: 395 m2 flats at 434,500 JOD baseline."
+Dabouq,sale_jd_m2,1250,2025-10,Amaken,https://www.amaken.jo/en/property-details/2905/semi-ground-apartment-for-sale-in-dabouq-1,2026-07-07,H,"Listing point: 180 m2 semi-ground at 225,000 JOD."
+Dabouq,sale_jd_m2,1000-1375,2026,Bayut,https://www.bayut.jo/en/amman/apartments-for-sale-in-dabouq/,2026-07-07,H,Listing cluster: 160 m2 @220k=1375; 290 m2 @360k=1241; 275/550 m2 @1000.
+Dabouq,rent_jd_m2,33-68,2026,Bayut,https://www.bayut.jo/en/amman/3-bedroom-apartments-for-rent-in-dabouq/,2026-07-07,H,Yield diluted by unit size: 420 m2 @14k=33; 220 m2 furnished @15k=68 JD/m2/yr.
+Dabouq,rent_monthly,"640-3750 (median ~1,431)",2026,Hagzi,https://hagzi.jo/amman/dabouq/apartment-for-rent,2026-07-07,M,"Annual 7,700-45,000 JOD, median ~17,177/yr across 37 listings."
+Sweifieh,sale_jd_m2,1200-2000,2025,Taj Al Safa,https://tajalsafa.com/apartments-for-sale-in-jordan-the-best-areas-and-prices,2026-07-07,H,Theoretical top-tier band; empirical listings settle well below.
+Sweifieh,sale_jd_m2,875-1357,2026,Bayut,https://www.bayut.jo/en/amman/apartments-for-sale-in-al-swaifyeh/,2026-07-07,H,Listing cluster: 147 m2 @140k=952; 200 m2 @175k=875; 280 m2 @380k=1357.
+Sweifieh,sale_jd_m2,493,2026,Bayut,https://www.bayut.jo/en/amman/2-bedroom-apartments-for-sale-in-al-swaifyeh/,2026-07-07,H,"Low outlier: 162 m2 older 2-bed at 80,000 JOD."
+Sweifieh,sale_jd_m2,883-888,2025-12,Amaken / Homes Jordan,https://www.amaken.jo/en/property-details/4295/apartment-for-sale-in-swaifyeh-8,2026-07-07,H,385 m2 duplex @340k=883; 180 m2 2nd-floor @160k=888 (Homes Jordan HMM-S-7588).
+Sweifieh,rent_jd_m2,122-150 (small furnished),2026,Amman Apartments,https://ammanapts.co/properties/city/al-swaifyeh,2026-07-07,H,80-85 m2 furnished 2-bed @12k = 141-150; 106 m2 @13k=122 JD/m2/yr - city-high yields.
+Sweifieh,rent_monthly,550-2000,2026-02,Amman Apartments,https://ammanapts.co/news/cost-of-living-in-amman-2026-rent-utilities-food-monthly-budget-guide-1,2026-07-07,M,"1-bed ~550-700/mo; larger furnished 3-bed to ~2,000/mo (24,000/yr)."
+Khalda,sale_jd_m2,500-1050,2026,Bayut,https://www.bayut.jo/en/amman/3-bedroom-apartments-for-sale-in-khalda/,2026-07-07,H,Listing cluster: 160 m2 @83k=518; 155 m2 @110k=709; 180 m2 @155k=861.
+Khalda,sale_jd_m2,714,2025-08,Amaken,https://www.amaken.jo/en/property-details/1720/apartment-for-sale-in-khalda-6,2026-07-07,H,"Listing point: 168 m2 at 120,000 JOD."
+Khalda,sale_jd_m2,1021,2025-08,Amaken,https://www.amaken.jo/en/property-details/1721/brand-new-apartment-for-sale-in-khalda,2026-07-07,H,"Brand-new 235 m2 4-bed at 240,000 JOD - only new builds break 1,000 JD/m2."
+Khalda,sale_jd_m2,373,2026,Bayut,https://www.bayut.jo/en/amman/apartments-for-sale/page-8/,2026-07-07,M,"Low outlier: 340 m2 at 127,000 JOD."
+Khalda,rent_jd_m2,30-58,2026,Bayut,https://www.bayut.jo/en/amman/apartments-for-rent-in-khalda/,2026-07-07,H,"180 m2 @6,600=36; 190 m2 furnished @11k=57; 400 m2 @12k=30 JD/m2/yr."
+Khalda,rent_monthly,650-850 (2-bed),2026-02,Amman Apartments,https://ammanapts.co/news/cost-of-living-in-amman-2026-rent-utilities-food-monthly-budget-guide-1,2026-07-07,H,"Standard 2-bed 120-160 m2; 7,800-10,200 JOD/yr."
+Shmeisani,sale_jd_m2,900-1300,2025,Taj Al Safa,https://tajalsafa.com/apartments-for-sale-in-jordan-the-best-areas-and-prices,2026-07-07,H,"District band (2025), spanning renovated and older stock."
+Shmeisani,sale_jd_m2,454-535 (older),2026,Bayut,https://www.bayut.jo/en/amman/apartments-for-sale-in-shmeisani/,2026-07-07,H,Older-stock cluster: 165 m2 @75k=454; 210 m2 @112.5k=535.
+Shmeisani,sale_jd_m2,907,2025-11,Amaken / Konyare,https://www.amaken.jo/en/property-details/3948/luxury-apartments-for-sale-in-amman--al--shmeisani,2026-07-07,H,"3-year-old luxury 195 m2 at 177,000 JOD - modern premium."
+Shmeisani,sale_jd_m2,562,2025-10,Amaken,https://www.amaken.jo/en/property-details/1367/apartment-for-sale-in-shmeisani,2026-07-07,H,"25-year-old 151 m2 ground-floor at 85,000 JOD - age discount."
+Shmeisani,rent_jd_m2,80-109,2026,Amman Apartments,https://ammanapts.co/properties/city/shmeisani,2026-07-07,H,85 m2 @8k=94; 110 m2 furnished @12k=109; 250 m2 @20k=80 JD/m2/yr.
+Shmeisani,rent_monthly,666-1667,2026,Amman Apartments,https://ammanapts.co/properties/city/shmeisani,2026-07-07,M,"2-bed 85-110 m2 @8,000-12,000/yr; large 250 m2 @20,000/yr."
+Abdoun,sale_jd_m2,1000 (land),2026,Bayut,https://www.bayut.jo/en/property/details-DKTT4278.html,2026-07-07,H,"LAND: 1,265 m2 Private-A plot at 1,265,000 JOD; nearby land to 1,300 JD/m2."
+Dabouq,sale_jd_m2,"400 (land, green-zoned)",2026,Bayut,https://www.bayut.jo/en/property/details-AD51020.html,2026-07-07,H,"LAND: 2,000 m2 green-housing plot (39% cap) at 800,000 JOD."

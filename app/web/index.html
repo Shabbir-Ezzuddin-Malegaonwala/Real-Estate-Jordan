@@ -3,12 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="light dark" />
     <title>Amman Real Estate Intelligence — Analyst Terminal</title>
     <meta
       name="description"
       content="Evidence-backed launch-price intelligence for premium Amman submarkets."
     />
+    <script>
+      // Resolve theme before first paint to avoid a flash of the wrong palette.
+      (function () {
+        try {
+          var v = localStorage.getItem("theme");
+          var t =
+            v === "light" || v === "dark"
+              ? v
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = t;
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -7,6 +7,7 @@ import type {
   Comparable,
   CompAdjustment,
   Confidence,
+  ConfidenceComponent,
   ConfidenceLevel,
   Direction,
   EvidenceKind,
@@ -16,6 +17,7 @@ import type {
   RiskFactor,
   Severity,
 } from "../types";
+import { COMPONENT_LABELS, COMPONENT_ORDER, fixText } from "./intel";
 
 // --- raw engine shapes (only the fields we read) ---------------------------
 interface RawSource {
@@ -70,6 +72,28 @@ interface RawConfidence {
   label: string;
   numeric: number;
   interval_jd_m2: [number, number];
+  components?: Record<string, { score: number; reason?: string }>;
+}
+
+// Maps the engine's keyed components object into the ordered bar list the UI
+// renders. Absent → undefined, so the panel derives a local estimate instead.
+function adaptConfidenceComponents(
+  raw: RawConfidence["components"],
+): ConfidenceComponent[] | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const out: ConfidenceComponent[] = [];
+  const keys = [...COMPONENT_ORDER, ...Object.keys(raw).filter((k) => !COMPONENT_ORDER.includes(k as never))];
+  for (const key of keys) {
+    const c = raw[key];
+    if (!c || typeof c.score !== "number") continue;
+    out.push({
+      key,
+      label: COMPONENT_LABELS[key] ?? key.replace(/_/g, " "),
+      score: Math.max(0, Math.min(100, Math.round(c.score))),
+      reason: c.reason ? fixText(c.reason) : "",
+    });
+  }
+  return out.length > 0 ? out : undefined;
 }
 interface RawMethodValues {
   comparison_asking?: number;
@@ -249,6 +273,7 @@ export function adaptNeighborhood(r: RawNeighborhood, sourceNote: string): Recom
     range_low: lo,
     range_high: hi,
     drivers,
+    components: adaptConfidenceComponents(conf.components),
   };
 
   return {

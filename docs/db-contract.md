@@ -127,6 +127,47 @@ Unique on `(indicator, geography, period)` — re-loading the same series is ide
 `benchmark_id (PK, auto), spec_class (req), cost_jd_per_m2_low, cost_jd_per_m2_high, year` + universal + provenance
 
 - `spec_class`: `basic`, `standard`, `high`, `luxury`, `unknown`
+- `basic`/`standard` low/high are filled from **DoS Building Licenses** (filed licensed estimated
+  cost — a conservative floor, not turnkey build cost; see `dos_building_cost`).
+
+### `dos_building_cost` — DoS quarterly building-licence cost time series (2004–2026)
+
+`cost_id (PK, auto), year (req), quarter (req), authority (req), building_type, license_type (req: new|extension|existing), licenses, residential_license_share, area_m2, estimated_cost_jd, cost_jd_per_m2` + universal + provenance
+Unique on `(year, quarter, authority, license_type)`. `authority` ∈ Kingdom / Greater Amman
+Municipality / Municipalities / Joint district committees / Regional authorities. Area/cost are
+authority totals (all building types blended); `cost_jd_per_m2 = estimated_cost_jd / area_m2`. The
+cost is the licensing authority's *filed estimate* — a conservative cost-approach floor.
+
+### Geo / terrain context (friend-sourced, **NON-PRICED**)
+
+Two derived tables sampled from open rasters (Copernicus DEM, GHS-POP, VIIRS). **Decision:
+elevation / population density / night-light do NOT correlate with price** — these are
+QUERYABLE CONTEXT ONLY (an affluence / density / activity proxy), never a price lever. They
+match the friend CSVs exactly and — unlike collected tables — carry **no** `evidence_category`
+/ `language` columns (the source data has none). Provenance columns still apply.
+
+#### `listing_geofeatures` — per-listing terrain / density / night-light
+
+CSV header (matches `data/raw/friend/listing_geofeatures_clean.csv`):
+
+`listing_id (PK), elevation_m, slope_deg, aspect_deg, aspect_cardinal, population_density, nightlight_intensity, source_name (req), source_url (req), capture_date (req), collected_by, confidence (req), notes`
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `listing_id` | TEXT **PK** | joins to `listings.listing_id` |
+| `elevation_m`, `slope_deg`, `aspect_deg` | REAL | terrain (Copernicus DEM) |
+| `aspect_cardinal` | TEXT | e.g. `N`, `E`, or the literal word `flat` |
+| `population_density` | REAL | persons/km² (GHS-POP) |
+| `nightlight_intensity` | REAL | VIIRS radiance index |
+
+#### `neighborhood_geocontext` — one median-summary row per submarket
+
+CSV header (matches `data/raw/friend/neighborhood_geocontext.csv`):
+
+`neighborhood (PK), median_elevation_m, elevation_rank, median_population_density, median_nightlight, dominant_aspect, context, source_name (req), source_url (req), capture_date (req), collected_by, confidence (req)`
+
+- `dominant_aspect` may be a compass label (`N`, `NE`, …) or the literal word `flat` — render as-is, never as a compass direction.
+- `context` is a human-readable one-liner used verbatim in the non-priced **"Neighborhood spatial context"** evidence chip (category `current_state`, `adjustment = "context — not a price adjustment"`). The chip is omitted (never fabricated) for a submarket with no row.
 
 ---
 

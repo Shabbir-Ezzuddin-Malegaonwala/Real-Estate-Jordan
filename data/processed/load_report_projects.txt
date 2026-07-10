@@ -1,0 +1,10 @@
+Jordan RE — CSV load report
+table         : projects
+source csv    : data\raw\research\projects_research.csv
+generated     : 2026-07-07T21:11:31
+------------------------------------------------------------
+rows read     : 6
+inserted      : 6
+updated       : 0 (upsert: enrichable attrs merged into existing rows)
+duplicates    : 0 (existing primary keys, skipped)
+rejected      : 0

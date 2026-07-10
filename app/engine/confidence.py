@@ -8,10 +8,12 @@ width is driven by the actual weighted dispersion of the adjusted comps.
 
 from __future__ import annotations
 
+from datetime import date
+from typing import Optional
+
 from . import config
 from .models import ComparableRecord, ConfidenceResult
 from .stats import months_between, weighted_std
-from datetime import date
 
 
 def _density_score(n: int) -> float:
@@ -79,6 +81,67 @@ def score(comps: list[ComparableRecord], adjusted_cv: float, method_values: dict
                             interval_low_ppm2=round(low, 1),
                             interval_high_ppm2=round(high, 1),
                             components=components)
+
+
+def _component(score: Optional[float], reason: str) -> dict:
+    return {"score": None if score is None else round(score), "reason": reason}
+
+
+def decompose(conf: ConfidenceResult, comps: list[ComparableRecord], adjusted_cv: float,
+              as_of: date, dev_score: float, gov: dict) -> dict:
+    """Map the internal reliability sub-signals to the five product-facing components the
+    Builder/Agent/Buyer surfaces expose, each 0-100 + a one-line reason. A component that
+    cannot be computed from the evidence is returned with score=None and a reason — never
+    fabricated. The overall confidence.numeric is unchanged; this only explains it.
+    """
+    c = conf.components
+    n = len(comps)
+
+    ages = [months_between(date.fromisoformat(x.listing_date), as_of)
+            for x in comps if x.listing_date]
+    freshness = _component(
+        c["recency"] * 100,
+        f"average comparable age ~{sum(ages) / len(ages):.0f} months "
+        f"(ideal ≤{config.IDEAL_RECENCY_MONTHS})") if ages else _component(
+        None, "comparables carry no listing dates — freshness not scorable")
+
+    gov_signals: list[float] = []
+    if gov.get("index_present"):
+        gov_signals.append(100.0 if gov.get("index_current") else 50.0)
+    if gov.get("has_cost_floor"):
+        gov_signals.append(100.0)
+    if gov_signals:
+        idx = ("CBJ price index current" if gov.get("index_current")
+               else "CBJ price index present but lagged") if gov.get("index_present") \
+            else "no CBJ price index"
+        cost = "construction-cost floor available" if gov.get("has_cost_floor") \
+            else "no construction-cost floor"
+        gov_evidence = _component(sum(gov_signals) / len(gov_signals), f"{idx}; {cost}")
+    else:
+        gov_evidence = _component(
+            None, "no government price index or construction-cost benchmark for this submarket")
+
+    if dev_score > 0:
+        future = _component(
+            min(100.0, dev_score / config.FUTURE_SIGNAL_SATURATION * 100),
+            f"development score {dev_score} from collected infrastructure/policy evidence "
+            f"(saturates at {config.FUTURE_SIGNAL_SATURATION})")
+    else:
+        future = _component(
+            None, "no infrastructure/development evidence collected for this submarket yet")
+
+    return {
+        "data_coverage": _component(
+            c["data_density"] * 100,
+            f"{n} comparable(s) after outlier filtering; full weight at "
+            f"{config.MIN_COMPS_FULL_CONFIDENCE}+"),
+        "comp_quality": _component(
+            c["dispersion"] * 100,
+            f"adjusted comparables vary {adjusted_cv * 100:.0f}% (tighter = higher quality)"),
+        "gov_evidence": gov_evidence,
+        "future_signals": future,
+        "market_freshness": freshness,
+    }
 
 
 def _interval(comps: list[ComparableRecord], point: float, numeric: float,

@@ -82,6 +82,16 @@ def pct(fraction: float) -> str:
     return f"{'+' if fraction >= 0 else ''}{fraction * 100:.1f}%"
 
 
+def to_monthly_rent(ppm2: Optional[float], cap: float) -> Optional[float]:
+    """Normalise a rent price/m² to a MONTHLY figure. Portal rent quotes mix monthly and
+    annual with no period field; a value above `cap` is an annual quote (÷12), and one still
+    above `cap` afterwards is sale-price contamination (dropped). See config.RENT_MONTHLY_MAX_PPM2."""
+    if ppm2 is None or ppm2 <= 0:
+        return None
+    monthly = ppm2 if ppm2 <= cap else ppm2 / 12.0
+    return monthly if monthly <= cap else None
+
+
 def robust_keep(values: Sequence[float], floor: float, k: float = 3.5) -> list[bool]:
     """Boolean keep-mask: drop <= floor, then log-space MAD outlier rejection.
 

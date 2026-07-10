@@ -1,177 +1,230 @@
 {
-  "location_id": null,
+  "location_id": "demo-sweifieh",
   "neighborhood": "Sweifieh",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 390.4,
-  "recommended_price_jd_m2": 600.7,
-  "premium_price_jd_m2": 846.9,
+  "min_safe_price_jd_m2": 545.5,
+  "recommended_price_jd_m2": 839.2,
+  "premium_price_jd_m2": 1132.9,
   "confidence": {
     "label": "M",
-    "numeric": 0.528,
+    "numeric": 0.638,
     "interval_jd_m2": [
-      390.4,
-      810.9
+      545.5,
+      1132.9
     ]
   },
   "evidence_objects": [
     {
-      "factor": "Floor level",
-      "adjustment": "-3.5% per unit",
-      "confidence": "Medium",
-      "method": "OLS slope of price/m² vs floor_level (n=48)",
+      "factor": "Furnishing",
+      "adjustment": "+0.0%",
+      "confidence": "Low",
+      "method": "paired median differential (n_semi=3, n_no=44)",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
           "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103217.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283132814",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103787.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-74553.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-102498.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-85643.html",
-          "capture_date": "2026-07-06"
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283183580",
+          "capture_date": "2026-07-07"
         },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-103254.html",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/279931177",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5b91b5df-6dd0-4154-a1e9-aeb2292003a1",
           "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/7b8f53e4-417a-431b-832f-e984dc423da1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/0ff6d84e-ffee-4f4c-af4c-b87e0b0819b9",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283070970",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282952868",
-          "capture_date": "2026-07-06"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of floor level moves price/m² by -3.5% (finish-controlled regression); subject value = 4."
+      "explanation": "Subject sits at the submarket-typical furnishing; comps differing on this attribute were adjusted by the derived differential."
+    },
+    {
+      "factor": "Floor level",
+      "adjustment": "-5.5% per unit",
+      "confidence": "Medium",
+      "method": "OLS slope of price/m² vs floor_level (n=27)",
+      "datasets": [
+        "listings"
+      ],
+      "sources": [
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103217.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283132814",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103787.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-74553.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-102498.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-85643.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283183580",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103254.html",
+          "capture_date": "2026-07-07"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Each unit of floor level moves price/m² by -5.5% (finish-controlled regression); subject value = 3."
     },
     {
       "factor": "Building age",
-      "adjustment": "-0.7% per unit",
-      "confidence": "Low",
-      "method": "OLS slope of price/m² vs building_age_years (n=60)",
+      "adjustment": "-2.9% per unit",
+      "confidence": "Medium",
+      "method": "OLS slope of price/m² vs building_age_years (n=36)",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
           "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103217.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283132814",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103787.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-74553.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-102498.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-85643.html",
-          "capture_date": "2026-07-06"
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283183580",
+          "capture_date": "2026-07-07"
         },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-103254.html",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/279931177",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5b91b5df-6dd0-4154-a1e9-aeb2292003a1",
           "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/7b8f53e4-417a-431b-832f-e984dc423da1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/0ff6d84e-ffee-4f4c-af4c-b87e0b0819b9",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283070970",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282952868",
-          "capture_date": "2026-07-06"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of building age moves price/m² by -0.7% (finish-controlled regression); subject value = 0."
+      "explanation": "Each unit of building age moves price/m² by -2.9% (finish-controlled regression); subject value = 0."
     },
     {
       "factor": "Size (per m²)",
-      "adjustment": "+0.1% per unit",
-      "confidence": "Low",
-      "method": "OLS slope of price/m² vs area_m2 (n=214)",
+      "adjustment": "+0.0% per unit",
+      "confidence": "Medium",
+      "method": "OLS slope of price/m² vs area_m2 (n=731)",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
           "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103217.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283132814",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103787.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-74553.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-102498.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-85643.html",
-          "capture_date": "2026-07-06"
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283183580",
+          "capture_date": "2026-07-07"
         },
         {
           "name": "Bayut",
           "url": "https://www.bayut.jo/en/property/details-103254.html",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/279931177",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/5b91b5df-6dd0-4154-a1e9-aeb2292003a1",
           "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/7b8f53e4-417a-431b-832f-e984dc423da1",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "EurekaJo",
-          "url": "https://eurekajo.com/Realestates/Details/0ff6d84e-ffee-4f4c-af4c-b87e0b0819b9",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283070970",
-          "capture_date": "2026-07-06"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282952868",
-          "capture_date": "2026-07-06"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of size (per m²) moves price/m² by +0.1% (finish-controlled regression); subject value = 175."
+      "explanation": "Each unit of size (per m²) moves price/m² by +0.0% (finish-controlled regression); subject value = 175."
     },
     {
       "factor": "Ask-to-transaction calibration",
@@ -192,28 +245,10 @@
       "explanation": "Portal prices are asking prices, not sales. A documented 5–15% gap is applied to estimate the transaction level."
     },
     {
-      "factor": "Cost approach floor",
-      "adjustment": "155 JD/m²",
-      "confidence": "Medium",
-      "method": "Value = replacement construction cost − depreciation (new-build ≈ 0)",
-      "datasets": [
-        "cost_benchmarks"
-      ],
-      "sources": [
-        {
-          "name": "DOS Building Licenses",
-          "url": "http://dosweb.dos.gov.jo/industry/building-licenses/",
-          "capture_date": "2026-07-03"
-        }
-      ],
-      "category": "current_state",
-      "explanation": "A rational buyer will not pay below the cost to rebuild: standard construction ≈ 155 JD/m². This sets the minimum-safe price."
-    },
-    {
       "factor": "Income approach ceiling",
-      "adjustment": "847 JD/m²",
+      "adjustment": "1060 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (8.7%, citywide rents vs sales)",
+      "method": "income approach: annual rent ÷ derived market yield (79.3%, citywide rents vs sales)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -221,101 +256,308 @@
         {
           "name": "listings (rentals)",
           "url": "internal://listings",
-          "capture_date": "2026-07-08"
+          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (8.7%). Above ≈ 847 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (79.3%). Above ≈ 1060 JD/m² the unit stops clearing to investors."
     },
     {
-      "factor": "Affluence (night-lights)",
-      "adjustment": "context",
-      "confidence": "Medium",
-      "method": "VIIRS median radiance in submarket",
+      "factor": "Market composition (context)",
+      "adjustment": "context — not a price adjustment",
+      "confidence": "High",
+      "method": "seller-type share of the 12 comps",
       "datasets": [
-        "viirs"
+        "listings"
       ],
       "sources": [
         {
-          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
-          "url": "internal://spatial",
-          "capture_date": "2026-07-08"
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103217.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283132814",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103787.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-74553.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-102498.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-85643.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283183580",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-103254.html",
+          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Submarket night-lights radiance 74 — a proxy for economic activity/affluence (Jordan publishes no neighborhood income data)."
+      "explanation": "Of the comparables driving this estimate, 75% agent-listed, 25% private-listed — a predominantly agency-brokered comp set. Provided as market texture; it does not move the price."
     },
     {
-      "factor": "Terrain / view (DEM)",
-      "adjustment": "context",
-      "confidence": "Medium",
-      "method": "Copernicus DEM median elevation",
+      "factor": "Neighborhood spatial context",
+      "adjustment": "context — not a price adjustment",
+      "confidence": "High",
+      "method": "median terrain, density and night-light of the submarket (open-raster sampling)",
       "datasets": [
-        "dem"
+        "neighborhood_geocontext"
       ],
       "sources": [
         {
-          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
-          "url": "internal://spatial",
-          "capture_date": "2026-07-08"
+          "name": "Copernicus DEM",
+          "url": "https://copernicus-dem-30m.s3.amazonaws.com",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "GHS-POP",
+          "url": "https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "VIIRS",
+          "url": "https://doi.org/10.7910/DVN/YGIVCD",
+          "capture_date": "2026-07-07"
         }
       ],
       "category": "current_state",
-      "explanation": "Median elevation 910 m — Amman's jabals give higher, view-favourable ground a real price signal (fed as the elevation premium)."
+      "explanation": "Sweifieh — Flat-ground commercial-retail hub with mid-to-high residential density. median ground ~910 m, rank 5/5; population density ~13,225/km²; night-time light index ~70; dominant aspect flat. Context only; does not move the price."
     },
     {
-      "factor": "Demand density",
-      "adjustment": "context",
-      "confidence": "Medium",
-      "method": "GHS-POP median residential density",
+      "factor": "Future signal: Amman inner-city BRT Lines 1 & 2 operational",
+      "adjustment": "positioning (no point premium)",
+      "confidence": "M",
+      "method": "future-signal weighting (proximity × timeline certainty × source trust)",
       "datasets": [
-        "ghs_pop"
+        "evidence_items"
       ],
       "sources": [
         {
-          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
-          "url": "internal://spatial",
-          "capture_date": "2026-07-08"
+          "name": "Greater Amman Municipality (Bus Express)",
+          "url": "http://www.ammanbrt.jo/?l=en",
+          "capture_date": "2026-07-07"
         }
       ],
-      "category": "current_state",
-      "explanation": "Residential density ~13,225 people/km² (GHS-POP) — higher = more central/liquid, lower = exclusive/low-rise."
+      "category": "future_signal",
+      "explanation": "Two dedicated-lane BRT lines ~32 km: Line 2 (17 km) Sweileh-Jordan Museum, Line 1 (15 km) Al Mahatta-Sweileh. Infrastructure works largely completed by 2024.. Stated effect: no price impact stated by source (interpretation by engine). Supports holding the launch at the top of the observed range."
     },
     {
-      "factor": "Amenity proximity",
-      "adjustment": "context",
-      "confidence": "Medium",
-      "method": "OSM POI nearest-distance (median)",
+      "factor": "Future signal: Sweifieh: commercial noise suppresses sale, boosts rental yield",
+      "adjustment": "positioning (no point premium)",
+      "confidence": "M",
+      "method": "future-signal weighting (proximity × timeline certainty × source trust)",
       "datasets": [
-        "osm_poi"
+        "evidence_items"
       ],
       "sources": [
         {
-          "name": "Satellite/GIS (DEM · VIIRS · GHS-POP · OSM)",
-          "url": "internal://spatial",
-          "capture_date": "2026-07-08"
+          "name": "Amman Apartments",
+          "url": "https://ammanapts.co/news/apartment-for-rent-in-amman-real-prices-areas-local-advice",
+          "capture_date": "2026-07-07"
         }
       ],
-      "category": "current_state",
-      "explanation": "Nearest school 0.2 km, hospital 1.1 km, mall 0.4 km — proximity drives desirability."
+      "category": "future_signal",
+      "explanation": "Sweifieh is a walkable commercial anchor (malls, retail corridors). Traffic/noise/congestion suppress residential SALE prices but push small-furnished-unit RENTAL yields to city-highs.. Stated effect: no price impact stated by source (interpretation by engine). Supports holding the launch at the top of the observed range."
     }
   ],
   "comparables": [
     {
-      "listing_id": "bayut_85643",
+      "listing_id": "bayut-103217",
+      "neighborhood": "Sweifieh",
+      "area_m2": 175.0,
+      "original_ppm2": 1114.3,
+      "time_adjusted_ppm2": 1114.3,
+      "adjusted_ppm2": 1114.3,
+      "gross_adjustment": 0,
+      "reconciliation_weight": 4.9136,
+      "similarity": 0.845,
+      "listing_date": "2026-06-23",
+      "adjustments": [],
+      "source": {
+        "name": "Bayut",
+        "url": "https://www.bayut.jo/en/property/details-103217.html",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 1114.3,
+      "adjustments_applied": []
+    },
+    {
+      "listing_id": "opensooq-283132814",
+      "neighborhood": "Sweifieh",
+      "area_m2": 190.0,
+      "original_ppm2": 894.7,
+      "time_adjusted_ppm2": 894.7,
+      "adjusted_ppm2": 894.0,
+      "gross_adjustment": 0.0008,
+      "reconciliation_weight": 4.907,
+      "similarity": 0.958,
+      "listing_date": "2026-06-25",
+      "adjustments": [
+        {
+          "factor": "Furnishing",
+          "adjustment": "-5.9%",
+          "method": "derived median differential",
+          "detail": "comp=full -> subject=no"
+        },
+        {
+          "factor": "Floor level",
+          "adjustment": "-5.5%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=14 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.6%",
+          "method": "derived OLS slope",
+          "detail": "comp=190.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283132814",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "price_per_m2": 894.7,
+      "adjustments_applied": [
+        "Furnishing",
+        "Floor level",
+        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "bayut-103787",
+      "neighborhood": "Sweifieh",
+      "area_m2": 190.0,
+      "original_ppm2": 1078.9,
+      "time_adjusted_ppm2": 1078.9,
+      "adjusted_ppm2": 1072.0,
+      "gross_adjustment": 0.0065,
+      "reconciliation_weight": 4.8071,
+      "similarity": 0.814,
+      "listing_date": "2026-07-01",
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.6%",
+          "method": "derived OLS slope",
+          "detail": "comp=190.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Bayut",
+        "url": "https://www.bayut.jo/en/property/details-103787.html",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 1078.9,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "bayut-74553",
+      "neighborhood": "Sweifieh",
+      "area_m2": 180.0,
+      "original_ppm2": 777.8,
+      "time_adjusted_ppm2": 777.8,
+      "adjusted_ppm2": 776.1,
+      "gross_adjustment": 0.0022,
+      "reconciliation_weight": 4.8061,
+      "similarity": 0.829,
+      "listing_date": "2026-06-14",
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=180.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Bayut",
+        "url": "https://www.bayut.jo/en/property/details-74553.html",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 777.8,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "bayut-102498",
+      "neighborhood": "Sweifieh",
+      "area_m2": 183.0,
+      "original_ppm2": 710.4,
+      "time_adjusted_ppm2": 710.4,
+      "adjusted_ppm2": 707.9,
+      "gross_adjustment": 0.0035,
+      "reconciliation_weight": 4.7512,
+      "similarity": 0.819,
+      "listing_date": "2026-06-10",
+      "adjustments": [
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.3%",
+          "method": "derived OLS slope",
+          "detail": "comp=183.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Bayut",
+        "url": "https://www.bayut.jo/en/property/details-102498.html",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 710.4,
+      "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "bayut-85643",
       "neighborhood": "Sweifieh",
       "area_m2": 200.0,
       "original_ppm2": 875.0,
       "time_adjusted_ppm2": 875.0,
-      "adjusted_ppm2": 863.7,
-      "gross_adjustment": 0.0129,
-      "reconciliation_weight": 4.6392,
-      "similarity": 0.789,
+      "adjusted_ppm2": 865.5,
+      "gross_adjustment": 0.0108,
+      "reconciliation_weight": 4.6909,
+      "similarity": 0.936,
       "listing_date": "2026-06-28",
       "adjustments": [
         {
           "factor": "Size (per m²)",
-          "adjustment": "-1.3%",
+          "adjustment": "-1.1%",
           "method": "derived OLS slope",
           "detail": "comp=200.0 -> subject=175"
         }
@@ -323,37 +565,86 @@
       "source": {
         "name": "Bayut",
         "url": "https://www.bayut.jo/en/property/details-85643.html",
-        "capture_date": "2026-07-06"
+        "capture_date": "2026-07-07"
       },
       "seller_type": "agent",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": null,
-      "building_age_years": null,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "no",
-      "price_jd": 175000.0,
       "price_per_m2": 875.0,
       "adjustments_applied": [
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "bayut_103254",
+      "listing_id": "opensooq-283183580",
+      "neighborhood": "Sweifieh",
+      "area_m2": 127.0,
+      "original_ppm2": 488.2,
+      "time_adjusted_ppm2": 488.2,
+      "adjusted_ppm2": 501.1,
+      "gross_adjustment": 0.0265,
+      "reconciliation_weight": 4.3557,
+      "similarity": 0.881,
+      "listing_date": "2026-06-26",
+      "adjustments": [
+        {
+          "factor": "Furnishing",
+          "adjustment": "-5.9%",
+          "method": "derived median differential",
+          "detail": "comp=full -> subject=no"
+        },
+        {
+          "factor": "Floor level",
+          "adjustment": "-5.5%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=20 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+2.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=127.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283183580",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "price_per_m2": 488.2,
+      "adjustments_applied": [
+        "Furnishing",
+        "Floor level",
+        "Building age",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "bayut-103254",
       "neighborhood": "Sweifieh",
       "area_m2": 147.0,
       "original_ppm2": 952.4,
       "time_adjusted_ppm2": 952.4,
-      "adjusted_ppm2": 966.1,
-      "gross_adjustment": 0.0144,
-      "reconciliation_weight": 4.5827,
-      "similarity": 0.779,
+      "adjusted_ppm2": 907.8,
+      "gross_adjustment": 0.0468,
+      "reconciliation_weight": 3.9872,
+      "similarity": 0.927,
       "listing_date": "2026-06-24",
       "adjustments": [
         {
+          "factor": "Furnishing",
+          "adjustment": "-5.9%",
+          "method": "derived median differential",
+          "detail": "comp=full -> subject=no"
+        },
+        {
           "factor": "Size (per m²)",
-          "adjustment": "+1.4%",
+          "adjustment": "+1.2%",
           "method": "derived OLS slope",
           "detail": "comp=147.0 -> subject=175"
         }
@@ -361,68 +652,90 @@
       "source": {
         "name": "Bayut",
         "url": "https://www.bayut.jo/en/property/details-103254.html",
-        "capture_date": "2026-07-06"
+        "capture_date": "2026-07-07"
       },
       "seller_type": "agent",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": null,
-      "building_age_years": null,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "full",
-      "price_jd": 140000.0,
       "price_per_m2": 952.4,
       "adjustments_applied": [
+        "Furnishing",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq_279931177",
+      "listing_id": "bayut-96139",
       "neighborhood": "Sweifieh",
-      "area_m2": 110.0,
-      "original_ppm2": 372.7,
-      "time_adjusted_ppm2": 372.7,
-      "adjusted_ppm2": 374.6,
-      "gross_adjustment": 0.0051,
-      "reconciliation_weight": 2.9255,
-      "similarity": 0.7,
-      "listing_date": null,
+      "area_m2": 165.0,
+      "original_ppm2": 2121.2,
+      "time_adjusted_ppm2": 2121.2,
+      "adjusted_ppm2": 2005.5,
+      "gross_adjustment": 0.0546,
+      "reconciliation_weight": 3.8168,
+      "similarity": 0.817,
+      "listing_date": "2026-06-14",
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+0.7%",
-          "method": "derived OLS slope",
-          "detail": "comp=1 -> subject=0"
+          "factor": "Furnishing",
+          "adjustment": "-5.9%",
+          "method": "derived median differential",
+          "detail": "comp=full -> subject=no"
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "+3.4%",
+          "adjustment": "+0.4%",
           "method": "derived OLS slope",
-          "detail": "comp=110.0 -> subject=175"
+          "detail": "comp=165.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "Bayut",
+        "url": "https://www.bayut.jo/en/property/details-96139.html",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "agent",
+      "price_per_m2": 2121.2,
+      "adjustments_applied": [
+        "Furnishing",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq-283117100",
+      "neighborhood": "Sweifieh",
+      "area_m2": 165.0,
+      "original_ppm2": 545.5,
+      "time_adjusted_ppm2": 545.5,
+      "adjusted_ppm2": 583.0,
+      "gross_adjustment": 0.0689,
+      "reconciliation_weight": 3.6635,
+      "similarity": 0.97,
+      "listing_date": "2026-06-25",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-5.5%",
+          "method": "derived OLS slope",
+          "detail": "comp=2 -> subject=3"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=20 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.4%",
+          "method": "derived OLS slope",
+          "detail": "comp=165.0 -> subject=175"
         }
       ],
       "source": {
         "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/279931177",
-        "capture_date": "2026-07-06"
+        "url": "https://jo.opensooq.com/en/search/283117100",
+        "capture_date": "2026-07-07"
       },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 2,
-      "floor_level": 3,
-      "building_age_years": 1,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "no",
-      "price_jd": 41000.0,
-      "price_per_m2": 372.7,
+      "seller_type": "agent",
+      "price_per_m2": 545.5,
       "adjustments_applied": [
         "Floor level",
         "Building age",
@@ -430,156 +743,22 @@
       ]
     },
     {
-      "listing_id": "eureka_5b91b5df-6dd0-4154-a1e9-aeb2292003a1",
-      "neighborhood": "Sweifieh",
-      "area_m2": 160.0,
-      "original_ppm2": 1000.0,
-      "time_adjusted_ppm2": 1000.0,
-      "adjusted_ppm2": 972.4,
-      "gross_adjustment": 0.0276,
-      "reconciliation_weight": 2.6362,
-      "similarity": 0.818,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=160.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/5b91b5df-6dd0-4154-a1e9-aeb2292003a1",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": 3,
-      "building_age_years": null,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "full",
-      "price_jd": 160000.0,
-      "price_per_m2": 1000.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "eureka_7b8f53e4-417a-431b-832f-e984dc423da1",
-      "neighborhood": "Sweifieh",
-      "area_m2": 230.0,
-      "original_ppm2": 717.4,
-      "time_adjusted_ppm2": 717.4,
-      "adjusted_ppm2": 697.0,
-      "gross_adjustment": 0.0284,
-      "reconciliation_weight": 2.6273,
-      "similarity": 0.724,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-2.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=230.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/7b8f53e4-417a-431b-832f-e984dc423da1",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": 4,
-      "building_age_years": null,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "full",
-      "price_jd": 165000.0,
-      "price_per_m2": 717.4,
-      "adjustments_applied": [
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "eureka_0ff6d84e-ffee-4f4c-af4c-b87e0b0819b9",
-      "neighborhood": "Sweifieh",
-      "area_m2": 165.0,
-      "original_ppm2": 818.2,
-      "time_adjusted_ppm2": 818.2,
-      "adjusted_ppm2": 793.5,
-      "gross_adjustment": 0.0302,
-      "reconciliation_weight": 2.6067,
-      "similarity": 0.829,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=165.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/0ff6d84e-ffee-4f4c-af4c-b87e0b0819b9",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": 3,
-      "building_age_years": null,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "full",
-      "price_jd": 135000.0,
-      "price_per_m2": 818.2,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq_283070970",
+      "listing_id": "opensooq-283070970",
       "neighborhood": "Sweifieh",
       "area_m2": 179.0,
       "original_ppm2": 514.0,
       "time_adjusted_ppm2": 514.0,
-      "adjusted_ppm2": 530.2,
-      "gross_adjustment": 0.0316,
-      "reconciliation_weight": 2.5907,
-      "similarity": 0.844,
-      "listing_date": null,
+      "adjusted_ppm2": 574.8,
+      "gross_adjustment": 0.1183,
+      "reconciliation_weight": 3.0916,
+      "similarity": 0.984,
+      "listing_date": "2026-06-24",
       "adjustments": [
         {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
           "factor": "Building age",
-          "adjustment": "+6.9%",
+          "adjustment": "+12.0%",
           "method": "derived OLS slope",
-          "detail": "comp=10 -> subject=0"
+          "detail": "comp=14 -> subject=0"
         },
         {
           "factor": "Size (per m²)",
@@ -591,235 +770,38 @@
       "source": {
         "name": "OpenSooq",
         "url": "https://jo.opensooq.com/en/search/283070970",
-        "capture_date": "2026-07-06"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": 3,
-      "building_age_years": 10,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "no",
-      "price_jd": 92000.0,
-      "price_per_m2": 514.0,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq_282952868",
-      "neighborhood": "Sweifieh",
-      "area_m2": 170.0,
-      "original_ppm2": 270.6,
-      "time_adjusted_ppm2": 270.6,
-      "adjusted_ppm2": 282.5,
-      "gross_adjustment": 0.044,
-      "reconciliation_weight": 2.4592,
-      "similarity": 0.694,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Building age",
-          "adjustment": "+4.1%",
-          "method": "derived OLS slope",
-          "detail": "comp=6 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.3%",
-          "method": "derived OLS slope",
-          "detail": "comp=170.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282952868",
-        "capture_date": "2026-07-06"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 4,
-      "bathrooms": 3,
-      "floor_level": null,
-      "building_age_years": 6,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "no",
-      "price_jd": 46000.0,
-      "price_per_m2": 270.6,
-      "adjustments_applied": [
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq_282733132",
-      "neighborhood": "Sweifieh",
-      "area_m2": 240.0,
-      "original_ppm2": 645.8,
-      "time_adjusted_ppm2": 645.8,
-      "adjusted_ppm2": 678.9,
-      "gross_adjustment": 0.0511,
-      "reconciliation_weight": 2.3891,
-      "similarity": 0.7,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+12.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=20 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-3.4%",
-          "method": "derived OLS slope",
-          "detail": "comp=240.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282733132",
-        "capture_date": "2026-07-06"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 4,
-      "floor_level": 3,
-      "building_age_years": 20,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "no",
-      "price_jd": 155000.0,
-      "price_per_m2": 645.8,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq_283099290",
-      "neighborhood": "Sweifieh",
-      "area_m2": 109.0,
-      "original_ppm2": 357.8,
-      "time_adjusted_ppm2": 357.8,
-      "adjusted_ppm2": 382.0,
-      "gross_adjustment": 0.0677,
-      "reconciliation_weight": 2.2413,
-      "similarity": 0.698,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Building age",
-          "adjustment": "+6.9%",
-          "method": "derived OLS slope",
-          "detail": "comp=10 -> subject=0"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+3.4%",
-          "method": "derived OLS slope",
-          "detail": "comp=109.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283099290",
-        "capture_date": "2026-07-06"
-      },
-      "seller_type": "unknown",
-      "bedrooms": 2,
-      "bathrooms": 2,
-      "floor_level": 3,
-      "building_age_years": 10,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "semi",
-      "price_jd": 39000.0,
-      "price_per_m2": 357.8,
-      "adjustments_applied": [
-        "Floor level",
-        "Building age",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "eureka_c69c892b-ce39-4155-9fd7-002a95da86ee",
-      "neighborhood": "Sweifieh",
-      "area_m2": 238.0,
-      "original_ppm2": 462.2,
-      "time_adjusted_ppm2": 462.2,
-      "adjusted_ppm2": 430.8,
-      "gross_adjustment": 0.0678,
-      "reconciliation_weight": 2.2402,
-      "similarity": 0.705,
-      "listing_date": null,
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-3.5%",
-          "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-3.2%",
-          "method": "derived OLS slope",
-          "detail": "comp=238.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "EurekaJo",
-        "url": "https://eurekajo.com/Realestates/Details/c69c892b-ce39-4155-9fd7-002a95da86ee",
         "capture_date": "2026-07-07"
       },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 4,
-      "floor_level": 3,
-      "building_age_years": null,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "unknown",
-      "price_jd": 110000.0,
-      "price_per_m2": 462.2,
+      "seller_type": "agent",
+      "price_per_m2": 514.0,
       "adjustments_applied": [
-        "Floor level",
+        "Building age",
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "opensooq_282577734",
+      "listing_id": "opensooq-283669608",
       "neighborhood": "Sweifieh",
-      "area_m2": 178.0,
-      "original_ppm2": 533.7,
-      "time_adjusted_ppm2": 533.7,
-      "adjusted_ppm2": 578.1,
-      "gross_adjustment": 0.0831,
-      "reconciliation_weight": 2.1193,
-      "similarity": 0.846,
-      "listing_date": null,
+      "area_m2": 150.0,
+      "original_ppm2": 666.7,
+      "time_adjusted_ppm2": 666.7,
+      "adjusted_ppm2": 924.1,
+      "gross_adjustment": 0.3862,
+      "reconciliation_weight": 0.8519,
+      "similarity": 0.941,
+      "listing_date": "2026-07-06",
       "adjustments": [
         {
+          "factor": "Furnishing",
+          "adjustment": "+20.0%",
+          "method": "derived median differential",
+          "detail": "comp=semi -> subject=no"
+        },
+        {
           "factor": "Floor level",
-          "adjustment": "-3.5%",
+          "adjustment": "+5.5%",
           "method": "derived OLS slope",
-          "detail": "comp=3 -> subject=4"
+          "detail": "comp=4 -> subject=3"
         },
         {
           "factor": "Building age",
@@ -829,27 +811,20 @@
         },
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.2%",
+          "adjustment": "+1.1%",
           "method": "derived OLS slope",
-          "detail": "comp=178.0 -> subject=175"
+          "detail": "comp=150.0 -> subject=175"
         }
       ],
       "source": {
         "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282577734",
-        "capture_date": "2026-07-06"
+        "url": "https://jo.opensooq.com/en/search/283669608",
+        "capture_date": "2026-07-07"
       },
-      "seller_type": "unknown",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "floor_level": 3,
-      "building_age_years": 20,
-      "view": "none",
-      "parking": "unknown",
-      "furnishing": "no",
-      "price_jd": 95000.0,
-      "price_per_m2": 533.7,
+      "seller_type": "private",
+      "price_per_m2": 666.7,
       "adjustments_applied": [
+        "Furnishing",
         "Floor level",
         "Building age",
         "Size (per m²)"
@@ -860,17 +835,17 @@
     {
       "factor": "High price dispersion",
       "severity": "medium",
-      "detail": "Adjusted comps vary 38% — the submarket is heterogeneous."
+      "detail": "Adjusted comps vary 43% — the submarket is heterogeneous."
     },
     {
-      "factor": "Subject attributes unknown",
+      "factor": "No cost-approach floor",
       "severity": "low",
-      "detail": "furnishing not supplied — those premiums could not be applied."
+      "detail": "No construction-cost benchmark for this spec class — the minimum-safe price rests on the comparison band alone."
     },
     {
-      "factor": "Valuation methods diverge",
-      "severity": "medium",
-      "detail": "Comparison, cost and income approaches disagree (PDF: divergence is informative)."
+      "factor": "View premium unavailable",
+      "severity": "low",
+      "detail": "Bayut/OpenSooq do not expose view per listing — the view/aspect factor will attach at neighborhood level from qualitative research (R7), not per comp."
     },
     {
       "factor": "Parking premium not derivable",
@@ -880,160 +855,127 @@
     {
       "factor": "Some attribute premiums limited",
       "severity": "low",
-      "detail": "Finish quality too sparse to derive even citywide — not adjusted."
+      "detail": "Elevator too sparse to derive even citywide — not adjusted."
     },
     {
       "factor": "Price index not current",
       "severity": "low",
-      "detail": "CBJ index covers only through none; time-adjustment of stale comps is disabled rather than extrapolated."
-    },
-    {
-      "factor": "No future-signal evidence",
-      "severity": "low",
-      "detail": "No infrastructure/development items collected yet — the appreciation story is not evidenced; premium tier rests on the comparison band."
+      "detail": "CBJ index covers only through 2021-Q3; time-adjustment of stale comps is disabled rather than extrapolated."
     }
   ],
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 390.4,
+      "recommended_price_jd_m2": 545.5,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 600.7,
+      "recommended_price_jd_m2": 839.2,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 846.9,
-      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.0). Enables the 'raise later, never cut' strategy under strong demand."
+      "recommended_price_jd_m2": 1132.9,
+      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.48). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a high apartment in Sweifieh (~175 m²), the recommended launch-price ESTIMATE is 601 JD/m², within an evidence-anchored range of 390–847 JD/m² (confidence: M, 0.53; evidence-dispersion band 390–811, uncalibrated — not yet validated against realized transactions). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. Cross-checks: cost floor ≈ 155, income ceiling ≈ 847. Convergence supports the estimate; divergence is captured in the risks. Key risk: Adjusted comps vary 38% — the submarket is heterogeneous.",
-  "computed_date": "2026-07-08",
+  "narrative": "For a luxury apartment in Sweifieh (~175 m²), the recommended launch price is 839 JD/m², within a defensible range of 546–1133 JD/m² (confidence: M, 0.64; 80% interval 546–1133). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~935 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: income ceiling ≈ 1060. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.48) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Adjusted comps vary 43% — the submarket is heterogeneous.",
+  "computed_date": "2026-07-07",
   "method_values": {
-    "comparison_asking": 667.4,
-    "comparison": 600.7,
-    "cost_floor": 154.9,
-    "income_ceiling": 846.9,
-    "development_score": 0.0,
+    "comparison_asking": 932.4,
+    "comparison_comp_draw": 911.3,
+    "submarket_anchor_ppm2": 935.1,
+    "comparison": 839.2,
+    "cost_floor": null,
+    "income_ceiling": 1059.8,
+    "development_score": 0.48,
     "confidence_components": {
       "data_density": 1.0,
       "dispersion": 0.0,
-      "recency": 0.978,
-      "method_agreement": 0.0,
+      "recency": 0.975,
+      "method_agreement": 0.613,
       "source_quality": 0.6
     },
     "selection_notes": [
-      "214 same-submarket apartment listings; 123 within 18 months",
-      "12 comps selected (ranked by similarity)"
+      "114 near-duplicate cross-posting(s) collapsed (same beds, area & price/m2 within 1%)",
+      "617 same-submarket apartment listings; 97 within 18 months",
+      "12 comps selected (ranked by similarity)",
+      "reconciled to submarket robust median 935 JD/m² (n=731 same-type sales) via inverse-variance weighting (anchor λ=0.99) — guards against an unrepresentative comp shortlist"
     ],
     "derived_premiums": [
       {
-        "factor": "View: city vs none",
-        "derived_premium": -0.0503,
-        "method": "paired median differential (n_city=21, n_none=160)",
+        "factor": "Finish quality: high vs luxury",
+        "derived_premium": -0.1262,
+        "method": "paired median differential (n_high=9, n_luxury=156)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 181,
-        "computed_date": "2026-07-08",
-        "neighborhood": "Sweifieh",
-        "property_type": "apartment",
-        "notes": "baseline=none"
-      },
-      {
-        "factor": "View: garden vs none",
-        "derived_premium": 0.54,
-        "method": "paired median differential (n_garden=3, n_none=160)",
-        "source": "listings (portal asking prices)",
-        "confidence": "Low",
-        "sample_size": 163,
-        "computed_date": "2026-07-08",
-        "neighborhood": "Sweifieh",
-        "property_type": "apartment",
-        "notes": "baseline=none"
-      },
-      {
-        "factor": "Elevator: n vs y",
-        "derived_premium": -0.2367,
-        "method": "paired median differential (n_n=7, n_y=152)",
-        "source": "listings (portal asking prices)",
-        "confidence": "Low",
-        "sample_size": 159,
-        "computed_date": "2026-07-08",
+        "sample_size": 165,
+        "computed_date": "2026-07-07",
         "neighborhood": "citywide",
         "property_type": "apartment",
-        "notes": "baseline=y; citywide fallback — submarket sample insufficient"
+        "notes": "baseline=luxury; citywide fallback — submarket sample insufficient"
       },
       {
         "factor": "Furnishing: full vs no",
-        "derived_premium": 0.6869,
-        "method": "paired median differential (n_full=36, n_no=48)",
+        "derived_premium": 0.0589,
+        "method": "paired median differential (n_full=9, n_no=44)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 84,
-        "computed_date": "2026-07-08",
+        "sample_size": 53,
+        "computed_date": "2026-07-07",
         "neighborhood": "Sweifieh",
         "property_type": "apartment",
         "notes": "baseline=no"
       },
       {
         "factor": "Furnishing: semi vs no",
-        "derived_premium": -0.3002,
-        "method": "paired median differential (n_semi=7, n_no=48)",
+        "derived_premium": -0.211,
+        "method": "paired median differential (n_semi=3, n_no=44)",
         "source": "listings (portal asking prices)",
         "confidence": "Low",
-        "sample_size": 55,
-        "computed_date": "2026-07-08",
+        "sample_size": 47,
+        "computed_date": "2026-07-07",
         "neighborhood": "Sweifieh",
         "property_type": "apartment",
         "notes": "baseline=no"
       },
       {
         "factor": "Floor level",
-        "derived_premium": -0.03534,
-        "method": "OLS slope of price/m² vs floor_level (n=48)",
+        "derived_premium": -0.0554,
+        "method": "OLS slope of price/m² vs floor_level (n=27)",
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
-        "sample_size": 48,
-        "computed_date": "2026-07-08",
+        "sample_size": 27,
+        "computed_date": "2026-07-07",
         "neighborhood": "Sweifieh",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit; absolute floor_level (total_floors unavailable from portals)"
       },
       {
         "factor": "Building age",
-        "derived_premium": -0.0069,
-        "method": "OLS slope of price/m² vs building_age_years (n=60)",
+        "derived_premium": -0.02873,
+        "method": "OLS slope of price/m² vs building_age_years (n=36)",
         "source": "listings (portal asking prices)",
-        "confidence": "Low",
-        "sample_size": 60,
-        "computed_date": "2026-07-08",
+        "confidence": "Medium",
+        "sample_size": 36,
+        "computed_date": "2026-07-07",
         "neighborhood": "Sweifieh",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit"
       },
       {
         "factor": "Size (per m²)",
-        "derived_premium": 0.00052,
-        "method": "OLS slope of price/m² vs area_m2 (n=214)",
+        "derived_premium": 0.00043,
+        "method": "OLS slope of price/m² vs area_m2 (n=731)",
         "source": "listings (portal asking prices)",
-        "confidence": "Low",
-        "sample_size": 214,
-        "computed_date": "2026-07-08",
+        "confidence": "Medium",
+        "sample_size": 731,
+        "computed_date": "2026-07-07",
         "neighborhood": "Sweifieh",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit"
       }
     ]
-  },
-  "provenance": {
-    "data_source_file": "db/jordan_national.sqlite",
-    "listings_source_csv": "data\\processed\\listings_national_20260708.csv",
-    "listings_row_count": 52792,
-    "listings_snapshot_hash": "dbca8785ebfdda4f",
-    "engine_git_sha": "2a85be8",
-    "generated_at": "2026-07-08"
   }
 }

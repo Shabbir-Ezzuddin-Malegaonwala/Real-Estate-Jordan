@@ -1,9 +1,37 @@
 # Frontend Report — Jordan Real Estate Intelligence Platform (Analyst Terminal)
 
-**Status:** Interactive — computes on demand against the live API, with an offline fallback. Builds clean, runs clean.
+**Status:** Interactive — computes on demand against the live API, with an offline fallback. Light + dark themes. Builds clean, runs clean.
 **Owner scope:** `app/web/`, `docs/frontend-*`. **Date:** 2026-07-07.
 
-> Sections 1–8 below document the original static build. **Section 0 (this update)** documents the interactive rework against the live backend API and a critical map-rendering bug fixed along the way. Read Section 0 first.
+> Read newest-first. **Section 00 (this update)** adds a light/dark theme toggle and an in-app "How to use" panel. **Section 0** documents the interactive rework against the live API. Sections 1–8 document the original static build.
+
+---
+
+## 00. Light + dark theme toggle, and an in-app "How to use" panel
+
+### 00.1 Theme system (light + dark)
+The dark map was hard to read, so the UI now ships both themes with a header toggle (sun/moon, `aria-label`). **Default follows the OS** (`prefers-color-scheme`); an explicit choice persists in `localStorage` and wins from then on. An inline script in `index.html` stamps `data-theme` before first paint (no flash).
+
+- **Palette is CSS-variable driven.** Every semantic Tailwind token (`base`, `surface`, `ink`, `line`, `accent`, `pos`…) is now `rgb(var(--c-…) / <alpha-value>)`, so opacity modifiers (`bg-accent/10`, `border-pos/40`) still work and **a single `[data-theme]` swap re-themes the entire UI with zero per-component edits** (`src/index.css`, `tailwind.config.js`). Light values are hand-tuned for contrast — deeper amber/cyan/green/red so badges and the large recommended figure stay legible on white.
+- **Basemap swaps with the theme.** Dark keeps CARTO dark-matter; light uses **CARTO Positron** (`src/lib/mapStyle.ts` — added `CARTO_LIGHT`, `themeStyle()`, and a per-theme `mapPalette()` covering roads, POI halo, neighbourhood fill/line/selection, zoning fills + outline, and marker text/shadow). MapLibre popups, controls, scrollbars, and the focus ring are all variable-driven and track the theme.
+- **Hook:** `src/lib/theme.ts` (`useTheme`) — resolves stored-or-system, applies `data-theme` + `color-scheme`, and keeps following the OS only while no explicit choice is stored.
+
+### 00.2 The map re-theme (the easy thing to get wrong — and a real bug fixed)
+`map.setStyle()` drops custom sources/layers, so `MapView` re-adds **all** of them (roads, POIs, comparables, future signals, neighbourhood fill/line/selection, and lazily-loaded zoning) on the `style.load` event, then re-applies the current selection + view and re-styles the DOM label markers (markers survive `setStyle`, so they're only re-styled, not recreated). Selection and camera are preserved via refs — nothing the user set is lost.
+
+**Bug found during verification:** `setStyle` defaults to *diff* mode. Because the two CARTO styles share source/layer ids (`carto`, `bg`), diff mode applied a partial change, **never fired `style.load`, and left `readyRef` stuck `false`** — which then silently blocked the next selection-fly and the next theme swap (the map stayed on the old basemap). Fixed with `map.setStyle(style, { diff: false })`, forcing a full reload that deterministically drops-and-re-adds the custom layers every time. Verified the full light→dark→light round-trip plus a post-swap selection.
+
+### 00.3 In-app "How to use / About" panel
+A header **"?"** button opens a right-side drawer (`role="dialog"`, `aria-modal`, Escape/backdrop/✕ to close) — `src/components/HelpPanel.tsx`. Honest and skimmable: what it is (five Amman submarkets), the 3-step how-to, what each panel means (Launch Price Band, Adjustment Waterfall, Comparables, Risk Factors, Future Signals), **included vs. pending** (view/parking not per-listing; competitors, construction costs, future infrastructure, neighbourhood profiles awaiting research), the data sources (Bayut, OpenSooq, OpenStreetMap, Central Bank of Jordan, Dept. of Statistics), and the decision-support disclaimer. A subtle first-load hint ("Click a submarket or use the form to begin") sits over the map and dismisses on first selection.
+
+### 00.4 Verification (Playwright, viewport 1440×900)
+- **Light** (`frontend-verify-light-01.png`) — Positron basemap + panels read cleanly; amber/cyan accents keep contrast.
+- **Dark** (`frontend-verify-dark-01.png`) — dark-matter basemap, Dabouq selected **after** a theme swap: map flew, amber selection ring drawn, panel recomputed (Dabouq HIGH 74 · 888/625/1,151) — proves layers + selection survive the swap.
+- **Help** — `frontend-verify-help-dark.png`, `frontend-verify-help-dark-sources.png`, `frontend-verify-help-light.png` (reads in both themes).
+- **Console:** only the pre-existing `favicon.ico` 404 and the `:8000/health` connection-refused (API was down in this run → offline precomputed fallback engaged, unchanged). No theme or runtime errors.
+- **Build:** `tsc` clean, `vite build` ~6.4s. Offline fallback and context-row rendering untouched. No paid basemap keys.
+
+**Files:** `src/lib/theme.ts` (new), `src/components/ThemeToggle.tsx` (new), `src/components/HelpPanel.tsx` (new), `src/lib/mapStyle.ts`, `src/components/MapView.tsx`, `src/App.tsx`, `src/index.css`, `tailwind.config.js`, `index.html`.
 
 ---
 

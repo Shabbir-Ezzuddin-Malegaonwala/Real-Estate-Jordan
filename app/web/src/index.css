@@ -3,8 +3,49 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* Dark is the default theme; the light overrides sit under [data-theme="light"].
+     An inline script in index.html stamps data-theme before first paint. */
+  :root,
+  :root[data-theme="dark"] {
+    --c-base: 10 13 18;
+    --c-surface: 15 20 28;
+    --c-panel: 18 24 36;
+    --c-raised: 24 33 48;
+    --c-line: 31 41 55;
+    --c-line-soft: 22 29 40;
+    --c-ink: 214 222 234;
+    --c-ink-dim: 154 167 184;
+    --c-ink-mute: 107 118 136;
+    --c-ink-faint: 74 85 104;
+    --c-accent: 230 169 75;
+    --c-accent-dim: 169 125 56;
+    --c-cyan: 95 178 201;
+    --c-cyan-dim: 63 125 143;
+    --c-pos: 95 164 127;
+    --c-neg: 201 115 111;
+    --c-warn: 217 164 65;
     color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --c-base: 240 243 247;
+    --c-surface: 255 255 255;
+    --c-panel: 247 249 251;
+    --c-raised: 233 238 244;
+    --c-line: 210 217 226;
+    --c-line-soft: 226 231 238;
+    --c-ink: 26 34 48;
+    --c-ink-dim: 66 78 95;
+    --c-ink-mute: 100 112 130;
+    --c-ink-faint: 146 158 174;
+    --c-accent: 176 121 26;
+    --c-accent-dim: 138 94 20;
+    --c-cyan: 40 122 145;
+    --c-cyan-dim: 63 125 143;
+    --c-pos: 45 122 84;
+    --c-neg: 176 62 57;
+    --c-warn: 166 118 20;
+    color-scheme: light;
   }
 
   html,
@@ -15,8 +56,8 @@
   }
 
   body {
-    background: #0a0d12;
-    color: #d6deea;
+    background: rgb(var(--c-base));
+    color: rgb(var(--c-ink));
     font-family: "IBM Plex Sans", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -37,15 +78,15 @@
     background: transparent;
   }
   .scroll-thin::-webkit-scrollbar-thumb {
-    background: #1f2937;
+    background: rgb(var(--c-line));
     border-radius: 4px;
   }
   .scroll-thin::-webkit-scrollbar-thumb:hover {
-    background: #2b3546;
+    background: rgb(var(--c-raised));
   }
 
   *:focus-visible {
-    outline: 2px solid #e6a94b;
+    outline: 2px solid rgb(var(--c-accent));
     outline-offset: 1px;
   }
 }
@@ -66,41 +107,42 @@
   .input:focus {
     @apply border-cyan-dim;
   }
-  select.input {
-    color-scheme: dark;
-  }
 }
 
-/* MapLibre popup + control theming to match the terminal. */
+/* MapLibre popup + control theming — driven by the palette variables so they
+   track the active theme. */
 .maplibregl-popup-content {
-  background: #121824 !important;
-  color: #d6deea !important;
-  border: 1px solid #1f2937 !important;
+  background: rgb(var(--c-panel)) !important;
+  color: rgb(var(--c-ink)) !important;
+  border: 1px solid rgb(var(--c-line)) !important;
   border-radius: 3px !important;
   padding: 8px 10px !important;
   font-family: "IBM Plex Sans", sans-serif !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
 }
 .maplibregl-popup-tip {
-  border-top-color: #121824 !important;
-  border-bottom-color: #121824 !important;
+  border-top-color: rgb(var(--c-panel)) !important;
+  border-bottom-color: rgb(var(--c-panel)) !important;
 }
 .maplibregl-ctrl-group {
-  background: #121824 !important;
-  border: 1px solid #1f2937 !important;
+  background: rgb(var(--c-panel)) !important;
+  border: 1px solid rgb(var(--c-line)) !important;
 }
 .maplibregl-ctrl-group button {
   background: transparent !important;
 }
 .maplibregl-ctrl-group button + button {
-  border-top: 1px solid #1f2937 !important;
+  border-top: 1px solid rgb(var(--c-line)) !important;
 }
 .maplibregl-ctrl button .maplibregl-ctrl-icon {
   filter: invert(0.85);
 }
+:root[data-theme="light"] .maplibregl-ctrl button .maplibregl-ctrl-icon {
+  filter: invert(0.25);
+}
 .maplibregl-ctrl-attrib {
-  background: rgba(10, 13, 18, 0.7) !important;
+  background: rgb(var(--c-base) / 0.7) !important;
 }
 .maplibregl-ctrl-attrib a {
-  color: #6b7688 !important;
+  color: rgb(var(--c-ink-mute)) !important;
 }
