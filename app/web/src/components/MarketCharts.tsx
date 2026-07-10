@@ -19,11 +19,14 @@ export function MarketCharts({
 }) {
   const [open, setOpen] = useState(true);
 
+  // Top submarkets by recommended price; capped so the dock stays readable with
+  // the full national coverage loaded (dozens of neighbourhoods).
   const priceRows = useMemo(
     () =>
       Object.values(bundle.results)
         .map((r) => ({ nb: r.neighborhood, value: r.recommended_jd_m2 }))
-        .sort((a, b) => b.value - a.value),
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10),
     [bundle],
   );
   const priceMax = Math.max(...priceRows.map((r) => r.value), 1);

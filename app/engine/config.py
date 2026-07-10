@@ -23,6 +23,7 @@ SIZE_BAND_WIDEN_STEP = 0.25      # relax band by this much when too few comps
 MIN_COMPS = 3                    # below this the market is "thin" (PDF: reliability drops)
 MIN_COMPS_FULL_CONFIDENCE = 8    # at/above this, data density stops penalising confidence
 TARGET_COMPS = 12                # stop selecting once we have this many strong comps
+MIN_LOCAL_RENT_COMPS = 4         # fewer local rents than this -> skip income ceiling (too noisy)
 
 # --- Near-duplicate collapse (comparable_analysis.collapse_near_duplicates) ---
 # Portal data is heavily cross-syndicated: the SAME physical unit is posted on Bayut,

@@ -69,3 +69,7 @@ deliverables/*.bak
 
 # raw OSM Overpass cache (regenerable via scrapers/osm_jordan_poi.py; huge)
 data/raw/osm/jordan/
+
+# national-rebuild artifacts (regenerable)
+db/jordan_national.sqlite
+data/processed/listings_national_20260708.csv

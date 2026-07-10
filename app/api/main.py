@@ -26,7 +26,9 @@ from app.engine.models import Subject
 from app.engine.opportunity import OPPORTUNITY_WEIGHTS, READINESS_WEIGHTS
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_re.sqlite"))
+# Production DB is the national build (56,854 listings). The 854-row jordan_re.sqlite
+# is the enriched PILOT, kept for reference only — see db/README.md. Override with JORDAN_RE_DB.
+_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_national.sqlite"))
 
 # The engine's human text uses typographic/math symbols (JD/m², →, ×, ≤, ≈, en/em-dash). Those are
 # valid UTF-8 on the wire, but a consumer that decodes the body as latin-1 (no charset was declared)

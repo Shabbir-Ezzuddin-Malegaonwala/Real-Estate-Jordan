@@ -1,0 +1,2 @@
+spec_class,cost_jd_per_m2_low,cost_jd_per_m2_high,year,evidence_category,language,source_name,source_url,capture_date,collected_by,confidence,notes
+standard,153.5,156.4,2024,government,en,DOS Building Licenses,http://dosweb.dos.gov.jo/industry/building-licenses/,2026-07-03,scraper,H,"national declared build cost/m2, 2022–2024 range; construction only (excl. land); conservative licence valuation"

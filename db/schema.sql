@@ -57,6 +57,14 @@ CREATE TABLE IF NOT EXISTS listings (
     listing_date       TEXT,
     main_image_url     TEXT,
     description_raw    TEXT,
+    -- Phase 2 spatial features (derived by scrapers/enrich_spatial.py; nullable, no provenance)
+    elevation_m        REAL,   -- Copernicus DEM (terrain / view signal)
+    slope_deg          REAL,   -- Copernicus DEM
+    ntl_radiance       REAL,   -- VIIRS night-lights (affluence proxy)
+    pop_density        REAL,   -- GHS-POP (demand density)
+    dist_school_km     REAL,   -- OSM POI proximity
+    dist_hospital_km   REAL,
+    dist_mall_km       REAL,
     evidence_category  TEXT NOT NULL CHECK (evidence_category IN ('market','government','gis','infrastructure','macro','portal','builder','news','derived','unknown')),
     language           TEXT NOT NULL DEFAULT 'unknown' CHECK (language IN ('en','ar','mixed','unknown')),
     source_name        TEXT NOT NULL,

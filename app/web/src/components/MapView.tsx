@@ -165,7 +165,7 @@ export function MapView({
       style: themeStyle(themeRef.current),
       center: AMMAN_CENTER,
       zoom: AMMAN_ZOOM,
-      minZoom: 10,
+      minZoom: 6.5,
       maxZoom: 17,
       attributionControl: { compact: true },
     });

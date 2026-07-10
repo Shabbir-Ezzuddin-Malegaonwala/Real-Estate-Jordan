@@ -163,6 +163,10 @@ def _recency_similarity(l: Listing, as_of: date) -> Optional[float]:
 
 
 def _attribute_match(l: Listing, subject: Subject) -> float:
+    # 'unknown' values are skipped below, so a sparsely-populated attribute simply doesn't
+    # bias selection. (finish_quality is intentionally NOT text-mined from marketing copy —
+    # see scrapers/enrich_from_text.py — so on real data it stays 'unknown' here; on clean
+    # data with a real finish field it contributes normally.)
     fields = ["view", "parking", "finish_quality", "elevator"]
     checked = matched = 0
     for f in fields:
