@@ -55,8 +55,10 @@ export interface Comparable {
   area_m2: number;
   price_per_m2: number; // the comp's normalised (adjusted) price/m²
   bedrooms: number | null;
+  bathrooms?: number | null;
   floor_level: number | null;
   view: string;
+  parking?: string;
   building_age_years: number | null;
   seller_type: string;
   url: string;

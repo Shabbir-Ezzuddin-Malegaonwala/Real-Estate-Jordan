@@ -5,9 +5,15 @@ export function Comparables({ items }: { items: Comparable[] }) {
   if (items.length === 0) return null;
   return (
     <section className="px-4 pt-5" aria-label="Comparable listings">
-      <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="text-[13px] font-semibold text-ink">Comparables</h3>
-        <span className="text-2xs text-ink-mute">{items.length} weighted comps</span>
+      <div className="mb-2">
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-[13px] font-semibold text-ink">The listings this price is based on</h3>
+          <span className="text-2xs text-ink-mute">{items.length} nearby</span>
+        </div>
+        <p className="mt-0.5 text-2xs leading-relaxed text-ink-mute">
+          Real apartments listed nearby. Each one is a piece of evidence — click any to open the
+          actual listing.
+        </p>
       </div>
 
       <div className="space-y-1.5">
@@ -39,18 +45,34 @@ export function Comparables({ items }: { items: Comparable[] }) {
   );
 }
 
-// Real-engine comp: show how the listing was normalised to the subject.
+// Real-engine comp: what the listing is, then how it was compared to the subject.
 function ReconciliationBody({ c }: { c: Comparable }) {
+  const specs = listingSpecs(c);
   return (
     <>
+      {/* what the listing actually consists of */}
+      {specs.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-2xs text-ink-dim">
+          {specs.map((s) => (
+            <span key={s.k}>
+              <span className="text-ink-faint">{s.k} </span>
+              <span className="tnum text-ink">{s.v}</span>
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="mt-1.5 flex items-center gap-1.5 text-2xs text-ink-mute">
-        <span className="tnum text-ink-dim">{jd(c.original_ppm2 ?? c.price_per_m2)}</span>
+        <span title="its own listed price">
+          <span className="tnum text-ink-dim">{jd(c.original_ppm2 ?? c.price_per_m2)}</span>
+        </span>
         <span className="text-ink-faint">→</span>
-        <span className="tnum text-ink">{jd(c.adjusted_ppm2 ?? c.price_per_m2)}</span>
+        <span title="adjusted to match your unit">
+          <span className="tnum text-ink">{jd(c.adjusted_ppm2 ?? c.price_per_m2)}</span>
+        </span>
         {c.gross_adjustment != null && (
-          <span className="text-ink-faint">· net adj {(c.gross_adjustment * 100).toFixed(1)}%</span>
+          <span className="text-ink-faint">· adjusted {(c.gross_adjustment * 100).toFixed(0)}%</span>
         )}
-        <span className="ml-auto tnum">{jd(c.area_m2)} m²</span>
       </div>
 
       <div className="mt-1.5 flex flex-wrap gap-1">
@@ -103,6 +125,20 @@ function AttributeBody({ c }: { c: Comparable }) {
       </div>
     </>
   );
+}
+
+// Build the "what this listing consists of" spec list from whatever the comp carries.
+function listingSpecs(c: Comparable): { k: string; v: string }[] {
+  const out: { k: string; v: string }[] = [];
+  if (c.area_m2) out.push({ k: "Size", v: `${jd(c.area_m2)} m²` });
+  if (c.bedrooms != null) out.push({ k: "Beds", v: String(c.bedrooms) });
+  if (c.bathrooms != null) out.push({ k: "Baths", v: String(c.bathrooms) });
+  if (c.floor_level != null) out.push({ k: "Floor", v: String(c.floor_level) });
+  if (c.building_age_years != null) out.push({ k: "Age", v: `${c.building_age_years}y` });
+  if (c.view) out.push({ k: "View", v: titleCase(c.view) });
+  if (c.parking) out.push({ k: "Parking", v: titleCase(c.parking) });
+  if (c.price_jd) out.push({ k: "Asking", v: money(c.price_jd) });
+  return out;
 }
 
 function Cell({ label, value }: { label: string; value: string }) {

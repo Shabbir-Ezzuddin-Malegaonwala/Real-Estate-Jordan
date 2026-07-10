@@ -52,6 +52,14 @@ interface RawComp {
   listing_date: string;
   adjustments: RawCompAdjustment[];
   source: RawSource;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  floor_level?: number | null;
+  building_age_years?: number | null;
+  view?: string;
+  parking?: string;
+  furnishing?: string;
+  price_jd?: number | null;
 }
 interface RawRiskObj {
   factor: string;
@@ -174,13 +182,15 @@ function adaptComp(c: RawComp): Comparable {
     id: c.listing_id,
     portal: c.source?.name ?? "listing",
     neighborhood: c.neighborhood,
-    price_jd: Math.round(c.adjusted_ppm2 * c.area_m2),
+    price_jd: c.price_jd ?? Math.round(c.original_ppm2 * c.area_m2),
     area_m2: c.area_m2,
     price_per_m2: c.adjusted_ppm2,
-    bedrooms: null,
-    floor_level: null,
-    view: "",
-    building_age_years: null,
+    bedrooms: c.bedrooms ?? null,
+    bathrooms: c.bathrooms ?? null,
+    floor_level: c.floor_level ?? null,
+    view: c.view && c.view !== "unknown" ? c.view : "",
+    parking: c.parking && c.parking !== "unknown" ? c.parking : "",
+    building_age_years: c.building_age_years ?? null,
     seller_type: "",
     url: c.source?.url ?? "#",
     capture_date: c.source?.capture_date ?? "",

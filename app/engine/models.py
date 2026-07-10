@@ -194,6 +194,15 @@ class ComparableRecord:
     adjustments: list[dict[str, Any]]
     source: dict[str, str]
     seller_type: str = "unknown"
+    # what the listing actually consists of (for the "hover to see the listing" UI)
+    bedrooms: Optional[int] = None
+    bathrooms: Optional[int] = None
+    floor_level: Optional[int] = None
+    building_age_years: Optional[int] = None
+    view: str = "unknown"
+    parking: str = "unknown"
+    furnishing: str = "unknown"
+    price_jd: Optional[float] = None
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)

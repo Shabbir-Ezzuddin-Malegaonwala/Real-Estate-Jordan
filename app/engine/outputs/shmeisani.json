@@ -326,6 +326,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 75000.0,
       "price_per_m2": 454.5,
       "adjustments_applied": [
         "Size (per m²)"
@@ -349,6 +357,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "semi",
+      "price_jd": 160000.0,
       "price_per_m2": 914.3,
       "adjustments_applied": []
     },
@@ -370,6 +386,14 @@
         "capture_date": "2026-07-07"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 63500.0,
       "price_per_m2": 362.9,
       "adjustments_applied": []
     },
@@ -391,6 +415,14 @@
         "capture_date": "2026-07-07"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 140000.0,
       "price_per_m2": 800.0,
       "adjustments_applied": []
     },
@@ -431,6 +463,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": 20,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 80000.0,
       "price_per_m2": 470.6,
       "adjustments_applied": [
         "Floor level",
@@ -475,6 +515,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": 10,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "full",
+      "price_jd": 100000.0,
       "price_per_m2": 588.2,
       "adjustments_applied": [
         "Floor level",
@@ -519,6 +567,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floor_level": 3,
+      "building_age_years": 20,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 63000.0,
       "price_per_m2": 446.8,
       "adjustments_applied": [
         "Floor level",
@@ -557,6 +613,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floor_level": 4,
+      "building_age_years": 10,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 98000.0,
       "price_per_m2": 725.9,
       "adjustments_applied": [
         "Building age",
@@ -594,6 +658,14 @@
         "capture_date": "2026-07-07"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 85000.0,
       "price_per_m2": 483.0,
       "adjustments_applied": [
         "Floor level",
@@ -625,6 +697,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": 20,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 63000.0,
       "price_per_m2": 360.0,
       "adjustments_applied": [
         "Building age"
@@ -655,6 +735,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": 10,
+      "view": "none",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 68000.0,
       "price_per_m2": 388.6,
       "adjustments_applied": [
         "Building age"
@@ -685,6 +773,14 @@
         "capture_date": "2026-07-06"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": 20,
+      "view": "none",
+      "parking": "covered",
+      "furnishing": "semi",
+      "price_jd": 75000.0,
       "price_per_m2": 428.6,
       "adjustments_applied": [
         "Building age"
@@ -856,7 +952,7 @@
     "listings_source_csv": "data\\processed\\listings_national_20260708.csv",
     "listings_row_count": 52792,
     "listings_snapshot_hash": "dbca8785ebfdda4f",
-    "engine_git_sha": "5285831",
+    "engine_git_sha": "2a85be8",
     "generated_at": "2026-07-08"
   }
 }

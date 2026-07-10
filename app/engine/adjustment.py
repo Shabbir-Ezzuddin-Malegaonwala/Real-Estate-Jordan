@@ -369,6 +369,9 @@ def normalize_comp(comp: Listing, subject: Subject, premiums: PremiumSet,
         source={"name": comp.source_name, "url": comp.source_url,
                 "capture_date": comp.capture_date.isoformat() if comp.capture_date else "unknown"},
         seller_type=comp.seller_type,
+        bedrooms=comp.bedrooms, bathrooms=comp.bathrooms, floor_level=comp.floor_level,
+        building_age_years=comp.building_age_years, view=comp.view, parking=comp.parking,
+        furnishing=comp.furnishing, price_jd=comp.price_jd,
     )
 
 

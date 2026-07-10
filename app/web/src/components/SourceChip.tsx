@@ -2,8 +2,27 @@ import { useState } from "react";
 import type { EvidenceSource } from "../types";
 import { shortDate } from "../lib/format";
 
-// Inline provenance chip: source name + capture date, hover/click reveals URL.
-// Every evidenced fact carries one (MASTER-PLAN §6).
+// Plain-English description of what each source actually is, so a non-expert
+// hovering "Bayut" knows what they're looking at.
+function describe(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes("bayut")) return "Jordan's largest property-listing website.";
+  if (n.includes("opensooq")) return "A big classifieds marketplace — lots of private sellers.";
+  if (n.includes("homes")) return "An estate-agency listing portal.";
+  if (n.includes("eureka")) return "A Jordanian property portal (Arabic listings).";
+  if (n.includes("abujudom") || n.includes("abu judom")) return "A premium-Amman estate agency.";
+  if (n.includes("4321")) return "A multi-city listing portal (has map coordinates).";
+  if (n.includes("dos") || n.includes("statistics")) return "Official government construction-cost figures.";
+  if (n.includes("dls") || n.includes("lands")) return "Official land-registry / price-index data.";
+  if (n.includes("satellite") || n.includes("gis") || n.includes("viirs") || n.includes("dem"))
+    return "Satellite & map data (terrain, night-lights, population, amenities).";
+  if (n.includes("listings")) return "The pool of collected market listings.";
+  if (n.includes("pdf") || n.includes("methodology")) return "The client's pricing-methodology document.";
+  return "Source of this figure.";
+}
+
+// Inline provenance chip: source name + capture date, hover/click reveals what it
+// is + the link. Every evidenced fact carries one (MASTER-PLAN §6).
 export function SourceChip({ source }: { source: EvidenceSource }) {
   const [open, setOpen] = useState(false);
   return (
@@ -27,16 +46,17 @@ export function SourceChip({ source }: { source: EvidenceSource }) {
           className="absolute bottom-full left-0 z-30 mb-1 w-64 rounded-[3px] border border-line bg-surface p-2 text-2xs leading-relaxed shadow-xl"
         >
           <span className="block font-medium text-ink">{source.name}</span>
+          <span className="mt-0.5 block text-ink-dim">{describe(source.name)}</span>
           <a
             href={source.url}
             target="_blank"
             rel="noreferrer noopener"
-            className="block truncate text-cyan hover:underline"
+            className="mt-1 block truncate text-cyan hover:underline"
           >
             {source.url}
           </a>
           <span className="mt-0.5 block text-ink-mute">
-            Captured {shortDate(source.capture_date)}
+            Collected {shortDate(source.capture_date)}
           </span>
         </span>
       )}
