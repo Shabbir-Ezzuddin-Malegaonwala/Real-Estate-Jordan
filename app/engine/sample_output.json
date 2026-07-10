@@ -5,7 +5,7 @@
     "data_source_file": "db/jordan_re.sqlite",
     "listings_row_count": 52647,
     "listings_snapshot_hash": "730cf18bd5f7b5b9",
-    "engine_git_sha": "c087dc3",
+    "engine_git_sha": "4bb708a",
     "generated_at": "2026-07-10"
   },
   "neighborhoods": {
@@ -1045,11 +1045,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.992,
+          "n": 846,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.972,
+          "n": 829,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.23,
+          "n": 196,
+          "status": "thin"
+        },
+        "building_age_years": {
+          "fill_rate": 0.059,
+          "n": 50,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.002,
+          "n": 2,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.059,
+          "n": 50,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.055,
+          "n": 47,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -1862,11 +1899,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 191,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.984,
+          "n": 188,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -2997,11 +3071,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.979,
+          "n": 1079,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.976,
+          "n": 1076,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.151,
+          "n": 166,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.037,
+          "n": 41,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.001,
+          "n": 1,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.052,
+          "n": 57,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.042,
+          "n": 46,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -3751,11 +3862,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.992,
+          "n": 122,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 123,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -4774,11 +4922,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.972,
+          "n": 106,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.945,
+          "n": 103,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.936,
+          "n": 102,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -5735,11 +5920,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.975,
+          "n": 384,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.939,
+          "n": 370,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.124,
+          "n": 49,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.119,
+          "n": 47,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.005,
+          "n": 2,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.127,
+          "n": 50,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.145,
+          "n": 57,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -6724,11 +6946,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.99,
+          "n": 101,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.99,
+          "n": 101,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.069,
+          "n": 7,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -7799,11 +8058,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.97,
+          "n": 709,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.96,
+          "n": 702,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.037,
+          "n": 27,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.049,
+          "n": 36,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.055,
+          "n": 40,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.018,
+          "n": 13,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -8767,11 +9063,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.959,
+          "n": 93,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.948,
+          "n": 92,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.443,
+          "n": 43,
+          "status": "thin"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -9450,11 +9783,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.982,
+          "n": 166,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.994,
+          "n": 168,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -10356,11 +10726,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.943,
+          "n": 249,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.996,
+          "n": 263,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -11253,11 +11660,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.799,
+          "n": 115,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.826,
+          "n": 119,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -12260,11 +12704,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 40,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 40,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.7,
+          "n": 28,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -13281,11 +13762,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 36,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 36,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.944,
+          "n": 34,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -14187,11 +14705,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.906,
+          "n": 106,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.88,
+          "n": 103,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -15315,11 +15870,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.981,
+          "n": 152,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.955,
+          "n": 148,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.187,
+          "n": 29,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.206,
+          "n": 32,
+          "status": "thin"
+        },
+        "view": {
+          "fill_rate": 0.019,
+          "n": 3,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.187,
+          "n": 29,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.013,
+          "n": 2,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -16302,11 +16894,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.952,
+          "n": 157,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.952,
+          "n": 157,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.17,
+          "n": 28,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -17317,11 +17946,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.986,
+          "n": 204,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.995,
+          "n": 206,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.459,
+          "n": 95,
+          "status": "thin"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -17798,11 +18464,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 22,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.864,
+          "n": 19,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -18161,11 +18864,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 11,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 11,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -19166,11 +19906,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.984,
+          "n": 60,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.951,
+          "n": 58,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.951,
+          "n": 58,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -20131,11 +20908,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 51,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 51,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.235,
+          "n": 12,
+          "status": "thin"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -20500,11 +21314,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 38,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 38,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -21530,11 +22381,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 121,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.983,
+          "n": 119,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.934,
+          "n": 113,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -22428,11 +23316,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.864,
+          "n": 57,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.864,
+          "n": 57,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -23197,11 +24122,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.868,
+          "n": 59,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.868,
+          "n": 59,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -23734,11 +24696,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.623,
+          "n": 38,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.984,
+          "n": 60,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -24632,11 +25631,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 71,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 71,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -25280,11 +26316,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.892,
+          "n": 33,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.865,
+          "n": 32,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -26283,11 +27356,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 0.961,
+          "n": 73,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 0.934,
+          "n": 71,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.658,
+          "n": 50,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -27291,11 +28401,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 67,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 67,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.672,
+          "n": 45,
+          "status": "ok"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -27885,11 +29032,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 5,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 5,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -28916,11 +30100,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 13,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 13,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -29751,11 +30972,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 11,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 11,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     },
@@ -30666,11 +31924,48 @@
           }
         ]
       },
+      "attribute_coverage": {
+        "bedrooms": {
+          "fill_rate": 1.0,
+          "n": 20,
+          "status": "ok"
+        },
+        "bathrooms": {
+          "fill_rate": 1.0,
+          "n": 20,
+          "status": "ok"
+        },
+        "floor_level": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "building_age_years": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "view": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "parking": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        },
+        "finish_quality": {
+          "fill_rate": 0.0,
+          "n": 0,
+          "status": "not_derivable"
+        }
+      },
       "provenance": {
         "data_source_file": "db/jordan_re.sqlite",
         "listings_row_count": 52647,
         "listings_snapshot_hash": "730cf18bd5f7b5b9",
-        "engine_git_sha": "c087dc3",
+        "engine_git_sha": "4bb708a",
         "generated_at": "2026-07-10"
       }
     }

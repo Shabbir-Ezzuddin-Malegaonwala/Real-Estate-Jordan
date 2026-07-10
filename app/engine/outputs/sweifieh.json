@@ -1065,11 +1065,48 @@
       }
     ]
   },
+  "attribute_coverage": {
+    "bedrooms": {
+      "fill_rate": 0.97,
+      "n": 709,
+      "status": "ok"
+    },
+    "bathrooms": {
+      "fill_rate": 0.96,
+      "n": 702,
+      "status": "ok"
+    },
+    "floor_level": {
+      "fill_rate": 0.037,
+      "n": 27,
+      "status": "not_derivable"
+    },
+    "building_age_years": {
+      "fill_rate": 0.049,
+      "n": 36,
+      "status": "not_derivable"
+    },
+    "view": {
+      "fill_rate": 0.0,
+      "n": 0,
+      "status": "not_derivable"
+    },
+    "parking": {
+      "fill_rate": 0.055,
+      "n": 40,
+      "status": "not_derivable"
+    },
+    "finish_quality": {
+      "fill_rate": 0.018,
+      "n": 13,
+      "status": "not_derivable"
+    }
+  },
   "provenance": {
     "data_source_file": "db/jordan_re.sqlite",
     "listings_row_count": 52647,
     "listings_snapshot_hash": "730cf18bd5f7b5b9",
-    "engine_git_sha": "c087dc3",
+    "engine_git_sha": "4bb708a",
     "generated_at": "2026-07-10"
   }
 }

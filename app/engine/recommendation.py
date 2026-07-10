@@ -12,7 +12,7 @@ from datetime import date
 from statistics import pstdev
 from typing import Optional
 
-from . import config, confidence, evidence
+from . import comparable_analysis, config, confidence, evidence
 from .adjustment import index_is_current
 from .data import DataBundle
 from .models import ComparableRecord, Listing, RecommendationResult, Subject
@@ -192,6 +192,7 @@ def assemble(subject: Subject, bundle: DataBundle, comps: list[ComparableRecord]
                        "derived_premiums": premiums.as_records()},
         computed_date=as_of.isoformat(),
         confidence_components=conf_components,
+        attribute_coverage=comparable_analysis.attribute_coverage(pool),
     )
 
 

@@ -16,6 +16,38 @@ from .models import Listing, Subject
 from .stats import haversine_km, months_between, robust_keep
 
 
+# Priced attributes the adjustment grid can use. Baseline/absent tokens don't let the
+# grid derive a premium (you need a distinguishing level), so they count as non-derivable.
+_PRICED_ATTRS = ("bedrooms", "bathrooms", "floor_level", "building_age_years",
+                 "view", "parking", "finish_quality")
+_NON_DERIVABLE_TOKENS = {"", "unknown", "none", "na", "n/a"}
+
+
+def attribute_coverage(pool: list[Listing]) -> dict[str, dict]:
+    """C2 coverage gate — per priced attribute, the share of the submarket pool that
+    actually carries a *distinguishing* value. Surfaced on the result so the output can
+    say "premium not derivable here" out loud instead of silently returning ``{}``.
+
+    ``status``: ok >= 0.50 · thin 0.20-0.50 · not_derivable < 0.20 (tunable; mirrors the
+    national enrichment reality, e.g. finish ~0%, view ~7%).
+    """
+    n = len(pool)
+    out: dict[str, dict] = {}
+    for attr in _PRICED_ATTRS:
+        filled = 0
+        for l in pool:
+            v = getattr(l, attr, None)
+            if v is None:
+                continue
+            if isinstance(v, str) and v.strip().lower() in _NON_DERIVABLE_TOKENS:
+                continue
+            filled += 1
+        rate = (filled / n) if n else 0.0
+        status = "ok" if rate >= 0.50 else "thin" if rate >= 0.20 else "not_derivable"
+        out[attr] = {"fill_rate": round(rate, 3), "n": filled, "status": status}
+    return out
+
+
 def neighborhood_pool(sales: list[Listing], subject: Subject) -> list[Listing]:
     """Same-submarket, same-type sale listings, outlier-filtered — basis for derivation.
 
