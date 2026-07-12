@@ -67,7 +67,7 @@ export function FeasibilityStep({ area }: { area: AreaEntry | null }) {
               {d.sources && d.sources.length > 0 && (
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   {d.sources.map((src, i) => (
-                    <SourceChip key={i} source={src} />
+                    <SourceChip key={i} source={src} variable={d.label} />
                   ))}
                 </div>
               )}

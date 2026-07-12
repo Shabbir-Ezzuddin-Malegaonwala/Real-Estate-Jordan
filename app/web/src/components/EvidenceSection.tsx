@@ -48,7 +48,7 @@ export function EvidenceSection({
             </div>
             <div className="mt-1.5 flex flex-wrap gap-1">
               {e.sources.map((s, i) => (
-                <SourceChip key={i} source={s} />
+                <SourceChip key={i} source={s} variable={e.factor} />
               ))}
             </div>
           </article>

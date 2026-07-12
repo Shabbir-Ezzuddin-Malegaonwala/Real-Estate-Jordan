@@ -6,8 +6,7 @@ import { OpportunityMeter } from "../OpportunityMeter";
 import { DecisionReadiness } from "../DecisionReadiness";
 import { PriceBands } from "../PriceBands";
 import { ConfidenceBreakdown } from "../ConfidenceBreakdown";
-import { AdjustmentWaterfall } from "../AdjustmentWaterfall";
-import { EvidenceSection } from "../EvidenceSection";
+import { Comparables } from "../Comparables";
 import { ResidualLandValue } from "../ResidualLandValue";
 import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
@@ -85,10 +84,10 @@ export function StepContent({
           <div className={`transition-opacity ${computing ? "opacity-50" : "opacity-100"}`}>
             <PriceBands r={result} />
             <ConfidenceBreakdown r={result} />
-            <AdjustmentWaterfall r={result} />
-            <FutureSignals result={result} />
+            <Comparables items={result.comparables} />
             <ScenarioPanel r={result} />
             <ScenarioCompare r={result} />
+            <PlainWords narrative={result.narrative} />
           </div>
         ) : (
           <NoStructuredData area={area} />
@@ -108,16 +107,15 @@ export function StepContent({
   );
 }
 
-function FutureSignals({ result }: { result: RecommendationResult }) {
-  const future = result.evidence_objects.filter((e) => e.category === "future_signal");
-  if (future.length === 0) return null;
+// Plain-English summary of the recommendation (the "In plain words" card from the
+// old UI). The "Things to watch out for" risk list was intentionally removed.
+function PlainWords({ narrative }: { narrative: string }) {
+  if (!narrative) return null;
   return (
-    <EvidenceSection
-      title="Future Signals"
-      eyebrow="positioning, not applied to today's band"
-      tone="future"
-      items={future}
-    />
+    <section className="px-4 pb-6 pt-5" aria-label="Plain-language summary">
+      <h3 className="mb-2 text-[13px] font-semibold text-ink">In plain words</h3>
+      <p className="card p-3 text-[12px] leading-relaxed text-ink-dim">{narrative}</p>
+    </section>
   );
 }
 

@@ -23,7 +23,9 @@ function describe(name: string): string {
 
 // Inline provenance chip: source name + capture date, hover/click reveals what it
 // is + the link. Every evidenced fact carries one (MASTER-PLAN §6).
-export function SourceChip({ source }: { source: EvidenceSource }) {
+// `variable` (optional): the factor/number this reference actually fed into the
+// model — shown on hover so the user can see WHICH variable came from this source.
+export function SourceChip({ source, variable }: { source: EvidenceSource; variable?: string }) {
   const [open, setOpen] = useState(false);
   return (
     <span className="relative inline-flex">
@@ -47,6 +49,12 @@ export function SourceChip({ source }: { source: EvidenceSource }) {
         >
           <span className="block font-medium text-ink">{source.name}</span>
           <span className="mt-0.5 block text-ink-dim">{describe(source.name)}</span>
+          {variable && (
+            <span className="mt-1 block rounded-[2px] border border-cyan/30 bg-cyan/5 px-1.5 py-1 text-ink">
+              <span className="text-ink-mute">Variable used from this reference: </span>
+              <span className="font-medium text-cyan">{variable}</span>
+            </span>
+          )}
           <a
             href={source.url}
             target="_blank"

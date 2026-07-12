@@ -12,7 +12,10 @@ const BAR: Record<string, string> = {
 // bars and their reasons. When the engine hasn't emitted components yet, a
 // clearly-labelled local estimate is shown instead of hiding the breakdown.
 export function ConfidenceBreakdown({ r }: { r: RecommendationResult }) {
-  const { components, source } = confidenceComponents(r);
+  const { components: allComponents, source } = confidenceComponents(r);
+  // Future signals were dropped from the product (date-backed evidence only), so
+  // the future-signals reliability bar no longer makes sense here — filter it out.
+  const components = allComponents.filter((c) => c.key !== "future_signals");
   const overall = r.confidence.score;
   const overallLevel = r.confidence.level;
 
