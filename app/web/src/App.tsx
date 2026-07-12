@@ -312,7 +312,6 @@ export default function App() {
           </div>
         </header>
 
-        <Stepper active={step} onSelect={setStep} />
         <AreaSearch areas={areas} onPick={selectArea} />
         <SubjectForm
           subject={subject}
@@ -322,6 +321,7 @@ export default function App() {
           onAnalyze={onAnalyze}
           computing={computing}
         />
+        <Stepper active={step} onSelect={setStep} />
 
         <StepContent
           step={step}
