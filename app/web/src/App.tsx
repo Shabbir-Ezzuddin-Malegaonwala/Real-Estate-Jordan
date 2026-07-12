@@ -239,9 +239,11 @@ export default function App() {
     () => (selectedArea ? amenities[selectedArea.name] ?? null : null),
     [amenities, selectedArea],
   );
+  // The priceable set is exactly the engine's result keys — reliable and always populated
+  // once the bundle loads (the `areas` list routes through the /areas API and can be empty).
   const neighborhoodNames = useMemo(
-    () => areas.filter((a) => a.covered).map((a) => a.name).sort((x, y) => x.localeCompare(y)),
-    [areas],
+    () => (bundle ? Object.keys(bundle.results).sort((x, y) => x.localeCompare(y)) : []),
+    [bundle],
   );
 
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
