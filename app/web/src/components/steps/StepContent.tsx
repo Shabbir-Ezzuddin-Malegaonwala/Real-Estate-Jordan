@@ -34,7 +34,11 @@ export function StepContent({
   computing: boolean;
   generatedAt: string;
 }) {
-  const covered = !!(area?.covered && result);
+  // "Covered" here means the area is not just in the catalogue but actually priceable:
+  // the engine returned a real band. Areas with too little sale data yet come back
+  // unpriceable (a 0/0/0 band) — show the honest "no data yet" state instead of a 0,
+  // and they flip to a real price automatically once more data is collected.
+  const covered = !!(area?.covered && result && result.recommended_jd_m2 > 0);
   const header = area && (
     <WorkspaceHeader
       title={area.name}

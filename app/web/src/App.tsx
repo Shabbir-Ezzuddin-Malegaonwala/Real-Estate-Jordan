@@ -241,16 +241,25 @@ export default function App() {
   );
   // The priceable set is exactly the engine's result keys — reliable and always populated
   // once the bundle loads (the `areas` list routes through the /areas API and can be empty).
-  const neighborhoodNames = useMemo(
-    () => (bundle ? Object.keys(bundle.results).sort((x, y) => x.localeCompare(y)) : []),
-    [bundle],
-  );
+  // Well-known precomputed areas (always ~5) — the reliable fallback + sensible defaults.
+  const bundleKeys = useMemo(() => (bundle ? Object.keys(bundle.results) : []), [bundle]);
+  // The dropdown lists every priceable area from the live /areas coverage set (hundreds once
+  // the districts registry is populated). Falls back to the bundle keys if /areas is empty
+  // (offline), so the form is never blank.
+  const neighborhoodNames = useMemo(() => {
+    const covered = areas.filter((a) => a.covered).map((a) => a.name);
+    const base = covered.length ? covered : bundleKeys;
+    return [...new Set(base)].sort((x, y) => x.localeCompare(y));
+  }, [areas, bundleKeys]);
 
   // Recommendation-first: once data is ready, open on the first neighbourhood so the price
   // bands are populated and Analyze is enabled immediately (user can change area/params).
   useEffect(() => {
-    if (!selectedArea && neighborhoodNames.length) selectByName(neighborhoodNames[0]);
-  }, [neighborhoodNames, selectedArea, selectByName]);
+    if (selectedArea || !neighborhoodNames.length) return;
+    // Land on a known-good precomputed area, not the alphabetical first (e.g. "1st Circle").
+    const preferred = bundleKeys.find((k) => neighborhoodNames.includes(k)) ?? neighborhoodNames[0];
+    selectByName(preferred);
+  }, [neighborhoodNames, bundleKeys, selectedArea, selectByName]);
 
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
