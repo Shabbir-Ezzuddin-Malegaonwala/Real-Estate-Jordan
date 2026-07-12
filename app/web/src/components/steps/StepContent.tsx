@@ -11,7 +11,6 @@ import { EvidenceSection } from "../EvidenceSection";
 import { ResidualLandValue } from "../ResidualLandValue";
 import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
-import { Copilot } from "../Copilot";
 import { NearbyAmenities } from "../NearbyAmenities";
 import { WorkspaceHeader, NoStructuredData } from "../workspaces/shared";
 import { FeasibilityStep } from "./FeasibilityStep";
@@ -105,7 +104,6 @@ export function StepContent({
     <div className="pb-2">
       {header}
       {body}
-      <Copilot area={area?.name ?? null} />
     </div>
   );
 }
