@@ -97,7 +97,7 @@ export default function App() {
   const [computing, setComputing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [step, setStep] = useState<StepKey>("opportunity");
+  const [step, setStep] = useState<StepKey>("pricing");
 
   const apiStatusRef = useRef<ApiStatus>("checking");
   const bundleRef = useRef<RecommendationBundle | null>(null);
@@ -173,9 +173,9 @@ export default function App() {
   );
 
   const onEnter = useCallback(
-    (mode: EntryMode) => {
+    (_mode: EntryMode) => {
       enter();
-      setStep(mode === "evaluate" ? "feasibility" : "opportunity");
+      setStep("pricing"); // recommendation-first: land on the launch-price view
     },
     [enter],
   );
@@ -245,6 +245,12 @@ export default function App() {
     () => (bundle ? Object.keys(bundle.results).sort((x, y) => x.localeCompare(y)) : []),
     [bundle],
   );
+
+  // Recommendation-first: once data is ready, open on the first neighbourhood so the price
+  // bands are populated and Analyze is enabled immediately (user can change area/params).
+  useEffect(() => {
+    if (!selectedArea && neighborhoodNames.length) selectByName(neighborhoodNames[0]);
+  }, [neighborhoodNames, selectedArea, selectByName]);
 
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
