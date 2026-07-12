@@ -26,6 +26,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { HelpPanel } from "./components/HelpPanel";
 import { Landing } from "./components/Landing";
 import { Stepper } from "./components/Stepper";
+import { SubjectForm } from "./components/SubjectForm";
 import { StepContent } from "./components/steps/StepContent";
 import { OpportunityLegend } from "./components/OpportunityLegend";
 import { useTheme } from "./lib/theme";
@@ -38,6 +39,19 @@ const DEFAULT_LAYERS: LayerState = {
   comparables: true,
   future: true,
   roads: true,
+};
+
+// The representative unit the engine prices when the user hasn't customised it — kept in
+// sync with scrapers/emit_national.py so the precomputed brief and the form agree.
+const DEFAULT_SUBJECT: SubjectInput = {
+  neighborhood: "",
+  area_m2: 175,
+  bedrooms: 3,
+  floor_level: 4,
+  building_age_years: 0,
+  view: "unknown",
+  parking: "unknown",
+  finish_quality: "high",
 };
 
 function areasFromBundle(
@@ -78,6 +92,7 @@ export default function App() {
   );
   const [layerLoading, setLayerLoading] = useState<Record<string, boolean>>({});
   const [selectedArea, setSelectedArea] = useState<AreaEntry | null>(null);
+  const [subject, setSubject] = useState<SubjectInput>(DEFAULT_SUBJECT);
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [computing, setComputing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -86,6 +101,8 @@ export default function App() {
 
   const apiStatusRef = useRef<ApiStatus>("checking");
   const bundleRef = useRef<RecommendationBundle | null>(null);
+  const subjectRef = useRef<SubjectInput>(subject);
+  subjectRef.current = subject;
 
   const setApiStatus = (s: ApiStatus) => {
     apiStatusRef.current = s;
@@ -123,11 +140,25 @@ export default function App() {
   const selectArea = useCallback(
     (area: AreaEntry) => {
       setSelectedArea(area);
-      if (area.covered) recompute({ neighborhood: area.name, area_m2: 175 });
-      else setResult(null);
+      if (area.covered) {
+        // price the area with the user's current subject params, not a bare default
+        const subj = { ...subjectRef.current, neighborhood: area.name };
+        setSubject(subj);
+        recompute(subj);
+      } else setResult(null);
     },
     [recompute],
   );
+
+  // Subject form wiring: edit a field → patch state; "Analyze" → recompute on demand.
+  const onPatchSubject = useCallback(
+    (patch: Partial<SubjectInput>) => setSubject((s) => ({ ...s, ...patch })),
+    [],
+  );
+  const onAnalyze = useCallback(() => {
+    const subj = subjectRef.current;
+    if (subj.neighborhood && subj.area_m2) recompute(subj);
+  }, [recompute]);
 
   const selectByName = useCallback(
     (name: string) => {
@@ -208,6 +239,10 @@ export default function App() {
     () => (selectedArea ? amenities[selectedArea.name] ?? null : null),
     [amenities, selectedArea],
   );
+  const neighborhoodNames = useMemo(
+    () => areas.filter((a) => a.covered).map((a) => a.name).sort((x, y) => x.localeCompare(y)),
+    [areas],
+  );
 
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
@@ -277,6 +312,14 @@ export default function App() {
 
         <Stepper active={step} onSelect={setStep} />
         <AreaSearch areas={areas} onPick={selectArea} />
+        <SubjectForm
+          subject={subject}
+          neighborhoods={neighborhoodNames}
+          onPatch={onPatchSubject}
+          onNeighborhood={selectByName}
+          onAnalyze={onAnalyze}
+          computing={computing}
+        />
 
         <StepContent
           step={step}
