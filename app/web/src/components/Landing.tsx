@@ -24,8 +24,8 @@ export function Landing({
         Decide where to build, and what to launch at.
       </h1>
       <p className="mt-2 max-w-[500px] text-[13px] leading-relaxed text-ink-mute">
-        One evidence base, one builder journey — opportunity, feasibility, market, economics,
-        pricing, sales. Every number is traceable to a source; where a signal is missing, we say so.
+        One evidence base, one builder journey — opportunity, economics, pricing, monitoring.
+        Every number is traceable to a source; where a signal is missing, we say so.
       </p>
 
       <div className="mt-8 grid w-full max-w-[720px] gap-3 sm:grid-cols-2">
@@ -41,7 +41,7 @@ export function Landing({
           icon="▣"
           title="Evaluate My Land"
           sub="I already own land"
-          blurb="Search your area and jump straight to feasibility, economics and launch pricing."
+          blurb="Search your area and jump straight to economics and launch pricing."
           cta="Find my area"
           onClick={() => onEnter("evaluate")}
         />

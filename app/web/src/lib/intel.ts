@@ -7,6 +7,7 @@
 import { API_BASE } from "./api";
 import type {
   AreaEntry,
+  AreaMonitoring,
   Confidence,
   ConfidenceComponent,
   Feasibility,
@@ -179,6 +180,17 @@ export async function fetchAreas(fallback: AreaEntry[]): Promise<AreaEntry[]> {
   });
 }
 
+// --- Area monitoring (GET /area-monitoring) ---------------------------------
+// Every graph value is computed server-side; the frontend only renders. No local
+// fallback — if the engine is unreachable the dashboard says so rather than
+// drawing browser-computed (and potentially drifting) numbers.
+export async function fetchAreaMonitoring(neighborhood: string): Promise<AreaMonitoring | null> {
+  return tryGet<AreaMonitoring>(
+    `/area-monitoring?neighborhood=${encodeURIComponent(neighborhood)}`,
+    8000,
+  );
+}
+
 // --- Opportunity (GET /opportunity) -----------------------------------------
 
 function pctRank(value: number, all: number[]): number {
@@ -203,21 +215,16 @@ export function localOpportunity(areas: AreaEntry[]): OpportunityScore[] {
       const price_level = pctRank(a.median_price_per_m2 ?? 0, prices);
       const demand_density = pctRank(a.sale_listing_count ?? 0, demand);
       const supply_pressure = 100 - pctRank(a.listing_count ?? 0, supply);
-      const price_growth = 50;
-      const future_signals = 50;
-      const score = Math.round(
-        price_level * 0.3 +
-          demand_density * 0.25 +
-          supply_pressure * 0.15 +
-          price_growth * 0.15 +
-          future_signals * 0.15,
-      );
+      // Price growth needs dated sales the local heuristic can't see — leave it
+      // unmeasured (null) rather than faking a neutral 50.
+      const price_growth = null;
+      const score = Math.round(price_level * 0.4 + demand_density * 0.35 + supply_pressure * 0.25);
       return {
         area: a.name,
         score,
-        components: { price_level, price_growth, demand_density, supply_pressure, future_signals },
+        components: { price_level, price_growth, demand_density, supply_pressure },
         covered: a.covered,
-        reason: "Local heuristic over portal counts — growth & future signals pending backend.",
+        reason: "Local heuristic over portal counts — price growth pending dated-sales backend.",
         source: "local" as const,
       };
     })
@@ -229,7 +236,6 @@ const OPP_KEYS: (keyof OpportunityComponents)[] = [
   "price_growth",
   "demand_density",
   "supply_pressure",
-  "future_signals",
 ];
 
 // Below this listing count an area's opportunity is noise, not signal — the
@@ -257,10 +263,14 @@ export function heatmapToOpportunity(fc: {
         score: num(p.score),
         components: {
           price_level: num(p.price_level),
-          price_growth: num(p.growth),
+          // The baked heatmap never computed growth (reserved slot = 0 for every area),
+          // so surface it as "not measured" rather than a misleading zero.
+          price_growth: null,
           demand_density: num(p.demand_density),
-          supply_pressure: num(p.supply_pressure),
-          future_signals: num(p.future_signals),
+          // The baked file stores RAW supply pressure (high = crowded). The bar is
+          // labelled "Low competition", so invert it to match (high = uncrowded),
+          // consistent with the live engine's inverted supply score.
+          supply_pressure: 100 - num(p.supply_pressure),
         },
         component_reasons: reasons,
         covered: Boolean(p.is_covered),
@@ -292,10 +302,20 @@ export async function fetchOpportunity(
   if (Array.isArray(rows)) {
     for (const o of rows as Record<string, unknown>[]) {
       const rawComp = (o.components ?? {}) as Record<string, { score?: number; reason?: string }>;
-      const components = {} as OpportunityComponents;
+      // Preserve "not scorable" components as null (price growth with too few dated sales,
+      // price/demand with no data) instead of collapsing them to a misleading 0.
+      const asScore = (k: string) => {
+        const s = rawComp[k]?.score;
+        return typeof s === "number" ? Math.round(s) : null;
+      };
+      const components: OpportunityComponents = {
+        price_level: asScore("price_level"),
+        price_growth: asScore("price_growth"),
+        demand_density: asScore("demand_density"),
+        supply_pressure: Math.round(rawComp["supply_pressure"]?.score ?? 0),
+      };
       const component_reasons: Partial<Record<keyof OpportunityComponents, string>> = {};
       for (const k of OPP_KEYS) {
-        components[k] = Math.round(rawComp[k]?.score ?? 0);
         if (rawComp[k]?.reason) component_reasons[k] = fixText(rawComp[k].reason as string);
       }
       const area = fixText(String(o.area ?? ""));
@@ -472,8 +492,12 @@ export function localResidual(input: ResidualInputs, recommendedJdM2: number): R
   const gdvPerM2 = input.gdv_per_m2 ?? recommendedJdM2;
   const gdv = gdvPerM2 * input.buildable_area_m2;
   const construction_cost = input.construction_cost_per_m2 * input.buildable_area_m2;
-  const finance_cost = construction_cost * (input.finance_pct / 100);
-  const fees = gdv * (input.fees_pct / 100);
+  // Match the engine (builder.residual_land_value) exactly: fees are a % of CONSTRUCTION,
+  // finance is a % of (CONSTRUCTION + fees), profit is a % of GDV. Order matters — fees feed
+  // finance. (Previously fees were taken on GDV and finance on construction-only, which made
+  // the offline number disagree with the live engine.)
+  const fees = construction_cost * (input.fees_pct / 100);
+  const finance_cost = (construction_cost + fees) * (input.finance_pct / 100);
   const developer_profit = gdv * (input.profit_pct / 100);
   const max_land_value = gdv - construction_cost - finance_cost - fees - developer_profit;
   return {
@@ -612,7 +636,18 @@ export function readinessFor(
   opp: OpportunityScore | null,
   result: RecommendationResult | null,
 ): ReadinessDimension[] {
-  if (opp?.readiness && opp.readiness.length > 0) return opp.readiness;
+  if (opp?.readiness && opp.readiness.length > 0) {
+    // The bulk /opportunity endpoint leaves pricing_confidence pending (running a full
+    // recommendation per area is too heavy). Fill it in here for the SELECTED area from
+    // its live pricing result.
+    const pricingConf = result ? result.confidence.score : null;
+    if (pricingConf == null) return opp.readiness;
+    return opp.readiness.map((d) =>
+      d.key === "pricing_confidence" && d.score == null
+        ? { ...d, score: pricingConf, reason: `Engine confidence ${pricingConf}/100 on the selected subject.` }
+        : d,
+    );
+  }
   if (!opp) return [];
 
   const c = opp.components;
@@ -630,8 +665,8 @@ export function readinessFor(
     dim("market_potential", c.price_level, r.price_level ?? "Price level vs the covered set."),
     dim("demand", c.demand_density, r.demand_density ?? "Sale-listing demand density."),
     dim("competition", c.supply_pressure, r.supply_pressure ?? "Active supply pressure (higher = less competition)."),
-    dim("future_growth", c.price_growth, r.price_growth ?? "Recent price trend."),
-    dim("infrastructure", c.future_signals, r.future_signals ?? "Collected infrastructure/policy signals."),
+    dim("future_growth", c.price_growth, r.price_growth ?? "Recent price trend (needs dated sales)."),
+    { key: "infrastructure", label: READINESS_LABELS.infrastructure, score: null, reason: "Infrastructure/policy signals not yet collected.", confidence: conf },
     { key: "regulatory_readiness", label: READINESS_LABELS.regulatory_readiness, score: null, reason: "GAM zoning/height data not yet collected." },
     {
       key: "pricing_confidence",

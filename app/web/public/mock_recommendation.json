@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T06:56:46.336Z",
+  "generated_at": "2026-07-13T01:38:41.225Z",
   "engine_version": "mock-0.1 (shape-compatible with Decision Engine RecommendationResult)",
   "disclaimer": "Illustrative figures for interface demonstration. Price bands are placeholders pending the Decision Engine; the data shape is the production contract. Neighborhood polygons are approximate circles.",
   "currency": "JOD",
@@ -239,8 +239,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.37,
           "similarity": 0.89,
-          "lat": 31.93687,
-          "lng": 35.89499
+          "lat": 31.93559,
+          "lng": 35.89454
         },
         {
           "id": "abdoun-cmp-3",
@@ -258,8 +258,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.31,
           "similarity": 0.86,
-          "lat": 31.94709,
-          "lng": 35.895
+          "lat": 31.94581,
+          "lng": 35.89455
         },
         {
           "id": "abdoun-cmp-2",
@@ -277,8 +277,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.33,
           "similarity": 0.8,
-          "lat": 31.94971,
-          "lng": 35.88924
+          "lat": 31.94843,
+          "lng": 35.88879
         },
         {
           "id": "abdoun-cmp-5",
@@ -296,8 +296,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.97,
           "similarity": 0.8,
-          "lat": 31.94264,
-          "lng": 35.88566
+          "lat": 31.94136,
+          "lng": 35.88521
         },
         {
           "id": "abdoun-cmp-4",
@@ -315,8 +315,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.49,
           "similarity": 0.78,
-          "lat": 31.96207,
-          "lng": 35.89649
+          "lat": 31.96079,
+          "lng": 35.89604
         }
       ],
       "risk_factors": [
@@ -333,8 +333,8 @@
       ],
       "narrative": "Abdoun sits at the top of the Amman apartment market. The evidenced grid places the justified launch band at a premium to the neighbourhood median, driven by view, finish and floor, and disciplined by the ask-to-transaction calibration. Future-signal corridor and amenity upgrades support a raise-later posture rather than a reduction.",
       "centroid": [
-        35.89266,
-        31.94905
+        35.89221,
+        31.94777
       ]
     },
     "Dabouq": {
@@ -539,8 +539,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.81,
           "similarity": 0.86,
-          "lat": 31.9939,
-          "lng": 35.81686
+          "lat": 31.99602,
+          "lng": 35.8105
         },
         {
           "id": "dabouq-cmp-5",
@@ -558,8 +558,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.03,
           "similarity": 0.74,
-          "lat": 31.98052,
-          "lng": 35.8172
+          "lat": 31.98264,
+          "lng": 35.81084
         },
         {
           "id": "dabouq-cmp-4",
@@ -577,8 +577,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.65,
           "similarity": 0.71,
-          "lat": 31.98366,
-          "lng": 35.82794
+          "lat": 31.98578,
+          "lng": 35.82158
         },
         {
           "id": "dabouq-cmp-2",
@@ -596,8 +596,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.55,
           "similarity": 0.61,
-          "lat": 31.98913,
-          "lng": 35.80553
+          "lat": 31.99125,
+          "lng": 35.79917
         },
         {
           "id": "dabouq-cmp-3",
@@ -615,8 +615,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.8,
           "similarity": 0.61,
-          "lat": 31.99988,
-          "lng": 35.79788
+          "lat": 32.002,
+          "lng": 35.79152
         }
       ],
       "risk_factors": [
@@ -633,8 +633,8 @@
       ],
       "narrative": "Dabouq is a low-density villa submarket where premium is a function of plot, privacy and view rather than density. Comparable liquidity is thin, so confidence is medium and the band is wider. Future arterial and retail signals underpin an appreciation story for a patient launch.",
       "centroid": [
-        35.8113,
-        31.98833
+        35.80494,
+        31.99045
       ]
     },
     "Sweifieh": {
@@ -839,8 +839,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.33,
           "similarity": 0.96,
-          "lat": 31.961,
-          "lng": 35.86593
+          "lat": 31.95482,
+          "lng": 35.86699
         },
         {
           "id": "sweifieh-cmp-5",
@@ -858,8 +858,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.42,
           "similarity": 0.91,
-          "lat": 31.95771,
-          "lng": 35.86822
+          "lat": 31.95153,
+          "lng": 35.86928
         },
         {
           "id": "sweifieh-cmp-3",
@@ -877,8 +877,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.94,
           "similarity": 0.84,
-          "lat": 31.96284,
-          "lng": 35.87251
+          "lat": 31.95666,
+          "lng": 35.87357
         },
         {
           "id": "sweifieh-cmp-1",
@@ -896,8 +896,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.29,
           "similarity": 0.7,
-          "lat": 31.95775,
-          "lng": 35.87754
+          "lat": 31.95157,
+          "lng": 35.8786
         },
         {
           "id": "sweifieh-cmp-2",
@@ -915,8 +915,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.43,
           "similarity": 0.7,
-          "lat": 31.96822,
-          "lng": 35.8538
+          "lat": 31.96204,
+          "lng": 35.85486
         }
       ],
       "risk_factors": [
@@ -933,8 +933,8 @@
       ],
       "narrative": "Sweifieh trades on walkability and liquidity. A transaction-rich pool gives high confidence and a tighter band. The evidenced grid rewards retail proximity and parking while discounting active-frontage noise. Transit and pedestrianisation signals support a hold-and-raise stance.",
       "centroid": [
-        35.86388,
-        31.95859
+        35.86494,
+        31.95241
       ]
     },
     "Khalda": {
@@ -1139,8 +1139,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.92,
           "similarity": 0.95,
-          "lat": 31.99565,
-          "lng": 35.85234
+          "lat": 31.99545,
+          "lng": 35.85278
         },
         {
           "id": "khalda-cmp-1",
@@ -1158,8 +1158,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.18,
           "similarity": 0.82,
-          "lat": 31.98097,
-          "lng": 35.85078
+          "lat": 31.98077,
+          "lng": 35.85122
         },
         {
           "id": "khalda-cmp-6",
@@ -1177,8 +1177,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.53,
           "similarity": 0.77,
-          "lat": 32.00406,
-          "lng": 35.84626
+          "lat": 32.00386,
+          "lng": 35.8467
         },
         {
           "id": "khalda-cmp-4",
@@ -1196,8 +1196,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.31,
           "similarity": 0.73,
-          "lat": 32.00213,
-          "lng": 35.84524
+          "lat": 32.00193,
+          "lng": 35.84568
         },
         {
           "id": "khalda-cmp-7",
@@ -1215,8 +1215,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.73,
           "similarity": 0.71,
-          "lat": 31.99072,
-          "lng": 35.85259
+          "lat": 31.99052,
+          "lng": 35.85303
         },
         {
           "id": "khalda-cmp-5",
@@ -1234,8 +1234,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.04,
           "similarity": 0.66,
-          "lat": 31.98494,
-          "lng": 35.83582
+          "lat": 31.98474,
+          "lng": 35.83626
         },
         {
           "id": "khalda-cmp-3",
@@ -1253,8 +1253,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.27,
           "similarity": 0.6,
-          "lat": 31.99276,
-          "lng": 35.84471
+          "lat": 31.99256,
+          "lng": 35.84515
         }
       ],
       "risk_factors": [
@@ -1266,8 +1266,8 @@
       ],
       "narrative": "Khalda is a deep, liquid family submarket. Value is driven by amenity access and unit practicality rather than luxury attributes. High comparable density gives strong confidence and a tight band; the main discipline is not over-reaching against elastic supply.",
       "centroid": [
-        35.84485,
-        31.99033
+        35.84529,
+        31.99013
       ]
     },
     "Shmeisani": {
@@ -1477,8 +1477,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.43,
           "similarity": 0.89,
-          "lat": 31.97074,
-          "lng": 35.89982
+          "lat": 31.96611,
+          "lng": 35.90236
         },
         {
           "id": "shmeisani-cmp-4",
@@ -1496,8 +1496,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.72,
           "similarity": 0.87,
-          "lat": 31.97143,
-          "lng": 35.87881
+          "lat": 31.9668,
+          "lng": 35.88135
         },
         {
           "id": "shmeisani-cmp-2",
@@ -1515,8 +1515,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.91,
           "similarity": 0.85,
-          "lat": 31.96771,
-          "lng": 35.90348
+          "lat": 31.96308,
+          "lng": 35.90602
         },
         {
           "id": "shmeisani-cmp-5",
@@ -1534,8 +1534,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.3,
           "similarity": 0.76,
-          "lat": 31.97596,
-          "lng": 35.89513
+          "lat": 31.97133,
+          "lng": 35.89767
         },
         {
           "id": "shmeisani-cmp-6",
@@ -1553,8 +1553,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 0.9,
           "similarity": 0.76,
-          "lat": 31.98144,
-          "lng": 35.89405
+          "lat": 31.97681,
+          "lng": 35.89659
         },
         {
           "id": "shmeisani-cmp-3",
@@ -1572,8 +1572,8 @@
           "capture_date": "2026-07-05",
           "distance_km": 1.71,
           "similarity": 0.75,
-          "lat": 31.97919,
-          "lng": 35.91385
+          "lat": 31.97456,
+          "lng": 35.91639
         }
       ],
       "risk_factors": [
@@ -1590,8 +1590,8 @@
       ],
       "narrative": "Shmeisani is a business-district submarket where yield and centrality drive value against an ageing core. Confidence is medium given vintage dispersion. Conversion pressure and a positive official index trend support the appreciation narrative behind a firm launch band.",
       "centroid": [
-        35.89688,
-        31.9737
+        35.89942,
+        31.96907
       ]
     }
   }

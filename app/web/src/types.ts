@@ -177,11 +177,10 @@ export type Role = "builder" | "agent" | "buyer";
 // GET /opportunity → per-area score + component breakdown. Every component is
 // 0..100 where higher = more favourable for a builder ("where should I build?").
 export interface OpportunityComponents {
-  price_level: number;
-  price_growth: number;
-  demand_density: number;
+  price_level: number | null; // null = no plausible sale data for the area
+  price_growth: number | null; // null = too few dated sales to measure a trend (not zero growth)
+  demand_density: number | null; // null = no neighborhood_geocontext row (not zero demand)
   supply_pressure: number;
-  future_signals: number;
 }
 export interface OpportunityScore {
   area: string;
@@ -269,6 +268,25 @@ export interface FeasibilityDimension {
   reason: string;
   sources?: EvidenceSource[];
 }
+// GET /area-monitoring — every value fully computed server-side; the UI only renders it.
+export interface AreaMonitoring {
+  neighborhood: string;
+  n_sale: number;
+  n_typical: number;
+  price_histogram: { low: number; high: number; count: number }[];
+  yearly_median: { year: number; median: number; n: number }[];
+  by_portal: { portal: string; count: number }[];
+  price_rank: { median: number; percentile: number; of_n: number; all_medians: number[] } | null;
+  peers: {
+    name: string;
+    median_price: number;
+    opportunity: number | null;
+    n_sale: number;
+    listings: number;
+    is_selected: boolean;
+  }[];
+}
+
 export interface Feasibility {
   neighborhood: string;
   dimensions: FeasibilityDimension[];

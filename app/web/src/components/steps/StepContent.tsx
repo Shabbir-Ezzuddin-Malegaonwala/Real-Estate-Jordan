@@ -3,20 +3,14 @@ import type { AreaAmenities } from "../../lib/poi";
 import type { StepKey } from "../../lib/journey";
 import { shortDate } from "../../lib/format";
 import { OpportunityMeter } from "../OpportunityMeter";
-import { DecisionReadiness } from "../DecisionReadiness";
 import { PriceBands } from "../PriceBands";
 import { ConfidenceBreakdown } from "../ConfidenceBreakdown";
-import { AdjustmentWaterfall } from "../AdjustmentWaterfall";
-import { EvidenceSection } from "../EvidenceSection";
+import { Comparables } from "../Comparables";
 import { ResidualLandValue } from "../ResidualLandValue";
 import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
-import { Copilot } from "../Copilot";
 import { NearbyAmenities } from "../NearbyAmenities";
 import { WorkspaceHeader, NoStructuredData } from "../workspaces/shared";
-import { FeasibilityStep } from "./FeasibilityStep";
-import { MarketStep } from "./MarketStep";
-import { SalesStep } from "./SalesStep";
 import { MonitoringStep } from "./MonitoringStep";
 
 export function StepContent({
@@ -36,7 +30,11 @@ export function StepContent({
   computing: boolean;
   generatedAt: string;
 }) {
-  const covered = !!(area?.covered && result);
+  // "Covered" here means the area is not just in the catalogue but actually priceable:
+  // the engine returned a real band. Areas with too little sale data yet come back
+  // unpriceable (a 0/0/0 band) — show the honest "no data yet" state instead of a 0,
+  // and they flip to a real price automatically once more data is collected.
+  const covered = !!(area?.covered && result && result.recommended_jd_m2 > 0);
   const header = area && (
     <WorkspaceHeader
       title={area.name}
@@ -60,16 +58,6 @@ export function StepContent({
               <div className="mb-2 label-eyebrow">Where to build · opportunity</div>
               {opportunity ? <OpportunityMeter opp={opportunity} /> : <Awaiting note="No opportunity score for this area yet." />}
             </section>
-            <DecisionReadiness opp={opportunity} result={result} />
-            <NearbyAmenities amenities={amenities} />
-          </>
-        );
-      case "feasibility":
-        return <FeasibilityStep area={area} />;
-      case "market":
-        return (
-          <>
-            <MarketStep area={area} result={result} opportunity={opportunity} />
             <NearbyAmenities amenities={amenities} />
           </>
         );
@@ -86,16 +74,14 @@ export function StepContent({
           <div className={`transition-opacity ${computing ? "opacity-50" : "opacity-100"}`}>
             <PriceBands r={result} />
             <ConfidenceBreakdown r={result} />
-            <AdjustmentWaterfall r={result} />
-            <FutureSignals result={result} />
+            <Comparables items={result.comparables} />
             <ScenarioPanel r={result} />
             <ScenarioCompare r={result} />
+            <PlainWords narrative={result.narrative} />
           </div>
         ) : (
           <NoStructuredData area={area} />
         );
-      case "sales":
-        return <SalesStep area={area} result={result} opportunity={opportunity} />;
       case "monitoring":
         return <MonitoringStep area={area} result={result} generatedAt={generatedAt} />;
     }
@@ -105,21 +91,19 @@ export function StepContent({
     <div className="pb-2">
       {header}
       {body}
-      <Copilot area={area?.name ?? null} />
     </div>
   );
 }
 
-function FutureSignals({ result }: { result: RecommendationResult }) {
-  const future = result.evidence_objects.filter((e) => e.category === "future_signal");
-  if (future.length === 0) return null;
+// Plain-English summary of the recommendation (the "In plain words" card from the
+// old UI). The "Things to watch out for" risk list was intentionally removed.
+function PlainWords({ narrative }: { narrative: string }) {
+  if (!narrative) return null;
   return (
-    <EvidenceSection
-      title="Future Signals"
-      eyebrow="positioning, not applied to today's band"
-      tone="future"
-      items={future}
-    />
+    <section className="px-4 pb-6 pt-5" aria-label="Plain-language summary">
+      <h3 className="mb-2 text-[13px] font-semibold text-ink">In plain words</h3>
+      <p className="card p-3 text-[12px] leading-relaxed text-ink-dim">{narrative}</p>
+    </section>
   );
 }
 

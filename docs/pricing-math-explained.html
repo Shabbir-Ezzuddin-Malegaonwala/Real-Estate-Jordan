@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Jordan Real-Estate Engine — The Math Behind Every Number</title>
+<style>
+:root{--bg:#0a0f1e;--panel:#111827;--panel2:#1a2340;--card:#141c30;--text:#e2e8f0;--muted:#94a3b8;--accent:#60a5fa;--accent2:#34d399;--accent3:#a78bfa;--warn:#fbbf24;--pink:#f472b6;--border:rgba(255,255,255,.1);--code:#0c1222;--glow:0 0 30px rgba(96,165,250,.15)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+.wrap{max-width:1200px;margin:0 auto;padding:40px 24px 80px}
+h1{font-size:2.6rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;font-weight:800}
+h2{font-size:1.8rem;margin:48px 0 16px;color:var(--accent);display:flex;align-items:center;gap:12px}
+h2 .num{background:var(--accent);color:var(--bg);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;flex-shrink:0}
+h3{font-size:1.25rem;margin:24px 0 10px;color:var(--accent2)}
+h4{font-size:1.05rem;margin:16px 0 8px;color:var(--accent3)}
+p,.desc{color:var(--muted);margin:0 0 16px}
+a{color:var(--accent);text-decoration:none}
+.hero{background:linear-gradient(135deg,rgba(96,165,250,.12),rgba(52,211,153,.08),rgba(167,139,250,.08));border:1px solid var(--border);border-radius:24px;padding:40px;margin-bottom:40px;box-shadow:var(--glow)}
+.hero .subtitle{font-size:1.15rem;color:var(--muted);max-width:820px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tag{background:rgba(255,255,255,.06);border:1px solid var(--border);padding:6px 14px;border-radius:999px;font-size:.85rem;color:var(--text)}
+.tag.blue{border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)}
+.tag.green{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08)}
+.tag.purple{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin:16px 0;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.grid{display:grid;gap:16px;margin:16px 0}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:800px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.note{border-left:4px solid var(--accent);background:rgba(96,165,250,.06);padding:16px 20px;border-radius:0 14px 14px 0;margin:16px 0}
+.warn{border-left:4px solid var(--warn);background:rgba(251,191,36,.06);padding:16px 20px;border-radius:0 14px 14px 0;margin:16px 0}
+.success{border-left:4px solid var(--accent2);background:rgba(52,211,153,.06);padding:16px 20px;border-radius:0 14px 14px 0;margin:16px 0}
+pre{background:var(--code);border:1px solid var(--border);padding:18px;border-radius:14px;overflow-x:auto;font-size:.88rem;line-height:1.5;color:#c4d3f0;margin:12px 0;font-family:'JetBrains Mono',ui-monospace,monospace}
+code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.88rem}
+.inline-code{background:rgba(96,165,250,.1);padding:2px 8px;border-radius:6px;color:var(--accent);font-size:.85rem}
+.formula{background:var(--code);border:1px solid rgba(96,165,250,.25);border-radius:14px;padding:18px 20px;margin:14px 0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.95rem;color:#d7e3ff;overflow-x:auto}
+.formula .lhs{color:var(--accent2);font-weight:600}
+.formula .op{color:var(--pink)}
+.formula .cmt{color:var(--muted);font-size:.82rem}
+table{width:100%;border-collapse:collapse;margin:16px 0;border-radius:14px;overflow:hidden}
+th,td{border:1px solid var(--border);padding:12px 16px;text-align:left;font-size:.92rem}
+th{background:rgba(96,165,250,.08);color:var(--accent);font-weight:600}
+td{color:var(--muted)}
+tr:hover td{background:rgba(255,255,255,.02)}
+ul,ol{color:var(--muted);padding-left:24px;margin:8px 0 16px}
+li{margin:4px 0}
+.flow{display:flex;flex-direction:column;gap:0;margin:20px 0;align-items:center}
+.fbox{background:var(--panel2);border:1px solid var(--border);padding:14px 20px;border-radius:14px;text-align:center;min-width:220px;font-size:.92rem;position:relative}
+.fbox.blue{border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.06)}
+.fbox.green{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.06)}
+.fbox.purple{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.06)}
+.fbox.pink{border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.06)}
+.fbox.warn{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06)}
+.arrow{color:var(--accent2);font-size:1.4rem;line-height:1;padding:4px 0}
+.parallel-box{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap}
+.parallel-box .fbox{flex:1;min-width:200px}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:48px 0}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:600;margin:2px}
+.badge.blue{background:rgba(96,165,250,.15);color:var(--accent)}
+.badge.green{background:rgba(52,211,153,.15);color:var(--accent2)}
+.badge.purple{background:rgba(167,139,250,.15);color:var(--accent3)}
+.badge.pink{background:rgba(244,114,182,.15);color:var(--pink)}
+.badge.warn{background:rgba(251,191,36,.15);color:var(--warn)}
+.badge.muted{background:rgba(255,255,255,.06);color:var(--muted)}
+.toc{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px;margin:24px 0}
+.toc a{display:flex;justify-content:space-between;gap:12px;padding:7px 0;color:var(--muted);font-size:.95rem;transition:color .2s;border-bottom:1px solid rgba(255,255,255,.04)}
+.toc a:last-child{border-bottom:none}
+.toc a:hover{color:var(--accent)}
+.toc a.done .st{color:var(--accent2)}
+.toc a.pending{opacity:.65}
+.toc a.pending .st{color:var(--muted)}
+.status-pill{display:inline-block;border:1px dashed var(--border);border-radius:10px;padding:14px 18px;color:var(--muted);font-size:.9rem;margin:12px 0;background:rgba(255,255,255,.02)}
+.footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;text-align:center}
+.kbd{font-family:'JetBrains Mono',ui-monospace,monospace;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;padding:1px 7px;font-size:.82rem;color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section class="hero">
+<h1>The Math Behind Every Number</h1>
+<p class="subtitle">A plain-and-precise walkthrough of how the Jordan real-estate recommendation engine turns raw market listings into the numbers you see on screen. One section per view of the app &mdash; documented as we visit each. Every constant below is copied verbatim from <span class="inline-code">app/engine/config.py</span>; nothing here is illustrative.</p>
+<div class="tags">
+<span class="tag green">Evidence-backed</span>
+<span class="tag blue">Sales-comparison approach</span>
+<span class="tag purple">Cost &amp; income cross-checks</span>
+<span class="tag">Confidence scoring</span>
+<span class="tag blue">Scenario simulation</span>
+<span class="tag green">No hand-set prices</span>
+</div>
+</section>
+
+<div class="note"><strong>Core principle.</strong> The engine never sets a price by hand. Every number is <em>derived</em> from real listings and documented assumptions, and every derived number carries its own method, sample size, source, and confidence. This document opens the box on that derivation, view by view.</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+<strong style="color:var(--text);font-size:1.05rem">Contents &mdash; one section per app view</strong>
+<a class="done" href="#pricing"><span>1. Pricing &mdash; the three prices, confidence, comparables &amp; scenarios</span><span class="st">&#10003; documented</span></a>
+<a class="done" href="#opportunity"><span>2. Opportunity &mdash; where to build (the 4-component score)</span><span class="st">&#10003; documented</span></a>
+<a class="done" href="#economics"><span>3. Economics &mdash; residual land value (what to pay for land)</span><span class="st">&#10003; documented</span></a>
+<a class="done" href="#monitoring"><span>4. Monitoring &mdash; the market-at-a-glance graphs</span><span class="st">&#10003; documented</span></a>
+</div>
+
+<!-- =================================================================== -->
+<!-- SECTION 1 — PRICING                                                 -->
+<!-- =================================================================== -->
+<h2 id="pricing"><span class="num">1</span> Pricing</h2>
+<p>The Pricing view answers one question: <strong>what should this specific unit launch at?</strong> It shows, in order: the <strong>three prices</strong>, a <strong>confidence</strong> breakdown, the <strong>comparables</strong> the price rests on, two <strong>scenario</strong> tools (What-if &amp; Compare), and a plain-language summary. Below is the math behind each.</p>
+
+<div class="parallel-box">
+<div class="fbox blue"><strong>Min-safe</strong><br/><span class="cmt" style="font-size:.82rem;color:var(--muted)">the floor you shouldn't go below</span></div>
+<div class="fbox green"><strong>Recommended</strong><br/><span style="font-size:.82rem;color:var(--muted)">the evidence-backed launch price</span></div>
+<div class="fbox purple"><strong>Premium</strong><br/><span style="font-size:.82rem;color:var(--muted)">the top the evidence can defend</span></div>
+</div>
+
+<!-- 1.1 THE THREE PRICES -->
+<h3 id="pricing-3prices">1.1 &nbsp;The three prices</h3>
+<p>Everything anchors on one number derived from the comparable listings: the <strong>reconciled asking price per m&sup2;</strong> for this submarket (how that is built &rarr; <a href="#pricing-comps">&sect;1.3</a>). From there:</p>
+
+<h4>Recommended price</h4>
+<p>Asking prices sit <em>above</em> what units actually transact for. The client methodology PDF documents a <strong>5&ndash;15%</strong> ask-to-transaction gap; the engine applies the midpoint (<strong>10%</strong>) uniformly and surfaces it as its own sourced evidence row &mdash; it is a documented assumption, not a derived premium.</p>
+<div class="formula">
+<span class="cmt"># mid_gap = (0.05 + 0.15) / 2 = 0.10</span><br/>
+<span class="lhs">recommended</span> = comparison_asking <span class="op">&times;</span> (1 <span class="op">&minus;</span> mid_gap) &nbsp;<span class="cmt">= asking &times; 0.90</span>
+</div>
+
+<h4>Min-safe price</h4>
+<p>The lowest defensible launch price. It starts at the <strong>bottom of the confidence band</strong> (&sect;1.2), is lifted to the <strong>cost-approach floor</strong> if that is higher (a rational buyer won't pay below the cost to rebuild: replacement construction cost minus depreciation, &asymp; 0 for new build), and is never allowed to exceed the recommended price.</p>
+<div class="formula">
+<span class="lhs">min_safe</span> = min( &nbsp;max( confidence.low, &nbsp;cost_floor ) , &nbsp;recommended &nbsp;)
+</div>
+
+<h4>Premium price</h4>
+<p>The most the evidence can defend &mdash; the <strong>top of the confidence band</strong>. If the income approach (what investors will pay: annual rent &divide; required yield) sets a higher ceiling, the premium is allowed to reach it; it never falls below the recommended price. Crucially, the premium is <strong>not a fabricated number above the evidenced range</strong>.</p>
+<div class="formula">
+<span class="lhs">premium</span> = max( &nbsp;confidence.high &nbsp;<span class="op">|</span>&nbsp; income_ceiling (if higher) , &nbsp;recommended &nbsp;)<br/>
+<span class="cmt"># income_ceiling = annual_local_rent &divide; required_yield</span><br/>
+<span class="cmt"># required_yield = citywide annual rent &divide; citywide sale price/m&sup2; &nbsp;(fallback 6.5%)</span>
+</div>
+
+<div class="note"><strong>Why three, not one?</strong> A single number hides risk. The spread between min-safe and premium <em>is</em> the honest uncertainty of the submarket &mdash; wide where data is thin, tight where comps agree. The width comes directly from the confidence math below.</div>
+
+<!-- 1.2 CONFIDENCE -->
+<h3 id="pricing-confidence">1.2 &nbsp;Confidence</h3>
+<p>Confidence scores the <strong>reliability</strong> of the recommendation (distinct from the trust rating on any single source). The headline 0&ndash;100 score is a weighted blend of five reliability signals; the app then shows the four most decision-relevant of them as bars.</p>
+
+<h4>The headline score</h4>
+<div class="formula">
+<span class="lhs">score</span> = 0.28&middot;density <span class="op">+</span> 0.24&middot;dispersion <span class="op">+</span> 0.18&middot;recency <span class="op">+</span> 0.18&middot;method_agreement <span class="op">+</span> 0.12&middot;source_quality
+</div>
+<table>
+<tr><th>Signal</th><th>Weight</th><th>How it is computed (from real comps)</th></tr>
+<tr><td>Data density</td><td>0.28</td><td><code>1.0</code> at <span class="kbd">8+</span> comps; <code>0.1</code> at 1 comp; linear between. More comps &rarr; higher.</td></tr>
+<tr><td>Dispersion</td><td>0.24</td><td><code>max(0, 1 &minus; cv / 0.35)</code>. Tighter spread of adjusted comps &rarr; higher. At &ge;35% variation &rarr; 0.</td></tr>
+<tr><td>Recency</td><td>0.18</td><td><code>max(0, 1 &minus; avg_age_months / 18)</code>. Fresher listings &rarr; higher.</td></tr>
+<tr><td>Method agreement</td><td>0.18</td><td>Do comparison, cost &amp; income converge? <code>max(0, 1 &minus; spread / 0.6)</code>. &lt;2 methods &rarr; neutral 0.5.</td></tr>
+<tr><td>Source quality</td><td>0.12</td><td>Average source trust of the comps (H=1.0, M=0.6, L=0.3).</td></tr>
+</table>
+<div class="formula">
+<span class="cmt"># label from the 0&ndash;1 score</span><br/>
+score <span class="op">&ge;</span> 0.70 &rarr; <span class="badge green">High</span> &nbsp;&nbsp; score <span class="op">&ge;</span> 0.45 &rarr; <span class="badge warn">Medium</span> &nbsp;&nbsp; else &rarr; <span class="badge pink">Low</span>
+</div>
+
+<h4>The four bars you see</h4>
+<p>The app decomposes the score into four plain-language bars (each 0&ndash;100 with a one-line reason). A bar that can't be computed from the evidence is shown as <em>"not scorable"</em> &mdash; never faked.</p>
+<table>
+<tr><th>Bar</th><th>Maps to</th><th>Reads as</th></tr>
+<tr><td>Data coverage</td><td>density &times; 100</td><td>"N comparables after outlier filtering; full weight at 8+"</td></tr>
+<tr><td>Comparable quality</td><td>dispersion &times; 100</td><td>"adjusted comparables vary X% (tighter = higher quality)"</td></tr>
+<tr><td>Official evidence</td><td>gov signals</td><td>CBJ price index present/current + construction-cost floor available</td></tr>
+<tr><td>Market freshness</td><td>recency &times; 100</td><td>"average comparable age ~N months (ideal &le;12)"</td></tr>
+</table>
+<div class="warn"><strong>What changed.</strong> A fifth bar, <em>Future signals</em>, was removed &mdash; the product is now date-backed evidence only. It never contributed to the headline score (that was always the five reliability signals above), so removing the bar does <strong>not</strong> change any price or score. It was purely explanatory, and now it's gone.</div>
+
+<h4>How the band width is set</h4>
+<p>The gap between min-safe and premium is the confidence interval around the recommended price. Its half-width is the <strong>observed weighted dispersion of the comps</strong>, widened as confidence falls, then clamped so a freak-tight or freak-wide sample can't produce an absurd range.</p>
+<div class="formula">
+base = weighted_std(adjusted comps) &divide; point &nbsp;<span class="cmt"># or cv if no comps</span><br/>
+if comps &lt; 3: base = max(base, 0.15) &nbsp;<span class="cmt"># thin market: no false precision</span><br/>
+widen = 1 <span class="op">+</span> (1 <span class="op">&minus;</span> score) &nbsp;<span class="cmt"># low confidence &rarr; up to 2&times; width</span><br/>
+half = clamp( base <span class="op">&times;</span> widen, &nbsp;0.04, &nbsp;0.35 )<br/>
+<span class="lhs">band</span> = point <span class="op">&times;</span> (1 &plusmn; half)
+</div>
+
+<!-- 1.3 COMPARABLES -->
+<h3 id="pricing-comps">1.3 &nbsp;Comparables &amp; reconciliation</h3>
+<p>"The listings this price is based on." Every recommendation is built from real nearby apartments. Turning a pile of listings into one <strong>reconciled asking price/m&sup2;</strong> is a four-step pipeline:</p>
+
+<div class="flow">
+<div class="fbox blue"><strong>1. Select</strong> &mdash; nearby, similar-size, recent listings for the same property type</div>
+<div class="arrow">&darr;</div>
+<div class="fbox"><strong>2. De-duplicate</strong> &mdash; collapse cross-syndicated relistings of the same physical unit</div>
+<div class="arrow">&darr;</div>
+<div class="fbox purple"><strong>3. Adjust</strong> &mdash; normalise each comp to <em>your</em> unit (view, floor, beds, age, finish, size)</div>
+<div class="arrow">&darr;</div>
+<div class="fbox green"><strong>4. Reconcile</strong> &mdash; weighted mean, blended toward the submarket median</div>
+</div>
+
+<h4>Selection knobs (from the client PDF, not prices)</h4>
+<table>
+<tr><th>Knob</th><th>Value</th><th>Meaning</th></tr>
+<tr><td>Recency window</td><td>18 months</td><td>Oldest a listing can be and still count (ideal &le;12).</td></tr>
+<tr><td>Size band</td><td>&plusmn;45%</td><td>Prefer comps within this of your area; relaxes in 25% steps if too few.</td></tr>
+<tr><td>Thin-market floor</td><td>3 comps</td><td>Below this the market is "thin" and reliability drops.</td></tr>
+<tr><td>Full-confidence</td><td>8 comps</td><td>At/above this, low count stops penalising confidence.</td></tr>
+<tr><td>Target</td><td>12 comps</td><td>Stop selecting once this many strong comps are found.</td></tr>
+</table>
+
+<h4>Adjustments are derived, then capped</h4>
+<p>There is <strong>no</strong> hard-coded "view = +8%" anywhere. Each premium (view, floor, beds, age, finish, size) is derived from the market at runtime by paired-listing comparison, then bounded &mdash; large adjustments reduce reliability, so v1 keeps them modest and honest.</p>
+<table>
+<tr><th>Adjustment type</th><th>Cap</th></tr>
+<tr><td>One categorical attribute (view, parking, finish&hellip;)</td><td>&plusmn;20%</td></tr>
+<tr><td>Continuous (floor, age)</td><td>&plusmn;12%</td></tr>
+<tr><td>Per-m&sup2; size curve</td><td>&plusmn;10%</td></tr>
+<tr><td>Net (sum of all adjustments on one comp)</td><td>&plusmn;40% &nbsp;<span class="badge muted">flagged low-reliability beyond 30%</span></td></tr>
+</table>
+
+<h4>Reconciliation weight</h4>
+<p>Comps are combined by a weighted mean. A comp is worth more if it is <em>fresh</em> and needed <em>little</em> adjustment. The <code>0.20</code> floor caps how much any single near-identical comp can dominate (max/min weight ratio &asymp; 3&times;).</p>
+<div class="formula">
+<span class="lhs">weight</span> = recency &divide; ( 0.20 <span class="op">+</span> gross_adjustment )
+</div>
+<div class="note"><strong>Submarket-median anchor.</strong> Once the pool is large (&ge;24 rows &mdash; twice the target), the small top-similarity draw is blended toward the pool's robust median by inverse-variance weighting, so a lucky/unlucky handful of comps can't pull the estimate off the submarket's true centre. Below that, the comps already <em>are</em> the submarket.</div>
+
+<!-- 1.4 SCENARIOS -->
+<h3 id="pricing-scenarios">1.4 &nbsp;What-if &amp; Compare (scenario tools)</h3>
+<p>Both tools answer "how does the price move if I change something?" &mdash; and they do it the honest way: by <strong>re-running the exact same engine</strong> on a modified input, never by nudging a price directly. An override that changes nothing yields a zero delta.</p>
+
+<h4>What-if &mdash; one scenario vs base</h4>
+<p>Levers map to real engine inputs:</p>
+<table>
+<tr><th>Lever</th><th>How it flows through the engine</th></tr>
+<tr><td>finish / parking / view / beds / age / target floor</td><td>Change the Subject &rarr; re-derive adjustments &rarr; new band.</td></tr>
+<tr><td>construction cost &plusmn;%</td><td>Scales the cost benchmarks &rarr; moves the cost-approach floor (min-safe &amp; method-agreement).</td></tr>
+<tr><td>launch delay (months)</td><td>Advances <span class="kbd">as_of</span> &rarr; every comp ages &rarr; recency falls.</td></tr>
+</table>
+<div class="formula">
+<span class="lhs">recommended_delta</span> = ( scenario.recommended <span class="op">&minus;</span> base.recommended ) &divide; base.recommended <span class="op">&times;</span> 100%
+</div>
+<p>The same delta is reported for min-safe, premium, and the confidence score, with a plain-language line listing exactly which levers were applied.</p>
+
+<h4>Compare &mdash; 2 to 4 scenarios side by side</h4>
+<p>Each named scenario is run through the identical simulation, so the deltas are directly comparable. The tool flags <span class="badge green">best recommended</span> and <span class="badge blue">safest floor</span> across the set.</p>
+<div class="success"><strong>The guarantee.</strong> "Every lever flows through the engine's own evidence &mdash; no price was set by hand." If you can't move a number through a documented mechanism, the scenario tools won't move it at all.</div>
+
+<div class="section-divider"></div>
+
+<!-- =================================================================== -->
+<!-- FUTURE SECTIONS — append new <h2 id="..."> blocks below this line.  -->
+<!-- Keep the same structure: <h2> with .num, then <h3> sub-sections,    -->
+<!-- .formula / table / .flow blocks. Flip the matching TOC row from     -->
+<!-- class="pending" to class="done" and its .st to "&#10003; documented".-->
+<!-- =================================================================== -->
+
+<h2 id="opportunity"><span class="num">2</span> Opportunity</h2>
+<p>The Opportunity view answers: <strong>where should I build?</strong> Every covered area gets a single <strong>0&ndash;100 opportunity score</strong> &mdash; a weighted blend of <strong>four components</strong>, each scored <em>relative to all other areas</em>. It is a comparison, not an absolute: 50 means "middle of the pack", not "50% good".</p>
+
+<div class="parallel-box">
+<div class="fbox green"><strong>Price headroom</strong><br/><span style="font-size:.82rem;color:var(--muted)">how pricey (margin room)</span></div>
+<div class="fbox blue"><strong>Price growth</strong><br/><span style="font-size:.82rem;color:var(--muted)">is it appreciating</span></div>
+<div class="fbox purple"><strong>Sale demand</strong><br/><span style="font-size:.82rem;color:var(--muted)">density &amp; activity</span></div>
+<div class="fbox warn"><strong>Low competition</strong><br/><span style="font-size:.82rem;color:var(--muted)">how uncrowded</span></div>
+</div>
+
+<!-- 2.1 THE SHARED STEP -->
+<h3 id="opp-normalize">2.1 &nbsp;The shared step: percentile rank</h3>
+<p>Each component computes a <strong>raw value per area</strong>, then converts it to 0&ndash;100 by <strong>percentile rank</strong> &mdash; where the area sits in the ranking of all areas:</p>
+<div class="formula">
+<span class="lhs">score(area)</span> = ( count of areas with a LOWER raw value ) &divide; ( total areas &minus; 1 ) <span class="op">&times;</span> 100
+</div>
+<div class="warn"><strong>Why rank, not min-max?</strong> The data has garbage outliers &mdash; one area's median "sale" is <strong>120,000 JD/m&sup2;</strong> (a bad row). Min-max scaling would peg that to 100 and crush every real area toward 0 (Abdoun's true 91st-percentile price collapsed to <strong>1</strong>). Percentile rank asks only "how does this area stand vs the others", so a single absurd tail can't distort the scale. The lowest area &rarr; 0, the highest &rarr; 100, everyone else spreads evenly.</div>
+
+<!-- 2.2 THE FOUR COMPONENTS -->
+<h3 id="opp-components">2.2 &nbsp;The four components</h3>
+
+<h4>1. Price headroom <span class="badge green">weight 0.30</span> &mdash; raw uses <strong>median</strong></h4>
+<div class="formula"><span class="lhs">raw</span> = median( plausible sale price/m&sup2; of the area ) &nbsp;<span class="cmt"># outlier-filtered: drop &lt;250 JD/m&sup2;, trim tails</span></div>
+<p>Higher median price &rarr; more gross-development-value headroom. Percentile-ranked across areas.</p>
+
+<h4>2. Price growth <span class="badge blue">weight 0.25</span> &mdash; raw uses <strong>median</strong>, tiered &amp; mix-adjusted</h4>
+<p>Growth needs dated sales, and this corpus is <em>clustered</em> (lots of dated sales 2017&ndash;2023, a ~2-year gap, then a handful in 2026). So the window is <strong>recent year vs 1&ndash;3 years ago</strong> (a wide older window that actually reaches the historical data &mdash; an adjacent 12-month window lands in the empty gap). Two tiers:</p>
+<div class="formula">
+<span class="cmt"># Tier 1 &mdash; like-for-like (mix-adjusted): compare only SIMILAR units</span><br/>
+group sales by (size band 50m&sup2;, bedrooms); in each bucket with &ge;3 sales/side:<br/>
+&nbsp;&nbsp;bucket_growth = ( median(recent) <span class="op">&minus;</span> median(older) ) &divide; median(older) <span class="op">&times;</span> 100<br/>
+<span class="lhs">growth</span> = sample-weighted mean of bucket growths<br/>
+<br/>
+<span class="cmt"># Tier 2 &mdash; fallback when too sparse to match buckets (&ge;5 dated sales/side)</span><br/>
+<span class="lhs">growth</span> = ( median(recent) <span class="op">&minus;</span> median(older) ) &divide; median(older) <span class="op">&times;</span> 100 &nbsp;<span class="cmt"># unadjusted, labelled as such</span>
+</div>
+<p><strong>Median</strong>, not mean &mdash; property prices are right-skewed, so a few luxury outliers would drag a mean. Like-for-like removes the illusion where a change in <em>what</em> got listed masquerades as price movement. Areas without enough dated sales on both sides show <strong>n/a</strong> (and drop from the score).</p>
+<div class="note"><strong>Data reality:</strong> only ~15 areas currently have enough dated sales on both sides. The full unlock is the <strong>DLS dated-transaction data</strong> (official sales), which turns this into a dense, trustworthy index.</div>
+
+<h4>3. Sale demand <span class="badge purple">weight 0.30</span> &mdash; raw uses <strong>mean</strong> of two ranked proxies</h4>
+<div class="formula">
+<span class="lhs">raw</span> = mean( &nbsp;rank(median population_density) , &nbsp;rank(median night_light_radiance) &nbsp;)
+</div>
+<p>Population density and satellite <strong>night-light radiance</strong> (urban activity) are carried <em>per listing</em> and aggregated by <strong>median</strong> per area, then each is percentile-ranked and the two are averaged (whichever are present). Denser / brighter area &rarr; stronger demand signal. Areas whose listings carry no spatial data show <strong>n/a</strong>.</p>
+
+<h4>4. Low competition <span class="badge warn">weight 0.15</span> &mdash; raw is a <strong>count</strong>, ranked inverted</h4>
+<div class="formula">
+<span class="lhs">raw</span> = active listing count in the area<br/>
+<span class="lhs">score</span> = 100 <span class="op">&minus;</span> rank(raw) &nbsp;<span class="cmt"># inverted: fewer listings &rarr; higher score</span>
+</div>
+<p>More competing supply &rarr; lower score. (No competing-project data exists yet, so the proxy is listings only; projects re-enter when that data lands.) Note: this is <em>absolute</em> supply, so the single most-listed area in the country scores 0 &mdash; correctly, it faces the most competition.</p>
+
+<!-- 2.3 COMPOSITE -->
+<h3 id="opp-composite">2.3 &nbsp;The composite score</h3>
+<div class="formula">
+<span class="lhs">opportunity</span> = &Sigma;( weight <span class="op">&times;</span> component score ) &divide; &Sigma;( weights of components that EXIST )
+</div>
+<p>Weights: price headroom <strong>0.30</strong>, price growth <strong>0.25</strong>, sale demand <strong>0.30</strong>, low competition <strong>0.15</strong>. If a component is <strong>n/a</strong> it <strong>drops out and its weight is redistributed</strong> &mdash; a missing metric never counts as a zero and never drags the score down.</p>
+
+<!-- 2.4 WORKED EXAMPLE -->
+<h3 id="opp-example">2.4 &nbsp;Worked example &mdash; Abdoun (real numbers)</h3>
+<table>
+<tr><th>Component</th><th>Raw</th><th>Score (percentile)</th><th>Weight</th></tr>
+<tr><td>Price headroom</td><td>median ~1,114 JD/m&sup2;</td><td><span class="badge green">91</span> (premium)</td><td>0.30</td></tr>
+<tr><td>Price growth</td><td>&minus;18.6% (unadjusted)</td><td><span class="badge blue">50</span></td><td>0.25</td></tr>
+<tr><td>Sale demand</td><td>pop ~25,000/km&sup2;, night-light ~81</td><td><span class="badge purple">77</span></td><td>0.30</td></tr>
+<tr><td>Low competition</td><td>3,545 listings (national max)</td><td><span class="badge warn">0</span> (most crowded)</td><td>0.15</td></tr>
+</table>
+<div class="formula">
+<span class="lhs">score</span> = ( 0.30&times;91 + 0.25&times;50 + 0.30&times;77 + 0.15&times;0 ) &divide; ( 0.30+0.25+0.30+0.15 )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= ( 27.3 + 12.5 + 23.1 + 0 ) &divide; 1.0 = <span class="lhs">62.9</span>
+</div>
+<p>The reading is honest and specific: Abdoun is <strong>expensive</strong> (great margins) with <strong>strong demand</strong>, but <strong>saturated</strong> (most listings in Jordan) and <strong>not appreciating</strong> recently &rarr; a solid-but-not-top opportunity. Premium areas cluster sensibly: Shmeisani 68.6 &gt; Abdoun 62.9 &gt; Sweifieh 60.6 &gt; Dabouq 43.6 (low-density villas).</p>
+
+<div class="success"><strong>Honesty rules.</strong> Every component that can't be computed shows <strong>n/a</strong>, never a fabricated 0. Bars are relative (0 = lowest in the set, 100 = highest), and each carries a one-line reason with its raw value and source.</div>
+
+<div class="section-divider"></div>
+
+<h2 id="economics"><span class="num">3</span> Economics</h2>
+<p>The Economics view answers the land question: <strong>what is the most I can pay for the land and still hit my target profit?</strong> It uses the <strong>residual method</strong> &mdash; start from what the finished building sells for, subtract every cost the developer incurs, and whatever is <strong>left over</strong> is the ceiling for the land. It is a <em>ceiling, not a market land quote</em>.</p>
+
+<div class="flow">
+<div class="fbox green"><strong>GDV</strong> &mdash; what the finished building sells for</div>
+<div class="arrow">&minus;</div>
+<div class="fbox">Construction &middot; Fees &middot; Finance &middot; Developer profit</div>
+<div class="arrow">&darr;</div>
+<div class="fbox purple"><strong>Residual land value</strong> &mdash; the most you can pay for the land</div>
+</div>
+
+<!-- 3.1 THE FORMULA -->
+<h3 id="econ-formula">3.1 &nbsp;The formula</h3>
+<div class="formula">
+<span class="lhs">residual land value</span> = GDV <span class="op">&minus;</span> Construction <span class="op">&minus;</span> Fees <span class="op">&minus;</span> Finance <span class="op">&minus;</span> Developer&nbsp;profit
+</div>
+<p>The order of the sub-calculations matters &mdash; <strong>fees feed finance</strong>:</p>
+<div class="formula">
+<span class="lhs">GDV</span>            = recommended price/m&sup2; <span class="op">&times;</span> buildable area<br/>
+<span class="lhs">Construction</span>   = build cost/m&sup2; <span class="op">&times;</span> buildable area<br/>
+<span class="lhs">Fees</span>           = fees% <span class="op">&times;</span> <span style="color:var(--accent2)">Construction</span> &nbsp;<span class="cmt"># NOT of GDV</span><br/>
+<span class="lhs">Finance</span>        = finance% <span class="op">&times;</span> ( <span style="color:var(--accent2)">Construction</span> <span class="op">+</span> <span style="color:var(--accent2)">Fees</span> ) &nbsp;<span class="cmt"># all deployed capital</span><br/>
+<span class="lhs">Developer profit</span> = profit% <span class="op">&times;</span> <span style="color:var(--accent2)">GDV</span>
+</div>
+
+<!-- 3.2 WHERE EACH NUMBER COMES FROM -->
+<h3 id="econ-inputs">3.2 &nbsp;Where each number comes from</h3>
+<table>
+<tr><th>Line</th><th>Basis</th><th>Source of the number</th></tr>
+<tr><td>GDV (gross dev value)</td><td>price/m&sup2; &times; area</td><td>price/m&sup2; is the <strong>engine's recommended launch price</strong> (traceable to <a href="#pricing">&sect;1</a>); area is your input (default 2,000 m&sup2;)</td></tr>
+<tr><td>Construction</td><td>cost/m&sup2; &times; area</td><td>build cost is your input (default 450 JD/m&sup2;)</td></tr>
+<tr><td>Fees</td><td><span class="badge blue">5%</span> of construction</td><td>design / engineering / permits &mdash; documented assumption, overridable</td></tr>
+<tr><td>Finance</td><td><span class="badge blue">6%</span> of (construction + fees)</td><td>cost of borrowing during the build &mdash; documented assumption, overridable</td></tr>
+<tr><td>Developer profit</td><td><span class="badge blue">20%</span> of GDV</td><td>your required margin &mdash; documented assumption, overridable</td></tr>
+</table>
+<div class="note"><strong>What's derived vs assumed.</strong> Only <strong>GDV</strong> flows in from the model (the recommended launch price). The three percentages (6% / 5% / 20%) are <strong>documented builder assumptions</strong> from the client methodology PDF &mdash; every one is an editable input, defaulted, not derived. The engine never invents a land price; it computes the break-even ceiling for the assumptions you give it.</div>
+
+<!-- 3.3 WORKED EXAMPLE -->
+<h3 id="econ-example">3.3 &nbsp;Worked example</h3>
+<p>Buildable 2,000 m&sup2;, GDV 1,000 JD/m&sup2;, build cost 450 JD/m&sup2;, fees 5%, finance 6%, profit 20%:</p>
+<div class="formula">
+<span class="lhs">GDV</span>          = 1,000 <span class="op">&times;</span> 2,000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;2,000,000<br/>
+<span class="op">&minus;</span> Construction = 450 <span class="op">&times;</span> 2,000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&minus;900,000<br/>
+<span class="op">&minus;</span> Fees         = 5% <span class="op">&times;</span> 900,000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&nbsp;&minus;45,000<br/>
+<span class="op">&minus;</span> Finance      = 6% <span class="op">&times;</span> (900,000+45,000) = &nbsp;&nbsp;&minus;56,700<br/>
+<span class="op">&minus;</span> Profit       = 20% <span class="op">&times;</span> 2,000,000 &nbsp;&nbsp;= &nbsp;&minus;400,000<br/>
+<span class="lhs">= Residual land value</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;<span style="color:var(--accent2)">598,300</span> &nbsp;<span class="cmt">(&asymp; 299 JD per buildable m&sup2;)</span>
+</div>
+<div class="success"><strong>How to read it.</strong> Pay <em>more</em> than ~598,300 JD for this land and you eat into your 20% margin &mdash; so it's the builder's <strong>maximum defensible land price</strong>, not a quote for what land actually trades at. Land above the line turns the target return negative.</div>
+
+<div class="note"><strong>Deterministic &amp; consistent.</strong> This is a pure formula &mdash; same inputs always give the same answer. The live engine (<code>builder.residual_land_value</code>) and the offline fallback now compute it <strong>identically</strong> (fees on construction, finance on construction + fees), so the land ceiling doesn't change depending on whether the backend is reachable.</div>
+
+<div class="section-divider"></div>
+
+<h2 id="monitoring"><span class="num">4</span> Monitoring</h2>
+<p>The Monitoring view is a <strong>market-at-a-glance</strong> dashboard &mdash; a few simple graphs, each with a plain caption, plus an <strong>Expand</strong> button that fills the whole screen for cross-region comparison. The one rule that makes it trustworthy:</p>
+<div class="success"><strong>Every value is computed on the server and only rendered in the browser.</strong> There is no chart math in the frontend &mdash; it receives ready-to-plot numbers from <code>GET /area-monitoring</code> (built in <code>app/engine/monitoring.py</code>) and draws bars. If the engine is unreachable the dashboard says so; it never draws a browser-estimated (and possibly drifting) number.</div>
+
+<!-- 4.1 PER-AREA GRAPHS -->
+<h3 id="mon-area">4.1 &nbsp;The per-area graphs</h3>
+<table>
+<tr><th>Graph</th><th>What it shows</th><th>How it's computed</th></tr>
+<tr><td>Price spread</td><td>where most prices land</td><td><strong>equal-width histogram</strong> of the area's sale price/m², after the same <strong>outlier trim</strong> the comp engine uses (drop &lt;250 JD/m², MAD-trim the tails) so a few bad 10k+ rows don't squash the bars into one</td></tr>
+<tr><td>Price by year</td><td>prices over time</td><td><strong>median</strong> price/m² per calendar year, dated &amp; plausible sales only. Years with no dated sales are simply absent &mdash; the gap is shown, never interpolated</td></tr>
+<tr><td>Rank vs Jordan</td><td>how pricey vs everywhere</td><td><strong>percentile rank</strong> of the area's median vs every other area's median (same rank method as <a href="#opportunity">&sect;2</a>)</td></tr>
+<tr><td>Listings by source</td><td>where the data comes from</td><td>a straight <strong>count</strong> of listings per portal</td></tr>
+</table>
+
+<!-- 4.2 CROSS-REGION GRAPHS -->
+<h3 id="mon-peers">4.2 &nbsp;The cross-region graphs (fullscreen)</h3>
+<table>
+<tr><th>Graph</th><th>What it shows</th><th>How it's computed</th></tr>
+<tr><td>Priciest areas</td><td>price leaderboard</td><td>top-10 areas by <strong>median</strong> price/m², the selected area always shown &amp; highlighted</td></tr>
+<tr><td>Best opportunity</td><td>where to build now</td><td>top-10 areas by <strong>opportunity score</strong> (the composite from <a href="#opportunity">&sect;2</a>)</td></tr>
+<tr><td>Opportunity vs price</td><td>find under-priced areas</td><td>a <strong>scatter</strong>: x = median price, y = opportunity score. <strong>Top-left = cheaper + higher opportunity = the best bets.</strong> One dot per area, the selected one enlarged</td></tr>
+</table>
+
+<!-- 4.3 THE GUARDS -->
+<h3 id="mon-guards">4.3 &nbsp;Why you can trust it</h3>
+<ul>
+<li><strong>Outlier trim</strong> on the price spread &mdash; the histogram shows the real distribution, not one giant bar caused by a bad row.</li>
+<li><strong>Depth gate (&ge; 30 sales)</strong> on the leaderboards &amp; scatter &mdash; only areas with enough real sales are ranked, so a fluke <span class="inline-code">n=2</span> area or a garbage 120,000 JD/m&sup2; row can't top the board. Of ~320 areas, 89 clear the bar.</li>
+<li><strong>Median, not mean</strong>, everywhere prices are summarised &mdash; robust to luxury outliers.</li>
+<li><strong>Empty when thin</strong> &mdash; a graph with too little data renders "not enough data" rather than a misleading shape.</li>
+<li><strong>Server-computed</strong> &mdash; the numbers are identical to what the engine holds; nothing is recalculated in the browser.</li>
+</ul>
+
+<div class="section-divider"></div>
+
+<div class="footer">
+Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; All 4 sections (Pricing, Opportunity, Economics, Monitoring) documented &bull; sourced from <code>config.py</code>, <code>opportunity.py</code>, <code>builder.py</code> &amp; <code>monitoring.py</code>
+</div>
+
+</div>
+</body>
+</html>

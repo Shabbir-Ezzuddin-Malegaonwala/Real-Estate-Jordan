@@ -26,6 +26,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { HelpPanel } from "./components/HelpPanel";
 import { Landing } from "./components/Landing";
 import { Stepper } from "./components/Stepper";
+import { SubjectForm } from "./components/SubjectForm";
 import { StepContent } from "./components/steps/StepContent";
 import { OpportunityLegend } from "./components/OpportunityLegend";
 import { useTheme } from "./lib/theme";
@@ -38,6 +39,19 @@ const DEFAULT_LAYERS: LayerState = {
   comparables: true,
   future: true,
   roads: true,
+};
+
+// The representative unit the engine prices when the user hasn't customised it — kept in
+// sync with scrapers/emit_national.py so the precomputed brief and the form agree.
+const DEFAULT_SUBJECT: SubjectInput = {
+  neighborhood: "",
+  area_m2: 175,
+  bedrooms: 3,
+  floor_level: 4,
+  building_age_years: 0,
+  view: "unknown",
+  parking: "unknown",
+  finish_quality: "high",
 };
 
 function areasFromBundle(
@@ -78,14 +92,17 @@ export default function App() {
   );
   const [layerLoading, setLayerLoading] = useState<Record<string, boolean>>({});
   const [selectedArea, setSelectedArea] = useState<AreaEntry | null>(null);
+  const [subject, setSubject] = useState<SubjectInput>(DEFAULT_SUBJECT);
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [computing, setComputing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [step, setStep] = useState<StepKey>("opportunity");
+  const [step, setStep] = useState<StepKey>("pricing");
 
   const apiStatusRef = useRef<ApiStatus>("checking");
   const bundleRef = useRef<RecommendationBundle | null>(null);
+  const subjectRef = useRef<SubjectInput>(subject);
+  subjectRef.current = subject;
 
   const setApiStatus = (s: ApiStatus) => {
     apiStatusRef.current = s;
@@ -123,11 +140,28 @@ export default function App() {
   const selectArea = useCallback(
     (area: AreaEntry) => {
       setSelectedArea(area);
-      if (area.covered) recompute({ neighborhood: area.name, area_m2: 175 });
-      else setResult(null);
+      if (area.covered) {
+        // price the area with the user's current subject params, not a bare default
+        const subj = { ...subjectRef.current, neighborhood: area.name };
+        setSubject(subj);
+        recompute(subj);
+      } else setResult(null);
     },
     [recompute],
   );
+
+  // Subject form wiring: edit a field → patch state; "Analyze" → recompute on demand.
+  const onPatchSubject = useCallback(
+    (patch: Partial<SubjectInput>) => setSubject((s) => ({ ...s, ...patch })),
+    [],
+  );
+  const onAnalyze = useCallback(() => {
+    const subj = subjectRef.current;
+    if (subj.neighborhood && subj.area_m2) {
+      setStep("pricing"); // Analyze always lands on the launch-price view
+      recompute(subj);
+    }
+  }, [recompute]);
 
   const selectByName = useCallback(
     (name: string) => {
@@ -142,9 +176,9 @@ export default function App() {
   );
 
   const onEnter = useCallback(
-    (mode: EntryMode) => {
+    (_mode: EntryMode) => {
       enter();
-      setStep(mode === "evaluate" ? "feasibility" : "opportunity");
+      setStep("pricing"); // recommendation-first: land on the launch-price view
     },
     [enter],
   );
@@ -208,6 +242,27 @@ export default function App() {
     () => (selectedArea ? amenities[selectedArea.name] ?? null : null),
     [amenities, selectedArea],
   );
+  // The priceable set is exactly the engine's result keys — reliable and always populated
+  // once the bundle loads (the `areas` list routes through the /areas API and can be empty).
+  // Well-known precomputed areas (always ~5) — the reliable fallback + sensible defaults.
+  const bundleKeys = useMemo(() => (bundle ? Object.keys(bundle.results) : []), [bundle]);
+  // The dropdown lists every priceable area from the live /areas coverage set (hundreds once
+  // the districts registry is populated). Falls back to the bundle keys if /areas is empty
+  // (offline), so the form is never blank.
+  const neighborhoodNames = useMemo(() => {
+    const covered = areas.filter((a) => a.covered).map((a) => a.name);
+    const base = covered.length ? covered : bundleKeys;
+    return [...new Set(base)].sort((x, y) => x.localeCompare(y));
+  }, [areas, bundleKeys]);
+
+  // Recommendation-first: once data is ready, open on the first neighbourhood so the price
+  // bands are populated and Analyze is enabled immediately (user can change area/params).
+  useEffect(() => {
+    if (selectedArea || !neighborhoodNames.length) return;
+    // Land on a known-good precomputed area, not the alphabetical first (e.g. "1st Circle").
+    const preferred = bundleKeys.find((k) => neighborhoodNames.includes(k)) ?? neighborhoodNames[0];
+    selectByName(preferred);
+  }, [neighborhoodNames, bundleKeys, selectedArea, selectByName]);
 
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
@@ -275,8 +330,16 @@ export default function App() {
           </div>
         </header>
 
-        <Stepper active={step} onSelect={setStep} />
         <AreaSearch areas={areas} onPick={selectArea} />
+        <SubjectForm
+          subject={subject}
+          neighborhoods={neighborhoodNames}
+          onPatch={onPatchSubject}
+          onNeighborhood={selectByName}
+          onAnalyze={onAnalyze}
+          computing={computing}
+        />
+        <Stepper active={step} onSelect={setStep} />
 
         <StepContent
           step={step}

@@ -178,7 +178,7 @@ function EvidenceDetail({ ev }: { ev: EvidenceObject }) {
       )}
       <div className="mt-1.5 flex flex-wrap gap-1">
         {ev.sources.map((s, i) => (
-          <SourceChip key={i} source={s} />
+          <SourceChip key={i} source={s} variable={ev.factor} />
         ))}
       </div>
     </div>
@@ -198,7 +198,7 @@ function AnchorBlock({ anchors }: { anchors: EvidenceObject[] }) {
               <span className="text-[12px] text-ink">{a.factor}</span>
               <div className="mt-0.5 flex flex-wrap gap-1">
                 {a.sources.map((s, i) => (
-                  <SourceChip key={i} source={s} />
+                  <SourceChip key={i} source={s} variable={a.factor} />
                 ))}
               </div>
             </div>
@@ -229,7 +229,7 @@ function ContextBlock({ rows }: { rows: EvidenceObject[] }) {
             <p className="mt-1 text-2xs leading-relaxed text-ink-mute">{c.explanation}</p>
             <div className="mt-1 flex flex-wrap gap-1">
               {c.sources.map((s, i) => (
-                <SourceChip key={i} source={s} />
+                <SourceChip key={i} source={s} variable={c.factor} />
               ))}
             </div>
           </div>

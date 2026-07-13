@@ -5,11 +5,8 @@ import { useCallback, useState } from "react";
 // the questions a builder asks in sequence.
 export type StepKey =
   | "opportunity"
-  | "feasibility"
-  | "market"
   | "economics"
   | "pricing"
-  | "sales"
   | "monitoring";
 
 export interface JourneyStep {
@@ -21,12 +18,9 @@ export interface JourneyStep {
 
 export const STEPS: JourneyStep[] = [
   { key: "opportunity", n: 1, label: "Opportunity", question: "Where should I build?" },
-  { key: "feasibility", n: 2, label: "Feasibility", question: "Can I build here?" },
-  { key: "market", n: 3, label: "Market", question: "Who will buy here?" },
-  { key: "economics", n: 4, label: "Economics", question: "What can I pay for the land?" },
-  { key: "pricing", n: 5, label: "Pricing", question: "What's the launch price?" },
-  { key: "sales", n: 6, label: "Sales", question: "How do I justify it?" },
-  { key: "monitoring", n: 7, label: "Monitoring", question: "What changed?" },
+  { key: "economics", n: 2, label: "Economics", question: "What can I pay for the land?" },
+  { key: "pricing", n: 3, label: "Pricing", question: "What's the launch price?" },
+  { key: "monitoring", n: 4, label: "Monitoring", question: "What changed?" },
 ];
 
 export const STEP_INDEX: Record<StepKey, number> = Object.fromEntries(

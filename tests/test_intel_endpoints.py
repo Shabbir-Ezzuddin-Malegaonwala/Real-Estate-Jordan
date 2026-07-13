@@ -222,8 +222,7 @@ class Residual(unittest.TestCase):
 # ---------------------------------------------------------------------------
 
 class Opportunity(unittest.TestCase):
-    _COMPS = {"price_level", "price_growth", "demand_density",
-              "supply_pressure", "future_signals"}
+    _COMPS = {"price_level", "price_growth", "demand_density", "supply_pressure"}
 
     @classmethod
     def setUpClass(cls):

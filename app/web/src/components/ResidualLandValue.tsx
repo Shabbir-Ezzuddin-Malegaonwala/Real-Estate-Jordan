@@ -9,7 +9,7 @@ const DEFAULTS: Inputs = {
   buildable_area_m2: 2000,
   construction_cost_per_m2: 450,
   finance_pct: 6,
-  fees_pct: 4,
+  fees_pct: 5, // matches the engine default (professional fees = 5% of construction)
   profit_pct: 20,
 };
 

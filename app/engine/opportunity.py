@@ -11,11 +11,11 @@ Components:
   price_growth     recent vs older median sale price/m² within the area (None if too sparse)
   demand_density   population density + night-light proxy (neighborhood_geocontext)
   supply_pressure  active listing + competing-project inventory, inverted (low pressure scores high)
-  future_signals   development score from evidence_items (proximity × timeline × source trust)
 """
 
 from __future__ import annotations
 
+import bisect
 from datetime import date
 from typing import Any, Optional
 
@@ -28,11 +28,10 @@ from . import evidence as _evidence
 
 # v1 heuristic composite weights — DEFINED and EXPOSED (not derived, not hidden). Tune freely.
 OPPORTUNITY_WEIGHTS = {
-    "price_level": 0.25,
-    "price_growth": 0.20,
-    "demand_density": 0.25,
+    "price_level": 0.30,
+    "price_growth": 0.25,
+    "demand_density": 0.30,
     "supply_pressure": 0.15,
-    "future_signals": 0.15,
 }
 
 # Builder Decision-Readiness dimensions — a broader, builder-facing framing on top of the
@@ -55,6 +54,23 @@ _GROWTH_MIN_SAMPLE = 8       # min sales on each side of the window to trust a g
 _GROWTH_RECENT_MONTHS = 12   # "recent" window
 _GROWTH_OLDER_MONTHS = 36    # "older" window ceiling (12–36 mo back)
 _PROJECT_SUPPLY_WEIGHT = 20  # each competing project counts as this many listings of supply
+
+# --- Like-for-like price growth (mix-adjusted, adaptive window) ---
+# Growth is measured by comparing SIMILAR units (same size band + bedroom count) across two
+# equal-length periods, so a change in the mix of what got listed can't masquerade as price
+# movement. The window adapts to the data: try year-over-year first, then 6-month, then 3-month
+# (recent [0,W] vs prior (W,2W]); use the shortest that has enough matched pairs.
+# (recent_max, older_min, older_max, label) in months. recent = [0, recent_max]; older =
+# (older_min, older_max]. The older window is WIDE on purpose: the dated corpus is clustered
+# with multi-year gaps, so an adjacent equal-length window often lands in an empty stretch —
+# the trend needs the older side to reach back far enough to actually contain sales.
+_GROWTH_WINDOWS = (
+    (12, 12, 36, "recent year vs 1–3 yr ago"),
+    (6, 6, 36, "recent 6mo vs up to 3 yr ago"),
+)
+_GROWTH_MIN_BUCKET = 3       # min matched sales per size/bed bucket on EACH side to trust it
+_GROWTH_SIZE_BAND_M2 = 50    # like-for-like size buckets, 50 m² wide
+_GROWTH_MIN_OVERALL = 5      # min dated sales each side for the unadjusted fallback
 
 
 def _area_sales(bundle: DataBundle, key: str) -> list[float]:
@@ -89,6 +105,142 @@ def _supply_raw(bundle: DataBundle, key: str) -> float:
                    if p.neighborhood.strip().lower() == key
                    and p.status in ("selling", "construction", "planned"))
     return listings + projects * _PROJECT_SUPPLY_WEIGHT
+
+
+def _bucket_area_stats(bundle: DataBundle, as_of: date) -> dict[str, dict]:
+    """One pass over listings + projects → per-neighborhood aggregates for scoring.
+
+    Replaces the previous per-area rescans (_area_sales / _growth_raw / _supply_raw each
+    walked the whole corpus for every area — O(areas × listings)). With hundreds of covered
+    areas that made /opportunity time out; this is a single O(listings) pass instead.
+    """
+    stats: dict[str, dict] = {}
+
+    def bucket(key: str) -> dict:
+        return stats.setdefault(key, {"sales": [], "dated": [], "listings": 0, "projects": 0,
+                                      "pop": [], "ntl": []})
+
+    for l in bundle.listings:
+        key = (l.neighborhood or "").strip().lower()
+        if not key:
+            continue
+        b = bucket(key)
+        b["listings"] += 1
+        # Demand proxies are carried per-listing (enrich_spatial): aggregate them here so
+        # Sale demand works from the national corpus even when neighborhood_geocontext is absent.
+        if l.pop_density is not None:
+            b["pop"].append(l.pop_density)
+        if l.ntl_radiance is not None:
+            b["ntl"].append(l.ntl_radiance)
+        if l.listing_type == "sale" and l.price_per_m2:
+            b["sales"].append(l.price_per_m2)
+            # Keep dated, plausibly-priced sales with the attributes needed for
+            # like-for-like growth: (months ago, price/m², size, bedrooms).
+            if l.listing_date and l.price_per_m2 >= config.MIN_PLAUSIBLE_SALE_PPM2:
+                b["dated"].append((months_between(l.listing_date, as_of),
+                                   l.price_per_m2, l.area_m2, l.bedrooms))
+    for p in bundle.projects:
+        if p.status in ("selling", "construction", "planned"):
+            key = (p.neighborhood or "").strip().lower()
+            if key:
+                bucket(key)["projects"] += 1
+    return stats
+
+
+def _percentile_ranks(raw: dict[str, Optional[float]], invert: bool = False
+                      ) -> dict[str, Optional[float]]:
+    """Rank each area against the rest (0–100 = share of areas with a lower value). Robust to
+    outliers — one huge area can't compress everyone else the way min-max does. `invert` flips
+    it so a LOW raw value scores HIGH (used for competition: fewer listings = more room)."""
+    vals = sorted(v for v in raw.values() if v is not None)
+    n = len(vals)
+    out: dict[str, Optional[float]] = {}
+    for a, v in raw.items():
+        if v is None:
+            out[a] = None
+        elif n <= 1:
+            out[a] = 50.0
+        else:
+            pr = bisect.bisect_left(vals, v) / (n - 1) * 100  # % of areas strictly below
+            out[a] = 100 - pr if invert else pr
+    return out
+
+
+def _lfl_key(sale: tuple) -> tuple:
+    """Like-for-like bucket key for a dated sale (_, _, area_m2, bedrooms): (size band, beds)."""
+    area = sale[2]
+    band = None if not area else int(area // _GROWTH_SIZE_BAND_M2)
+    return (band, sale[3])
+
+
+def _like_for_like_growth(recent: list[tuple], older: list[tuple]) -> Optional[tuple]:
+    """Median price/m² change between two periods, computed WITHIN matched size/bed buckets and
+    combined by sample weight — so composition shifts don't masquerade as price movement.
+    Returns (growth_pct, n_matched_buckets) or None if no bucket has enough on both sides."""
+    rb: dict[tuple, list] = {}
+    ob: dict[tuple, list] = {}
+    for s in recent:
+        rb.setdefault(_lfl_key(s), []).append(s[1])
+    for s in older:
+        ob.setdefault(_lfl_key(s), []).append(s[1])
+    num = den = 0.0
+    matched = 0
+    for k, rlist in rb.items():
+        olist = ob.get(k)
+        if not olist or len(rlist) < _GROWTH_MIN_BUCKET or len(olist) < _GROWTH_MIN_BUCKET:
+            continue
+        m_old = median(olist)
+        if not m_old:
+            continue
+        g = (median(rlist) - m_old) / m_old * 100
+        w = min(len(rlist), len(olist))
+        num += g * w
+        den += w
+        matched += 1
+    if den == 0:
+        return None
+    return num / den, matched
+
+
+def _growth_reason(gi: Optional[dict]) -> str:
+    if gi is None:
+        return "not enough dated sales to measure a trend yet"
+    if gi["method"] == "like-for-like":
+        n = gi["buckets"]
+        return (f"like-for-like {gi['window']}: {gi['pct']:+.1f}% "
+                f"(median across {n} size/bed bucket{'s' if n != 1 else ''})")
+    return (f"{gi['window']}: {gi['pct']:+.1f}% "
+            "(unadjusted median — too sparse for like-for-like matching)")
+
+
+def _overall_growth(recent: list[tuple], older: list[tuple]) -> Optional[float]:
+    """Unadjusted median price/m² change — the fallback when the dated data is too sparse to
+    match like-for-like buckets. Composition-biased, so it is labelled as unadjusted."""
+    if len(recent) < _GROWTH_MIN_OVERALL or len(older) < _GROWTH_MIN_OVERALL:
+        return None
+    m_old = median([s[1] for s in older])
+    if not m_old:
+        return None
+    return (median([s[1] for s in recent]) - m_old) / m_old * 100
+
+
+def _growth_adaptive(dated: list[tuple]) -> Optional[dict]:
+    """Tiered, adaptive-window growth. Preference order:
+      1. mix-adjusted like-for-like, at the LONGEST window that supports it (year → 6mo → 3mo);
+      2. else an unadjusted median comparison, at the longest window with enough dated depth.
+    Returns {pct, window, method, buckets} or None."""
+    windows = [(label, [s for s in dated if 0 <= s[0] <= rmax],
+                [s for s in dated if omin < s[0] <= omax])
+               for rmax, omin, omax, label in _GROWTH_WINDOWS]
+    for label, recent, older in windows:
+        lfl = _like_for_like_growth(recent, older)
+        if lfl is not None:
+            return {"pct": lfl[0], "window": label, "method": "like-for-like", "buckets": lfl[1]}
+    for label, recent, older in windows:
+        ov = _overall_growth(recent, older)
+        if ov is not None:
+            return {"pct": ov, "window": label, "method": "unadjusted", "buckets": None}
+    return None
 
 
 def _normalize(raw: dict[str, Optional[float]], invert: bool = False
@@ -175,10 +327,12 @@ def _readiness(price_level: Optional[float], demand: Optional[float],
         "future_growth": _dim(None, _ENRICH_REASON, "low"),
         "infrastructure": _dim(None, _ENRICH_REASON, "low"),
         "regulatory_readiness": regulatory_dim,
-        "pricing_confidence": _dim(pricing_pct,
-                                   f"decision-engine confidence '{pricing_label}' on a standard "
-                                   f"{_STD_READINESS_AREA_M2:.0f} m2 subject",
-                                   _CONF_LABEL.get(pricing_label, "low")),
+        "pricing_confidence": _dim(
+            pricing_pct,
+            (f"decision-engine confidence '{pricing_label}' on a standard "
+             f"{_STD_READINESS_AREA_M2:.0f} m2 subject" if pricing_pct is not None
+             else "computed per selected area on demand (not run for the bulk heatmap)"),
+            _CONF_LABEL.get(pricing_label, "low")),
         "construction_feasibility": construction_dim,
     }
     num = den = 0.0
@@ -212,24 +366,40 @@ def opportunity_scores(bundle: DataBundle, areas: list[str],
     as_of = as_of or bundle.as_of or date.today()
     centroids = centroids or {}
     keys = {a: a.strip().lower() for a in areas}
-    geo = {a: bundle.geocontext_for(a) for a in areas}
 
-    price_raw = {a: (median(_area_sales(bundle, keys[a])) or None) for a in areas}
-    growth_raw = {a: _growth_raw(bundle, keys[a], as_of) for a in areas}
-    pop_raw = {a: (geo[a].median_population_density if geo[a] else None) for a in areas}
-    light_raw = {a: (geo[a].median_nightlight if geo[a] else None) for a in areas}
-    supply_raw = {a: _supply_raw(bundle, keys[a]) for a in areas}
+    # Single O(listings) pass, then every per-area stat is a dict lookup.
+    stats = _bucket_area_stats(bundle, as_of)
+    empty = {"sales": [], "dated": [], "listings": 0, "projects": 0, "pop": [], "ntl": []}
 
-    price_n = _normalize(price_raw)
-    growth_n = _normalize(growth_raw)
-    pop_n = _normalize(pop_raw)
-    light_n = _normalize(light_raw)
-    supply_n = _normalize(supply_raw, invert=True)
+    def _st(a: str) -> dict:
+        return stats.get(keys[a], empty)
 
-    have_evidence = bool(bundle.evidence_items)
+    def _kept_sales(a: str) -> list[float]:
+        raw = _st(a)["sales"]
+        keep = robust_keep(raw, config.MIN_PLAUSIBLE_SALE_PPM2)
+        return [v for v, k in zip(raw, keep) if k]
+
+    price_raw = {a: (median(_kept_sales(a)) or None) for a in areas}
+    growth_info = {a: _growth_adaptive(_st(a)["dated"]) for a in areas}
+    growth_raw = {a: (growth_info[a]["pct"] if growth_info[a] else None) for a in areas}
+    pop_raw = {a: (median(_st(a)["pop"]) or None) for a in areas}
+    light_raw = {a: (median(_st(a)["ntl"]) or None) for a in areas}
+    # Competition = the area's own active-listing count, but ranked by PERCENTILE (not min-max)
+    # so one huge market (Abdoun ~3.5k listings) can't distort every other area's score. There
+    # is no project-supply data yet, so the proxy is listings only (projects re-added when live).
+    supply_raw = {a: float(_st(a)["listings"]) for a in areas}
+
+    # All components are percentile-ranked (not min-max): a single garbage outlier — e.g. an
+    # area whose median "sale" is 120,000 JD/m² from a bad row — must not crush every real area
+    # to ~0. Rank asks "how does this area stand vs the others", which is robust to such tails.
+    price_n = _percentile_ranks(price_raw)
+    growth_n = _percentile_ranks(growth_raw)
+    pop_n = _percentile_ranks(pop_raw)
+    light_n = _percentile_ranks(light_raw)
+    supply_n = _percentile_ranks(supply_raw, invert=True)
+
     out: list[dict[str, Any]] = []
     for a in areas:
-        dev = _evidence.future_signal_evidence(bundle.evidence_items, Subject(neighborhood=a))[1]
         demand_parts = [x for x in (pop_n[a], light_n[a]) if x is not None]
         demand = sum(demand_parts) / len(demand_parts) if demand_parts else None
 
@@ -238,37 +408,30 @@ def opportunity_scores(bundle: DataBundle, areas: list[str],
                 price_n[a],
                 f"median sale ~{price_raw[a]:.0f} JD/m² (relative to covered set)"
                 if price_raw[a] else "no plausible sale listings"),
-            "price_growth": _component(
-                growth_n[a],
-                f"recent vs 12–36mo median {growth_raw[a]:+.1f}%"
-                if growth_raw[a] is not None
-                else f"< {_GROWTH_MIN_SAMPLE} dated sales each side of the window — not scorable"),
+            "price_growth": _component(growth_n[a], _growth_reason(growth_info[a])),
             "demand_density": _component(
                 demand,
                 (f"pop density ~{pop_raw[a]:,.0f}/km²"
                  if pop_raw[a] is not None else "no density")
                 + (f", night-light ~{light_raw[a]:.0f}" if light_raw[a] is not None else "")
-                + " (activity proxy)" if demand is not None
-                else "no neighborhood_geocontext row"),
+                + " (activity proxy, from listings)" if demand is not None
+                else "no pop-density / night-light on this area's listings yet"),
             "supply_pressure": _component(
                 supply_n[a],
-                f"active supply proxy {supply_raw[a]:.0f} (listings + projects); "
-                "low pressure scores high"),
-            "future_signals": _component(
-                min(100.0, dev / config.FUTURE_SIGNAL_SATURATION * 100) if have_evidence else None,
-                f"development score {dev} (saturates at {config.FUTURE_SIGNAL_SATURATION})"
-                if have_evidence else "no evidence_items collected"),
+                f"{supply_raw[a]:.0f} active listings (percentile-ranked vs all areas; "
+                "fewer listings = less competition = higher score)"),
         }
         weights_used = {n: round(w, 4) for n, w in OPPORTUNITY_WEIGHTS.items()
                         if components[n]["score"] is not None}
         total_w = sum(weights_used.values()) or 1.0
         weights_used = {n: round(w / total_w, 4) for n, w in weights_used.items()}
-        pricing_pct, pricing_label = _pricing_confidence(bundle, a, as_of)
-        # Covered submarkets are all Greater Amman -> use the Amman DoS build-cost floor.
+        # Pricing confidence is a FULL recommend() per area — far too heavy to run for
+        # every covered area on this bulk/heatmap endpoint. It is left pending here and
+        # filled in for the single SELECTED area on the client (from its live result).
         cc = bundle.construction_cost
         build_cost = cc.amman_jd_m2 if cc else None
         asez_n = len(asez_rules_for(bundle, keys[a]))
-        readiness = _readiness(price_n[a], demand, supply_n[a], pricing_pct, pricing_label,
+        readiness = _readiness(price_n[a], demand, supply_n[a], None, "unknown",
                                construction_cost=build_cost, median_sale=price_raw[a],
                                asez_count=asez_n)
         lat, lng = centroids.get(keys[a], (None, None))
