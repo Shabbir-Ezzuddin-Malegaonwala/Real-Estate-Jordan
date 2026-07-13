@@ -7,6 +7,7 @@
 import { API_BASE } from "./api";
 import type {
   AreaEntry,
+  AreaMonitoring,
   Confidence,
   ConfidenceComponent,
   Feasibility,
@@ -177,6 +178,17 @@ export async function fetchAreas(fallback: AreaEntry[]): Promise<AreaEntry[]> {
       centroid_lng: typeof a.centroid_lng === "number" ? a.centroid_lng : undefined,
     };
   });
+}
+
+// --- Area monitoring (GET /area-monitoring) ---------------------------------
+// Every graph value is computed server-side; the frontend only renders. No local
+// fallback — if the engine is unreachable the dashboard says so rather than
+// drawing browser-computed (and potentially drifting) numbers.
+export async function fetchAreaMonitoring(neighborhood: string): Promise<AreaMonitoring | null> {
+  return tryGet<AreaMonitoring>(
+    `/area-monitoring?neighborhood=${encodeURIComponent(neighborhood)}`,
+    8000,
+  );
 }
 
 // --- Opportunity (GET /opportunity) -----------------------------------------

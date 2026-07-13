@@ -268,6 +268,25 @@ export interface FeasibilityDimension {
   reason: string;
   sources?: EvidenceSource[];
 }
+// GET /area-monitoring — every value fully computed server-side; the UI only renders it.
+export interface AreaMonitoring {
+  neighborhood: string;
+  n_sale: number;
+  n_typical: number;
+  price_histogram: { low: number; high: number; count: number }[];
+  yearly_median: { year: number; median: number; n: number }[];
+  by_portal: { portal: string; count: number }[];
+  price_rank: { median: number; percentile: number; of_n: number; all_medians: number[] } | null;
+  peers: {
+    name: string;
+    median_price: number;
+    opportunity: number | null;
+    n_sale: number;
+    listings: number;
+    is_selected: boolean;
+  }[];
+}
+
 export interface Feasibility {
   neighborhood: string;
   dimensions: FeasibilityDimension[];

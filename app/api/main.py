@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from app.engine import builder, opportunity, recommend, scenario
+from app.engine import builder, monitoring, opportunity, recommend, scenario
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
 from app.engine.data import DataBundle, load_bundle_from_sqlite
 from app.engine.models import Subject
@@ -461,3 +461,20 @@ def get_areas():
     catalog = opportunity.area_catalog(bundle, set(cov.names()), cov.centroids)
     return {"covered_count": sum(1 for a in catalog if a["covered"]),
             "total_count": len(catalog), "areas": catalog}
+
+
+@app.get("/area-monitoring")
+def get_area_monitoring(neighborhood: str = Query(..., min_length=1)):
+    """All Monitoring-dashboard graph data for one area, computed server-side (frontend renders
+    only). Resolves to any corpus neighborhood, not just covered submarkets."""
+    cov: Coverage = app.state.coverage
+    bundle: DataBundle = app.state.bundle
+    canonical = cov.resolve_any(neighborhood)
+    if canonical is None:
+        raise HTTPException(
+            status_code=422,
+            detail=f"No data for {neighborhood}; covered: {cov.names()} (or any corpus neighborhood)")
+    data = monitoring.area_monitoring(bundle, canonical, bundle.as_of)
+    opp = opportunity.opportunity_scores(bundle, cov.names(), bundle.as_of, cov.centroids)
+    data["peers"] = monitoring.peer_comparison(bundle, opp, canonical.strip().lower())
+    return data
