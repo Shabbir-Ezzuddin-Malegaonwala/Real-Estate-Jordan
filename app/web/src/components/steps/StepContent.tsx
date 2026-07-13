@@ -11,7 +11,6 @@ import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
 import { NearbyAmenities } from "../NearbyAmenities";
 import { WorkspaceHeader, NoStructuredData } from "../workspaces/shared";
-import { MarketStep } from "./MarketStep";
 import { SalesStep } from "./SalesStep";
 import { MonitoringStep } from "./MonitoringStep";
 
@@ -60,13 +59,6 @@ export function StepContent({
               <div className="mb-2 label-eyebrow">Where to build · opportunity</div>
               {opportunity ? <OpportunityMeter opp={opportunity} /> : <Awaiting note="No opportunity score for this area yet." />}
             </section>
-            <NearbyAmenities amenities={amenities} />
-          </>
-        );
-      case "market":
-        return (
-          <>
-            <MarketStep area={area} result={result} opportunity={opportunity} />
             <NearbyAmenities amenities={amenities} />
           </>
         );

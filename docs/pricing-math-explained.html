@@ -97,12 +97,10 @@ li{margin:4px 0}
 <div class="toc">
 <strong style="color:var(--text);font-size:1.05rem">Contents &mdash; one section per app view</strong>
 <a class="done" href="#pricing"><span>1. Pricing &mdash; the three prices, confidence, comparables &amp; scenarios</span><span class="st">&#10003; documented</span></a>
-<a class="pending" href="#opportunity"><span>2. Opportunity &mdash; where to build (heatmap score)</span><span class="st">pending</span></a>
-<a class="pending" href="#feasibility"><span>3. Feasibility &mdash; can you build here?</span><span class="st">pending</span></a>
-<a class="pending" href="#market"><span>4. Market &mdash; supply, demand &amp; comparables depth</span><span class="st">pending</span></a>
-<a class="pending" href="#economics"><span>5. Economics &mdash; residual land value</span><span class="st">pending</span></a>
-<a class="pending" href="#sales"><span>6. Sales &mdash; absorption &amp; launch strategy</span><span class="st">pending</span></a>
-<a class="pending" href="#monitoring"><span>7. Monitoring &mdash; what to track after launch</span><span class="st">pending</span></a>
+<a class="done" href="#opportunity"><span>2. Opportunity &mdash; where to build (the 4-component score)</span><span class="st">&#10003; documented</span></a>
+<a class="pending" href="#economics"><span>3. Economics &mdash; residual land value</span><span class="st">pending</span></a>
+<a class="pending" href="#sales"><span>4. Sales &mdash; absorption &amp; launch strategy</span><span class="st">pending</span></a>
+<a class="pending" href="#monitoring"><span>5. Monitoring &mdash; what to track after launch</span><span class="st">pending</span></a>
 </div>
 
 <!-- =================================================================== -->
@@ -257,26 +255,95 @@ half = clamp( base <span class="op">&times;</span> widen, &nbsp;0.04, &nbsp;0.35
 <!-- class="pending" to class="done" and its .st to "&#10003; documented".-->
 <!-- =================================================================== -->
 
-<h2 id="opportunity"><span class="num">2</span> Opportunity <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
-<div class="status-pill">Documented when we visit the <strong>Opportunity</strong> view. Will cover the heatmap score (price level, demand density, supply pressure, growth) and the low-data mute threshold.</div>
+<h2 id="opportunity"><span class="num">2</span> Opportunity</h2>
+<p>The Opportunity view answers: <strong>where should I build?</strong> Every covered area gets a single <strong>0&ndash;100 opportunity score</strong> &mdash; a weighted blend of <strong>four components</strong>, each scored <em>relative to all other areas</em>. It is a comparison, not an absolute: 50 means "middle of the pack", not "50% good".</p>
 
-<h2 id="feasibility"><span class="num">3</span> Feasibility <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
-<div class="status-pill">Documented when we visit the <strong>Feasibility</strong> view.</div>
+<div class="parallel-box">
+<div class="fbox green"><strong>Price headroom</strong><br/><span style="font-size:.82rem;color:var(--muted)">how pricey (margin room)</span></div>
+<div class="fbox blue"><strong>Price growth</strong><br/><span style="font-size:.82rem;color:var(--muted)">is it appreciating</span></div>
+<div class="fbox purple"><strong>Sale demand</strong><br/><span style="font-size:.82rem;color:var(--muted)">density &amp; activity</span></div>
+<div class="fbox warn"><strong>Low competition</strong><br/><span style="font-size:.82rem;color:var(--muted)">how uncrowded</span></div>
+</div>
 
-<h2 id="market"><span class="num">4</span> Market <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
-<div class="status-pill">Documented when we visit the <strong>Market</strong> view.</div>
+<!-- 2.1 THE SHARED STEP -->
+<h3 id="opp-normalize">2.1 &nbsp;The shared step: percentile rank</h3>
+<p>Each component computes a <strong>raw value per area</strong>, then converts it to 0&ndash;100 by <strong>percentile rank</strong> &mdash; where the area sits in the ranking of all areas:</p>
+<div class="formula">
+<span class="lhs">score(area)</span> = ( count of areas with a LOWER raw value ) &divide; ( total areas &minus; 1 ) <span class="op">&times;</span> 100
+</div>
+<div class="warn"><strong>Why rank, not min-max?</strong> The data has garbage outliers &mdash; one area's median "sale" is <strong>120,000 JD/m&sup2;</strong> (a bad row). Min-max scaling would peg that to 100 and crush every real area toward 0 (Abdoun's true 91st-percentile price collapsed to <strong>1</strong>). Percentile rank asks only "how does this area stand vs the others", so a single absurd tail can't distort the scale. The lowest area &rarr; 0, the highest &rarr; 100, everyone else spreads evenly.</div>
 
-<h2 id="economics"><span class="num">5</span> Economics <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
+<!-- 2.2 THE FOUR COMPONENTS -->
+<h3 id="opp-components">2.2 &nbsp;The four components</h3>
+
+<h4>1. Price headroom <span class="badge green">weight 0.30</span> &mdash; raw uses <strong>median</strong></h4>
+<div class="formula"><span class="lhs">raw</span> = median( plausible sale price/m&sup2; of the area ) &nbsp;<span class="cmt"># outlier-filtered: drop &lt;250 JD/m&sup2;, trim tails</span></div>
+<p>Higher median price &rarr; more gross-development-value headroom. Percentile-ranked across areas.</p>
+
+<h4>2. Price growth <span class="badge blue">weight 0.25</span> &mdash; raw uses <strong>median</strong>, tiered &amp; mix-adjusted</h4>
+<p>Growth needs dated sales, and this corpus is <em>clustered</em> (lots of dated sales 2017&ndash;2023, a ~2-year gap, then a handful in 2026). So the window is <strong>recent year vs 1&ndash;3 years ago</strong> (a wide older window that actually reaches the historical data &mdash; an adjacent 12-month window lands in the empty gap). Two tiers:</p>
+<div class="formula">
+<span class="cmt"># Tier 1 &mdash; like-for-like (mix-adjusted): compare only SIMILAR units</span><br/>
+group sales by (size band 50m&sup2;, bedrooms); in each bucket with &ge;3 sales/side:<br/>
+&nbsp;&nbsp;bucket_growth = ( median(recent) <span class="op">&minus;</span> median(older) ) &divide; median(older) <span class="op">&times;</span> 100<br/>
+<span class="lhs">growth</span> = sample-weighted mean of bucket growths<br/>
+<br/>
+<span class="cmt"># Tier 2 &mdash; fallback when too sparse to match buckets (&ge;5 dated sales/side)</span><br/>
+<span class="lhs">growth</span> = ( median(recent) <span class="op">&minus;</span> median(older) ) &divide; median(older) <span class="op">&times;</span> 100 &nbsp;<span class="cmt"># unadjusted, labelled as such</span>
+</div>
+<p><strong>Median</strong>, not mean &mdash; property prices are right-skewed, so a few luxury outliers would drag a mean. Like-for-like removes the illusion where a change in <em>what</em> got listed masquerades as price movement. Areas without enough dated sales on both sides show <strong>n/a</strong> (and drop from the score).</p>
+<div class="note"><strong>Data reality:</strong> only ~15 areas currently have enough dated sales on both sides. The full unlock is the <strong>DLS dated-transaction data</strong> (official sales), which turns this into a dense, trustworthy index.</div>
+
+<h4>3. Sale demand <span class="badge purple">weight 0.30</span> &mdash; raw uses <strong>mean</strong> of two ranked proxies</h4>
+<div class="formula">
+<span class="lhs">raw</span> = mean( &nbsp;rank(median population_density) , &nbsp;rank(median night_light_radiance) &nbsp;)
+</div>
+<p>Population density and satellite <strong>night-light radiance</strong> (urban activity) are carried <em>per listing</em> and aggregated by <strong>median</strong> per area, then each is percentile-ranked and the two are averaged (whichever are present). Denser / brighter area &rarr; stronger demand signal. Areas whose listings carry no spatial data show <strong>n/a</strong>.</p>
+
+<h4>4. Low competition <span class="badge warn">weight 0.15</span> &mdash; raw is a <strong>count</strong>, ranked inverted</h4>
+<div class="formula">
+<span class="lhs">raw</span> = active listing count in the area<br/>
+<span class="lhs">score</span> = 100 <span class="op">&minus;</span> rank(raw) &nbsp;<span class="cmt"># inverted: fewer listings &rarr; higher score</span>
+</div>
+<p>More competing supply &rarr; lower score. (No competing-project data exists yet, so the proxy is listings only; projects re-enter when that data lands.) Note: this is <em>absolute</em> supply, so the single most-listed area in the country scores 0 &mdash; correctly, it faces the most competition.</p>
+
+<!-- 2.3 COMPOSITE -->
+<h3 id="opp-composite">2.3 &nbsp;The composite score</h3>
+<div class="formula">
+<span class="lhs">opportunity</span> = &Sigma;( weight <span class="op">&times;</span> component score ) &divide; &Sigma;( weights of components that EXIST )
+</div>
+<p>Weights: price headroom <strong>0.30</strong>, price growth <strong>0.25</strong>, sale demand <strong>0.30</strong>, low competition <strong>0.15</strong>. If a component is <strong>n/a</strong> it <strong>drops out and its weight is redistributed</strong> &mdash; a missing metric never counts as a zero and never drags the score down.</p>
+
+<!-- 2.4 WORKED EXAMPLE -->
+<h3 id="opp-example">2.4 &nbsp;Worked example &mdash; Abdoun (real numbers)</h3>
+<table>
+<tr><th>Component</th><th>Raw</th><th>Score (percentile)</th><th>Weight</th></tr>
+<tr><td>Price headroom</td><td>median ~1,114 JD/m&sup2;</td><td><span class="badge green">91</span> (premium)</td><td>0.30</td></tr>
+<tr><td>Price growth</td><td>&minus;18.6% (unadjusted)</td><td><span class="badge blue">50</span></td><td>0.25</td></tr>
+<tr><td>Sale demand</td><td>pop ~25,000/km&sup2;, night-light ~81</td><td><span class="badge purple">77</span></td><td>0.30</td></tr>
+<tr><td>Low competition</td><td>3,545 listings (national max)</td><td><span class="badge warn">0</span> (most crowded)</td><td>0.15</td></tr>
+</table>
+<div class="formula">
+<span class="lhs">score</span> = ( 0.30&times;91 + 0.25&times;50 + 0.30&times;77 + 0.15&times;0 ) &divide; ( 0.30+0.25+0.30+0.15 )<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= ( 27.3 + 12.5 + 23.1 + 0 ) &divide; 1.0 = <span class="lhs">62.9</span>
+</div>
+<p>The reading is honest and specific: Abdoun is <strong>expensive</strong> (great margins) with <strong>strong demand</strong>, but <strong>saturated</strong> (most listings in Jordan) and <strong>not appreciating</strong> recently &rarr; a solid-but-not-top opportunity. Premium areas cluster sensibly: Shmeisani 68.6 &gt; Abdoun 62.9 &gt; Sweifieh 60.6 &gt; Dabouq 43.6 (low-density villas).</p>
+
+<div class="success"><strong>Honesty rules.</strong> Every component that can't be computed shows <strong>n/a</strong>, never a fabricated 0. Bars are relative (0 = lowest in the set, 100 = highest), and each carries a one-line reason with its raw value and source.</div>
+
+<div class="section-divider"></div>
+
+<h2 id="economics"><span class="num">3</span> Economics <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
 <div class="status-pill">Documented when we visit the <strong>Economics</strong> view (residual land value).</div>
 
-<h2 id="sales"><span class="num">6</span> Sales <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
+<h2 id="sales"><span class="num">4</span> Sales <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
 <div class="status-pill">Documented when we visit the <strong>Sales</strong> view.</div>
 
-<h2 id="monitoring"><span class="num">7</span> Monitoring <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
+<h2 id="monitoring"><span class="num">5</span> Monitoring <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
 <div class="status-pill">Documented when we visit the <strong>Monitoring</strong> view.</div>
 
 <div class="footer">
-Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; Section 1 (Pricing) documented &bull; constants sourced from <code>app/engine/config.py</code>
+Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; Sections 1&ndash;2 (Pricing, Opportunity) documented &bull; constants sourced from <code>app/engine/config.py</code> &amp; <code>app/engine/opportunity.py</code>
 </div>
 
 </div>
