@@ -11,7 +11,6 @@ import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
 import { NearbyAmenities } from "../NearbyAmenities";
 import { WorkspaceHeader, NoStructuredData } from "../workspaces/shared";
-import { SalesStep } from "./SalesStep";
 import { MonitoringStep } from "./MonitoringStep";
 
 export function StepContent({
@@ -83,8 +82,6 @@ export function StepContent({
         ) : (
           <NoStructuredData area={area} />
         );
-      case "sales":
-        return <SalesStep area={area} result={result} opportunity={opportunity} />;
       case "monitoring":
         return <MonitoringStep area={area} result={result} generatedAt={generatedAt} />;
     }

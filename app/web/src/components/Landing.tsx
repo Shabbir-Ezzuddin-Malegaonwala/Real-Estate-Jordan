@@ -24,7 +24,7 @@ export function Landing({
         Decide where to build, and what to launch at.
       </h1>
       <p className="mt-2 max-w-[500px] text-[13px] leading-relaxed text-ink-mute">
-        One evidence base, one builder journey — opportunity, economics, pricing, sales.
+        One evidence base, one builder journey — opportunity, economics, pricing, monitoring.
         Every number is traceable to a source; where a signal is missing, we say so.
       </p>
 

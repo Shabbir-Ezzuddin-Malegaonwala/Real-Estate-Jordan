@@ -157,7 +157,10 @@ export default function App() {
   );
   const onAnalyze = useCallback(() => {
     const subj = subjectRef.current;
-    if (subj.neighborhood && subj.area_m2) recompute(subj);
+    if (subj.neighborhood && subj.area_m2) {
+      setStep("pricing"); // Analyze always lands on the launch-price view
+      recompute(subj);
+    }
   }, [recompute]);
 
   const selectByName = useCallback(
