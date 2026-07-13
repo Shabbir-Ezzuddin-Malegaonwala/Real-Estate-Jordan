@@ -6,7 +6,6 @@ const COMPONENT_LABELS: Record<string, string> = {
   price_growth: "Price growth",
   demand_density: "Sale demand",
   supply_pressure: "Low competition",
-  future_signals: "Future signals",
 };
 
 const BAR: Record<string, string> = { High: "bg-pos", Medium: "bg-warn", Low: "bg-neg" };
@@ -15,7 +14,7 @@ const BAR: Record<string, string> = { High: "bg-pos", Medium: "bg-warn", Low: "b
 // before any project form. Score ring on the left, component bars on the right.
 export function OpportunityMeter({ opp }: { opp: OpportunityScore }) {
   const level = levelFromScore(opp.score);
-  const entries = Object.entries(opp.components) as [keyof typeof opp.components, number][];
+  const entries = Object.entries(opp.components) as [keyof typeof opp.components, number | null][];
 
   const sourceLabel =
     opp.source === "local" ? "locally computed" : opp.source === "heatmap" ? "area heatmap" : "engine-scored";
@@ -46,8 +45,26 @@ export function OpportunityMeter({ opp }: { opp: OpportunityScore }) {
 
       <div className="mt-3 space-y-2">
         {entries.map(([key, val]) => {
-          const lvl = levelFromScore(val);
           const reason = opp.component_reasons?.[key];
+          // A null component (e.g. price growth with too few dated sales) is shown
+          // honestly as "not measured yet" — never a misleading 0 bar.
+          if (val == null) {
+            return (
+              <div key={key}>
+                <div className="grid grid-cols-[96px_1fr_auto] items-center gap-2">
+                  <span className="truncate text-2xs text-ink-dim" title={COMPONENT_LABELS[key] ?? key}>
+                    {COMPONENT_LABELS[key] ?? key}
+                  </span>
+                  <div className="h-1.5 rounded-full bg-raised opacity-40" aria-hidden />
+                  <span className="text-2xs text-ink-faint">n/a</span>
+                </div>
+                <p className="mt-0.5 pl-[104px] text-2xs leading-snug text-ink-faint">
+                  {reason ?? "Not enough dated sales to measure yet."}
+                </p>
+              </div>
+            );
+          }
+          const lvl = levelFromScore(val);
           return (
             <div key={key}>
               <div className="grid grid-cols-[96px_1fr_auto] items-center gap-2">

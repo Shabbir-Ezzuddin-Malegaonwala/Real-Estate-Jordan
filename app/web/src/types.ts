@@ -177,11 +177,10 @@ export type Role = "builder" | "agent" | "buyer";
 // GET /opportunity → per-area score + component breakdown. Every component is
 // 0..100 where higher = more favourable for a builder ("where should I build?").
 export interface OpportunityComponents {
-  price_level: number;
-  price_growth: number;
-  demand_density: number;
+  price_level: number | null; // null = no plausible sale data for the area
+  price_growth: number | null; // null = too few dated sales to measure a trend (not zero growth)
+  demand_density: number | null; // null = no neighborhood_geocontext row (not zero demand)
   supply_pressure: number;
-  future_signals: number;
 }
 export interface OpportunityScore {
   area: string;

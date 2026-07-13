@@ -193,7 +193,7 @@ class ScenarioSimulation(unittest.TestCase):
 
 class OpportunityScore(unittest.TestCase):
     _COMPS = {"price_level", "price_growth", "demand_density",
-              "supply_pressure", "future_signals"}
+              "supply_pressure"}
 
     def _bundle(self):
         ls = []
@@ -278,9 +278,11 @@ class DecisionReadiness(unittest.TestCase):
 
     def test_computed_dims_present(self):
         dims = self._readiness()["dimensions"]
-        # pricing_confidence + competition are always computable from the bundle
-        self.assertIsNotNone(dims["pricing_confidence"]["score"])
+        # competition is always computable from the bundle
         self.assertIsNotNone(dims["competition"]["score"])
+        # pricing_confidence is intentionally deferred on the bulk/heatmap endpoint (a full
+        # recommendation per area is too heavy) — it is filled in per selected area client-side.
+        self.assertIsNone(dims["pricing_confidence"]["score"])
 
     def test_overall_is_weighted_mean_over_non_null_and_weights_renormalize(self):
         r = self._readiness()

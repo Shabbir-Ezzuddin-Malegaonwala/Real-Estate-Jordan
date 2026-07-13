@@ -3,7 +3,6 @@ import type { AreaAmenities } from "../../lib/poi";
 import type { StepKey } from "../../lib/journey";
 import { shortDate } from "../../lib/format";
 import { OpportunityMeter } from "../OpportunityMeter";
-import { DecisionReadiness } from "../DecisionReadiness";
 import { PriceBands } from "../PriceBands";
 import { ConfidenceBreakdown } from "../ConfidenceBreakdown";
 import { Comparables } from "../Comparables";
@@ -62,7 +61,6 @@ export function StepContent({
               <div className="mb-2 label-eyebrow">Where to build · opportunity</div>
               {opportunity ? <OpportunityMeter opp={opportunity} /> : <Awaiting note="No opportunity score for this area yet." />}
             </section>
-            <DecisionReadiness opp={opportunity} result={result} />
             <NearbyAmenities amenities={amenities} />
           </>
         );
