@@ -98,7 +98,7 @@ li{margin:4px 0}
 <strong style="color:var(--text);font-size:1.05rem">Contents &mdash; one section per app view</strong>
 <a class="done" href="#pricing"><span>1. Pricing &mdash; the three prices, confidence, comparables &amp; scenarios</span><span class="st">&#10003; documented</span></a>
 <a class="done" href="#opportunity"><span>2. Opportunity &mdash; where to build (the 4-component score)</span><span class="st">&#10003; documented</span></a>
-<a class="pending" href="#economics"><span>3. Economics &mdash; residual land value</span><span class="st">pending</span></a>
+<a class="done" href="#economics"><span>3. Economics &mdash; residual land value (what to pay for land)</span><span class="st">&#10003; documented</span></a>
 <a class="pending" href="#sales"><span>4. Sales &mdash; absorption &amp; launch strategy</span><span class="st">pending</span></a>
 <a class="pending" href="#monitoring"><span>5. Monitoring &mdash; what to track after launch</span><span class="st">pending</span></a>
 </div>
@@ -333,8 +333,59 @@ group sales by (size band 50m&sup2;, bedrooms); in each bucket with &ge;3 sales/
 
 <div class="section-divider"></div>
 
-<h2 id="economics"><span class="num">3</span> Economics <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
-<div class="status-pill">Documented when we visit the <strong>Economics</strong> view (residual land value).</div>
+<h2 id="economics"><span class="num">3</span> Economics</h2>
+<p>The Economics view answers the land question: <strong>what is the most I can pay for the land and still hit my target profit?</strong> It uses the <strong>residual method</strong> &mdash; start from what the finished building sells for, subtract every cost the developer incurs, and whatever is <strong>left over</strong> is the ceiling for the land. It is a <em>ceiling, not a market land quote</em>.</p>
+
+<div class="flow">
+<div class="fbox green"><strong>GDV</strong> &mdash; what the finished building sells for</div>
+<div class="arrow">&minus;</div>
+<div class="fbox">Construction &middot; Fees &middot; Finance &middot; Developer profit</div>
+<div class="arrow">&darr;</div>
+<div class="fbox purple"><strong>Residual land value</strong> &mdash; the most you can pay for the land</div>
+</div>
+
+<!-- 3.1 THE FORMULA -->
+<h3 id="econ-formula">3.1 &nbsp;The formula</h3>
+<div class="formula">
+<span class="lhs">residual land value</span> = GDV <span class="op">&minus;</span> Construction <span class="op">&minus;</span> Fees <span class="op">&minus;</span> Finance <span class="op">&minus;</span> Developer&nbsp;profit
+</div>
+<p>The order of the sub-calculations matters &mdash; <strong>fees feed finance</strong>:</p>
+<div class="formula">
+<span class="lhs">GDV</span>            = recommended price/m&sup2; <span class="op">&times;</span> buildable area<br/>
+<span class="lhs">Construction</span>   = build cost/m&sup2; <span class="op">&times;</span> buildable area<br/>
+<span class="lhs">Fees</span>           = fees% <span class="op">&times;</span> <span style="color:var(--accent2)">Construction</span> &nbsp;<span class="cmt"># NOT of GDV</span><br/>
+<span class="lhs">Finance</span>        = finance% <span class="op">&times;</span> ( <span style="color:var(--accent2)">Construction</span> <span class="op">+</span> <span style="color:var(--accent2)">Fees</span> ) &nbsp;<span class="cmt"># all deployed capital</span><br/>
+<span class="lhs">Developer profit</span> = profit% <span class="op">&times;</span> <span style="color:var(--accent2)">GDV</span>
+</div>
+
+<!-- 3.2 WHERE EACH NUMBER COMES FROM -->
+<h3 id="econ-inputs">3.2 &nbsp;Where each number comes from</h3>
+<table>
+<tr><th>Line</th><th>Basis</th><th>Source of the number</th></tr>
+<tr><td>GDV (gross dev value)</td><td>price/m&sup2; &times; area</td><td>price/m&sup2; is the <strong>engine's recommended launch price</strong> (traceable to <a href="#pricing">&sect;1</a>); area is your input (default 2,000 m&sup2;)</td></tr>
+<tr><td>Construction</td><td>cost/m&sup2; &times; area</td><td>build cost is your input (default 450 JD/m&sup2;)</td></tr>
+<tr><td>Fees</td><td><span class="badge blue">5%</span> of construction</td><td>design / engineering / permits &mdash; documented assumption, overridable</td></tr>
+<tr><td>Finance</td><td><span class="badge blue">6%</span> of (construction + fees)</td><td>cost of borrowing during the build &mdash; documented assumption, overridable</td></tr>
+<tr><td>Developer profit</td><td><span class="badge blue">20%</span> of GDV</td><td>your required margin &mdash; documented assumption, overridable</td></tr>
+</table>
+<div class="note"><strong>What's derived vs assumed.</strong> Only <strong>GDV</strong> flows in from the model (the recommended launch price). The three percentages (6% / 5% / 20%) are <strong>documented builder assumptions</strong> from the client methodology PDF &mdash; every one is an editable input, defaulted, not derived. The engine never invents a land price; it computes the break-even ceiling for the assumptions you give it.</div>
+
+<!-- 3.3 WORKED EXAMPLE -->
+<h3 id="econ-example">3.3 &nbsp;Worked example</h3>
+<p>Buildable 2,000 m&sup2;, GDV 1,000 JD/m&sup2;, build cost 450 JD/m&sup2;, fees 5%, finance 6%, profit 20%:</p>
+<div class="formula">
+<span class="lhs">GDV</span>          = 1,000 <span class="op">&times;</span> 2,000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;2,000,000<br/>
+<span class="op">&minus;</span> Construction = 450 <span class="op">&times;</span> 2,000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&minus;900,000<br/>
+<span class="op">&minus;</span> Fees         = 5% <span class="op">&times;</span> 900,000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&nbsp;&minus;45,000<br/>
+<span class="op">&minus;</span> Finance      = 6% <span class="op">&times;</span> (900,000+45,000) = &nbsp;&nbsp;&minus;56,700<br/>
+<span class="op">&minus;</span> Profit       = 20% <span class="op">&times;</span> 2,000,000 &nbsp;&nbsp;= &nbsp;&minus;400,000<br/>
+<span class="lhs">= Residual land value</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;<span style="color:var(--accent2)">598,300</span> &nbsp;<span class="cmt">(&asymp; 299 JD per buildable m&sup2;)</span>
+</div>
+<div class="success"><strong>How to read it.</strong> Pay <em>more</em> than ~598,300 JD for this land and you eat into your 20% margin &mdash; so it's the builder's <strong>maximum defensible land price</strong>, not a quote for what land actually trades at. Land above the line turns the target return negative.</div>
+
+<div class="note"><strong>Deterministic &amp; consistent.</strong> This is a pure formula &mdash; same inputs always give the same answer. The live engine (<code>builder.residual_land_value</code>) and the offline fallback now compute it <strong>identically</strong> (fees on construction, finance on construction + fees), so the land ceiling doesn't change depending on whether the backend is reachable.</div>
+
+<div class="section-divider"></div>
 
 <h2 id="sales"><span class="num">4</span> Sales <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
 <div class="status-pill">Documented when we visit the <strong>Sales</strong> view.</div>
@@ -343,7 +394,7 @@ group sales by (size band 50m&sup2;, bedrooms); in each bucket with &ge;3 sales/
 <div class="status-pill">Documented when we visit the <strong>Monitoring</strong> view.</div>
 
 <div class="footer">
-Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; Sections 1&ndash;2 (Pricing, Opportunity) documented &bull; constants sourced from <code>app/engine/config.py</code> &amp; <code>app/engine/opportunity.py</code>
+Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; Sections 1&ndash;3 (Pricing, Opportunity, Economics) documented &bull; sourced from <code>app/engine/config.py</code>, <code>opportunity.py</code> &amp; <code>builder.py</code>
 </div>
 
 </div>

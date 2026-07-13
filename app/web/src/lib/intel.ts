@@ -480,8 +480,12 @@ export function localResidual(input: ResidualInputs, recommendedJdM2: number): R
   const gdvPerM2 = input.gdv_per_m2 ?? recommendedJdM2;
   const gdv = gdvPerM2 * input.buildable_area_m2;
   const construction_cost = input.construction_cost_per_m2 * input.buildable_area_m2;
-  const finance_cost = construction_cost * (input.finance_pct / 100);
-  const fees = gdv * (input.fees_pct / 100);
+  // Match the engine (builder.residual_land_value) exactly: fees are a % of CONSTRUCTION,
+  // finance is a % of (CONSTRUCTION + fees), profit is a % of GDV. Order matters — fees feed
+  // finance. (Previously fees were taken on GDV and finance on construction-only, which made
+  // the offline number disagree with the live engine.)
+  const fees = construction_cost * (input.fees_pct / 100);
+  const finance_cost = (construction_cost + fees) * (input.finance_pct / 100);
   const developer_profit = gdv * (input.profit_pct / 100);
   const max_land_value = gdv - construction_cost - finance_cost - fees - developer_profit;
   return {
