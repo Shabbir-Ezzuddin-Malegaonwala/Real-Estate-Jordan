@@ -11,7 +11,6 @@ import { ScenarioPanel } from "../ScenarioPanel";
 import { ScenarioCompare } from "../ScenarioCompare";
 import { NearbyAmenities } from "../NearbyAmenities";
 import { WorkspaceHeader, NoStructuredData } from "../workspaces/shared";
-import { FeasibilityStep } from "./FeasibilityStep";
 import { MarketStep } from "./MarketStep";
 import { SalesStep } from "./SalesStep";
 import { MonitoringStep } from "./MonitoringStep";
@@ -64,8 +63,6 @@ export function StepContent({
             <NearbyAmenities amenities={amenities} />
           </>
         );
-      case "feasibility":
-        return <FeasibilityStep area={area} />;
       case "market":
         return (
           <>
