@@ -99,7 +99,7 @@ li{margin:4px 0}
 <a class="done" href="#pricing"><span>1. Pricing &mdash; the three prices, confidence, comparables &amp; scenarios</span><span class="st">&#10003; documented</span></a>
 <a class="done" href="#opportunity"><span>2. Opportunity &mdash; where to build (the 4-component score)</span><span class="st">&#10003; documented</span></a>
 <a class="done" href="#economics"><span>3. Economics &mdash; residual land value (what to pay for land)</span><span class="st">&#10003; documented</span></a>
-<a class="pending" href="#monitoring"><span>4. Monitoring &mdash; what to track after launch</span><span class="st">pending</span></a>
+<a class="done" href="#monitoring"><span>4. Monitoring &mdash; the market-at-a-glance graphs</span><span class="st">&#10003; documented</span></a>
 </div>
 
 <!-- =================================================================== -->
@@ -386,11 +386,43 @@ group sales by (size band 50m&sup2;, bedrooms); in each bucket with &ge;3 sales/
 
 <div class="section-divider"></div>
 
-<h2 id="monitoring"><span class="num">4</span> Monitoring <span class="badge muted" style="font-size:.7rem;vertical-align:middle">pending</span></h2>
-<div class="status-pill">Documented when we visit the <strong>Monitoring</strong> view.</div>
+<h2 id="monitoring"><span class="num">4</span> Monitoring</h2>
+<p>The Monitoring view is a <strong>market-at-a-glance</strong> dashboard &mdash; a few simple graphs, each with a plain caption, plus an <strong>Expand</strong> button that fills the whole screen for cross-region comparison. The one rule that makes it trustworthy:</p>
+<div class="success"><strong>Every value is computed on the server and only rendered in the browser.</strong> There is no chart math in the frontend &mdash; it receives ready-to-plot numbers from <code>GET /area-monitoring</code> (built in <code>app/engine/monitoring.py</code>) and draws bars. If the engine is unreachable the dashboard says so; it never draws a browser-estimated (and possibly drifting) number.</div>
+
+<!-- 4.1 PER-AREA GRAPHS -->
+<h3 id="mon-area">4.1 &nbsp;The per-area graphs</h3>
+<table>
+<tr><th>Graph</th><th>What it shows</th><th>How it's computed</th></tr>
+<tr><td>Price spread</td><td>where most prices land</td><td><strong>equal-width histogram</strong> of the area's sale price/m², after the same <strong>outlier trim</strong> the comp engine uses (drop &lt;250 JD/m², MAD-trim the tails) so a few bad 10k+ rows don't squash the bars into one</td></tr>
+<tr><td>Price by year</td><td>prices over time</td><td><strong>median</strong> price/m² per calendar year, dated &amp; plausible sales only. Years with no dated sales are simply absent &mdash; the gap is shown, never interpolated</td></tr>
+<tr><td>Rank vs Jordan</td><td>how pricey vs everywhere</td><td><strong>percentile rank</strong> of the area's median vs every other area's median (same rank method as <a href="#opportunity">&sect;2</a>)</td></tr>
+<tr><td>Listings by source</td><td>where the data comes from</td><td>a straight <strong>count</strong> of listings per portal</td></tr>
+</table>
+
+<!-- 4.2 CROSS-REGION GRAPHS -->
+<h3 id="mon-peers">4.2 &nbsp;The cross-region graphs (fullscreen)</h3>
+<table>
+<tr><th>Graph</th><th>What it shows</th><th>How it's computed</th></tr>
+<tr><td>Priciest areas</td><td>price leaderboard</td><td>top-10 areas by <strong>median</strong> price/m², the selected area always shown &amp; highlighted</td></tr>
+<tr><td>Best opportunity</td><td>where to build now</td><td>top-10 areas by <strong>opportunity score</strong> (the composite from <a href="#opportunity">&sect;2</a>)</td></tr>
+<tr><td>Opportunity vs price</td><td>find under-priced areas</td><td>a <strong>scatter</strong>: x = median price, y = opportunity score. <strong>Top-left = cheaper + higher opportunity = the best bets.</strong> One dot per area, the selected one enlarged</td></tr>
+</table>
+
+<!-- 4.3 THE GUARDS -->
+<h3 id="mon-guards">4.3 &nbsp;Why you can trust it</h3>
+<ul>
+<li><strong>Outlier trim</strong> on the price spread &mdash; the histogram shows the real distribution, not one giant bar caused by a bad row.</li>
+<li><strong>Depth gate (&ge; 30 sales)</strong> on the leaderboards &amp; scatter &mdash; only areas with enough real sales are ranked, so a fluke <span class="inline-code">n=2</span> area or a garbage 120,000 JD/m&sup2; row can't top the board. Of ~320 areas, 89 clear the bar.</li>
+<li><strong>Median, not mean</strong>, everywhere prices are summarised &mdash; robust to luxury outliers.</li>
+<li><strong>Empty when thin</strong> &mdash; a graph with too little data renders "not enough data" rather than a misleading shape.</li>
+<li><strong>Server-computed</strong> &mdash; the numbers are identical to what the engine holds; nothing is recalculated in the browser.</li>
+</ul>
+
+<div class="section-divider"></div>
 
 <div class="footer">
-Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; Sections 1&ndash;3 (Pricing, Opportunity, Economics) documented &bull; sourced from <code>app/engine/config.py</code>, <code>opportunity.py</code> &amp; <code>builder.py</code>
+Jordan Real-Estate Engine &bull; The Math Behind Every Number &bull; All 4 sections (Pricing, Opportunity, Economics, Monitoring) documented &bull; sourced from <code>config.py</code>, <code>opportunity.py</code>, <code>builder.py</code> &amp; <code>monitoring.py</code>
 </div>
 
 </div>
