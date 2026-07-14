@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from app.api import llm, valuation
 from app.engine import builder, monitoring, opportunity, recommend, scenario
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
 from app.engine.data import DataBundle, load_bundle_from_sqlite
@@ -363,6 +364,19 @@ class ResidualRequest(BaseModel):
     developer_profit_pct: float = Field(builder.DEVELOPER_PROFIT_PCT_DEFAULT, ge=0, le=1)
 
 
+class ValuePropertyRequest(BaseModel):
+    """A seller drops a pin (lat/lng) on their building and describes it."""
+    lat: float = Field(..., ge=29, le=34)
+    lng: float = Field(..., ge=34, le=40)
+    total_area_m2: float = Field(..., gt=0)
+    finish: Literal["basic", "standard", "high"] = "standard"
+    mode: Literal["building", "flat"] = "building"
+    flats: Optional[int] = Field(None, gt=0)
+    flat_area_m2: Optional[float] = Field(None, gt=0)
+    plot_area_m2: Optional[float] = Field(None, gt=0)
+    language: Literal["en", "ar"] = "en"
+
+
 @app.post("/residual-land-value")
 def post_residual_land_value(req: ResidualRequest):
     cov: Coverage = app.state.coverage
@@ -415,6 +429,22 @@ def post_residual_land_value(req: ResidualRequest):
         cost_source=cost_source, gdv_defaulted=gdv_defaulted, cost_defaulted=cost_defaulted,
         construction_caveat=caveat)
     return {"neighborhood": canonical, **result}
+
+
+@app.post("/value-property")
+def post_value_property(req: ValuePropertyRequest):
+    """Value an existing property from its pin: comparable-based market value +
+    itemised cost breakdown, with an explain-only LLM narration in the user's
+    language (falls back to None when no key is configured)."""
+    result = valuation.value_property(
+        lat=req.lat, lng=req.lng, total_area_m2=req.total_area_m2, finish=req.finish,
+        mode=req.mode, flats=req.flats, flat_area_m2=req.flat_area_m2, plot_area_m2=req.plot_area_m2)
+    if not result.get("ok"):
+        return {**result, "narration": None, "llm_available": llm.available()}
+    facts = {k: v for k, v in result.items() if k != "ok"}
+    facts["area"] = result.get("nearest_area")
+    facts["finish"] = req.finish
+    return {**result, "narration": llm.narrate(facts, req.language), "llm_available": llm.available()}
 
 
 @app.get("/opportunity")
