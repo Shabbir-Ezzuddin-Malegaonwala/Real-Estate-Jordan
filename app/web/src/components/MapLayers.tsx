@@ -7,6 +7,8 @@ export interface LayerState {
   comparables: boolean;
   future: boolean;
   roads: boolean;
+  areaPrices: boolean;
+  listings: boolean;
 }
 
 // Grouped map-layer control: amenity categories (9), geographic overlays, and the
@@ -70,6 +72,11 @@ export function MapLayers({
             ))}
           </Group>
 
+          <Group title="Prices">
+            <Toggle checked={state.areaPrices} onChange={() => onToggle("areaPrices")} label="Asking price by area" color="#1d4ed8" />
+            <Toggle checked={state.listings} onChange={() => onToggle("listings")} label="All listings" color="#3b82f6" note="19k" />
+          </Group>
+
           <Group title="Analytical">
             <Toggle checked={state.comparables} onChange={() => onToggle("comparables")} label="Comparables" color="#e6a94b" />
             <Toggle checked={state.future} onChange={() => onToggle("future")} label="Future signals" color="#5fb2c9" />
@@ -78,7 +85,7 @@ export function MapLayers({
           </Group>
 
           <div className="border-t border-line px-3 py-1.5 text-2xs leading-relaxed text-ink-faint">
-            Points appear as you zoom in.
+            Asking prices are portal medians (not appraised). Points appear as you zoom in.
           </div>
         </div>
       )}

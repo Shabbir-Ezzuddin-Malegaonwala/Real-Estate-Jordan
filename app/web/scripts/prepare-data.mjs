@@ -38,6 +38,11 @@ const geo = [
   "water.geojson",
   "green.geojson",
   "major_roads.geojson",
+  // Nationwide price layers (scrapers/export_map_full.py): every geocoded listing
+  // as a point + median asking JD/m2 per neighbourhood. Optional — map still works
+  // without them.
+  "listings.geojson",
+  "area_prices.geojson",
 ];
 let copied = 0;
 for (const f of geo) {

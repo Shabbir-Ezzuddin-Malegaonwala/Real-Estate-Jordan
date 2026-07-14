@@ -32,7 +32,16 @@ interface Geo {
   roads: FeatureCollection<LineString, RoadProps>;
   zoning: FeatureCollection<Polygon, ZoningProps>;
   voronoi?: FeatureCollection<Polygon>;
+  listings?: FeatureCollection<Point>;
+  areaPrices?: FeatureCollection<Point>;
 }
+
+// Sequential blue scale for the asking-price layers (distinct from the opportunity
+// heat scale). Stops in JD/m² spanning the national range.
+const PRICE_COLOR: maplibregl.ExpressionSpecification = [
+  "interpolate", ["linear"], ["get", "ppm2"],
+  200, "#dbeafe", 450, "#93c5fd", 700, "#3b82f6", 1000, "#1d4ed8", 1400, "#1e3a8a",
+];
 
 const EMPTY: FeatureCollection = { type: "FeatureCollection", features: [] };
 
@@ -225,7 +234,7 @@ export function MapView({
         onOutsideRef.current();
       }
     });
-    for (const lyr of ["opp-fill", "nbhd-fill", "poi", "cmp-pts", "future-pts"]) {
+    for (const lyr of ["opp-fill", "nbhd-fill", "poi", "cmp-pts", "future-pts", "area-prices", "listings"]) {
       map.on("mouseenter", lyr, () => (map.getCanvas().style.cursor = "pointer"));
       map.on("mouseleave", lyr, () => (map.getCanvas().style.cursor = ""));
     }
@@ -255,6 +264,28 @@ export function MapView({
         map,
         e.lngLat,
         `<b style="color:#3d9fb5">${esc(String(p.factor))}</b><br/><span style="color:#8a94a5">Future signal${p.expected_year ? " · ~" + p.expected_year : ""}</span>`,
+      );
+    });
+    // Asking-price-per-area popup (median of the area's listings; asking, not appraised).
+    map.on("click", "area-prices", (e) => {
+      const f = e.features?.[0];
+      if (!f) return;
+      const p = f.properties as Record<string, unknown>;
+      popup(
+        map,
+        e.lngLat,
+        `<b>${esc(String(p.neighborhood))}</b><br/><b style="color:#1d4ed8">${jd(Number(p.ppm2))} JD/m²</b> <span style="color:#8a94a5">median asking · ${esc(String(p.n))} listings</span>`,
+      );
+    });
+    map.on("click", "listings", (e) => {
+      const f = e.features?.[0];
+      if (!f) return;
+      const p = f.properties as Record<string, unknown>;
+      const ppm2 = p.ppm2 != null ? `<b style="color:#1d4ed8">${jd(Number(p.ppm2))} JD/m²</b> · ` : "";
+      popup(
+        map,
+        e.lngLat,
+        `${ppm2}<span style="color:#8a94a5">${esc(String(p.pt || "listing"))}${p.nb ? " · " + esc(String(p.nb)) : ""}</span><br/><span style="color:#8a94a5">${jd(Number(p.price))} JD asking</span>`,
       );
     });
 
@@ -510,6 +541,38 @@ function addBaseLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
   map.addSource("future", { type: "geojson", data: EMPTY });
   map.addSource("roads", { type: "geojson", data: geo.roads });
 
+  // Every geocoded listing (~19.5k) — small dots so density reads at city zoom;
+  // hidden by default and zoom-gated so the country view isn't a wall of points.
+  map.addSource("listings", { type: "geojson", data: geo.listings ?? EMPTY });
+  map.addLayer({
+    id: "listings",
+    type: "circle",
+    source: "listings",
+    minzoom: 8,
+    layout: { visibility: "none" },
+    paint: {
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 1.2, 16, 4],
+      "circle-color": PRICE_COLOR,
+      "circle-opacity": 0.55,
+    },
+  });
+
+  // Median asking JD/m² per neighbourhood — graduated circles coloured by price,
+  // visible at every zoom so the whole country is covered, not just Amman.
+  map.addSource("areaprices", { type: "geojson", data: geo.areaPrices ?? EMPTY });
+  map.addLayer({
+    id: "area-prices",
+    type: "circle",
+    source: "areaprices",
+    paint: {
+      "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 4, 11, 9, 15, 16],
+      "circle-color": PRICE_COLOR,
+      "circle-opacity": 0.82,
+      "circle-stroke-width": 1,
+      "circle-stroke-color": "rgba(255,255,255,0.85)",
+    },
+  });
+
   // Roads — subtle, weighted by hierarchy.
   map.addLayer({
     id: "roads",
@@ -646,6 +709,8 @@ function applyVisibility(map: maplibregl.Map, layers: LayerState, geo: Geo, pal:
   set("poi", layers.pois);
   set("cmp-pts", layers.comparables);
   set("future-pts", layers.future);
+  set("listings", layers.listings);
+  set("area-prices", layers.areaPrices);
 }
 
 function popup(map: maplibregl.Map, lngLat: maplibregl.LngLatLike, html: string) {

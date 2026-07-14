@@ -16,7 +16,10 @@ import type {
 import { adaptNeighborhood, isEngineBundle } from "./adaptEngine";
 
 async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  // no-store: the /data/*.geojson files are refreshed by the auto-update pipeline
+  // independently of frontend builds, so a heuristically-cached copy silently
+  // serves stale data (e.g. an old 5-area neighbourhoods file). Always revalidate.
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`${url} → ${res.status}`);
   return (await res.json()) as T;
 }
@@ -32,16 +35,22 @@ export interface GeoLayers {
   voronoi?: FeatureCollection<Polygon>;
   // Same 290 cells + baked opportunity score/components/raw-inputs per cell.
   opportunityHeatmap?: FeatureCollection<Polygon>;
+  // Every geocoded listing as a point (~19.5k) — props {nb,pt,price,ppm2}.
+  listings?: FeatureCollection<Point>;
+  // Median asking JD/m² per neighbourhood centroid — props {neighborhood,ppm2,n}.
+  areaPrices?: FeatureCollection<Point>;
 }
 
 export async function loadGeo(): Promise<GeoLayers> {
-  const [neighborhoods, pois, roads, zoning, voronoi, opportunityHeatmap] = await Promise.all([
+  const [neighborhoods, pois, roads, zoning, voronoi, opportunityHeatmap, listings, areaPrices] = await Promise.all([
     getJson<FeatureCollection<Polygon, NeighborhoodProps>>("/data/neighborhoods.geojson"),
     getJson<FeatureCollection<Point, PoiProps>>("/data/poi.geojson"),
     getJson<FeatureCollection<LineString, RoadProps>>("/data/roads.geojson"),
     getJson<FeatureCollection<Polygon, ZoningProps>>("/data/zoning.geojson"),
     getJson<FeatureCollection<Polygon>>("/data/neighborhoods_voronoi.geojson").catch(() => null),
     getJson<FeatureCollection<Polygon>>("/data/opportunity_heatmap.geojson").catch(() => null),
+    getJson<FeatureCollection<Point>>("/data/listings.geojson").catch(() => null),
+    getJson<FeatureCollection<Point>>("/data/area_prices.geojson").catch(() => null),
   ]);
   return {
     neighborhoods,
@@ -50,6 +59,8 @@ export async function loadGeo(): Promise<GeoLayers> {
     zoning,
     voronoi: voronoi ?? undefined,
     opportunityHeatmap: opportunityHeatmap ?? undefined,
+    listings: listings ?? undefined,
+    areaPrices: areaPrices ?? undefined,
   };
 }
 

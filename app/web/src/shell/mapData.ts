@@ -18,6 +18,8 @@ const DEFAULT_LAYERS: LayerState = {
   comparables: true,
   future: true,
   roads: true,
+  areaPrices: true, // nationwide asking-price coverage on by default
+  listings: false, // 19k dots — opt-in to avoid clutter on first load
 };
 
 function areasFromBundle(
