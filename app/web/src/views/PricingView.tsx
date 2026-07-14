@@ -1,5 +1,6 @@
+import type { ReactNode } from "react";
 import { useApp } from "../lib/store";
-import type { AreaBundle, LaunchStatus } from "../lib/contract";
+import type { AreaBundle, LaunchStatus, PricingData } from "../lib/contract";
 import { Card, StatusPill, PriceBand, Confidence } from "../ui";
 import type { StatusTone } from "../ui";
 import { Sparkline } from "../ui/charts";
@@ -10,6 +11,11 @@ const STATUS_LABEL: Record<LaunchStatus, string> = {
   REVIEW: "NEEDS REVIEW",
 };
 const STATUS_TONE: Record<LaunchStatus, StatusTone> = { READY: "ready", WAIT: "wait", REVIEW: "review" };
+const SEVERITY_CLASSES: Record<"high" | "medium" | "low", string> = {
+  high: "bg-stitch-warn text-white",
+  medium: "bg-stitch-warn/15 text-stitch-warn",
+  low: "bg-stitch-soft text-stitch-muted",
+};
 
 function trendLabel(trend: number[]): string {
   if (trend.length < 2) return "→ Stable";
@@ -19,9 +25,106 @@ function trendLabel(trend: number[]): string {
   return "→ Stable";
 }
 
+// Native <details> expander — collapsed by default, no JS state needed.
+// Progressive disclosure per the UI/UX blueprint: simple on the face, depth on demand.
+function Expander({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <details className="group rounded-xl border border-stitch-line bg-stitch-card">
+      <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-wide text-stitch-muted">
+        {label}
+        <span className="text-stitch-muted transition-transform group-open:rotate-180">▾</span>
+      </summary>
+      <div className="px-4 pb-4">{children}</div>
+    </details>
+  );
+}
+
+function Waterfall({ rows }: { rows: NonNullable<PricingData["waterfall"]> }) {
+  const max = Math.max(...rows.map((r) => Math.abs(r.pct)), 1);
+  return (
+    <div className="flex flex-col gap-2.5">
+      {rows.map((r) => (
+        <div key={r.factor}>
+          <div className="mb-1 flex items-center justify-between text-[13px]">
+            <span className="text-stitch-ink">{r.factor}</span>
+            <span className={`tabular-nums font-semibold ${r.positive ? "text-stitch-green" : "text-stitch-warn"}`}>
+              {r.positive ? "+" : ""}
+              {r.pct.toFixed(1)}%
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-stitch-soft">
+            <div
+              className={`h-full rounded-full ${r.positive ? "bg-stitch-green" : "bg-stitch-warn"}`}
+              style={{ width: `${(Math.abs(r.pct) / max) * 100}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ConfidenceBreakdown({ rows }: { rows: NonNullable<PricingData["confidenceBreakdown"]> }) {
+  return (
+    <div className="flex flex-col gap-3">
+      {rows.map((r) => (
+        <div key={r.label}>
+          <div className="mb-1 flex items-center justify-between text-[13px]">
+            <span className="text-stitch-ink">{r.label}</span>
+            <span className="tabular-nums font-semibold text-stitch-brand-dark">{Math.round(r.score)}/100</span>
+          </div>
+          <div className="h-2 rounded-full bg-stitch-soft">
+            <div className="h-full rounded-full bg-stitch-brand" style={{ width: `${Math.max(0, Math.min(100, r.score))}%` }} />
+          </div>
+          {r.reason && <div className="mt-1 text-[12px] text-stitch-muted">{r.reason}</div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Risks({ rows }: { rows: NonNullable<PricingData["risks"]> }) {
+  return (
+    <ul className="flex flex-col gap-2.5">
+      {rows.map((r) => (
+        <li key={r.factor} className="flex items-start gap-2.5 text-sm">
+          <span className={`mt-0.5 flex-none rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${SEVERITY_CLASSES[r.severity]}`}>
+            {r.severity}
+          </span>
+          <div>
+            <span className="font-semibold text-stitch-ink">{r.factor}</span>
+            <span className="block text-xs text-stitch-muted mt-0.5">{r.detail}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Sources({ rows }: { rows: NonNullable<PricingData["evidence"]> }) {
+  return (
+    <ul className="flex flex-col gap-2">
+      {rows.map((s) => (
+        <li key={s.name} className="text-[13px]">
+          {s.url ? (
+            <a href={s.url} target="_blank" rel="noreferrer" className="font-semibold text-stitch-brand hover:underline">
+              {s.name}
+            </a>
+          ) : (
+            <span className="font-semibold text-stitch-ink">{s.name}</span>
+          )}
+          <span className="ml-1.5 text-stitch-muted">
+            {[s.what, s.date].filter(Boolean).join(" · ")}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function PricingView({ bundle, focus }: { bundle: AreaBundle; focus: "price" | "comps" | "trend" }) {
   const { setView } = useApp();
-  const { summary, reasons, comparables } = bundle.pricing;
+  const { summary, reasons, comparables, waterfall, confidenceBreakdown, risks, evidence, narrative } = bundle.pricing;
   const margin = bundle.costProfit.marginPct;
 
   const askLink = (
@@ -116,7 +219,32 @@ export function PricingView({ bundle, focus }: { bundle: AreaBundle; focus: "pri
                 </li>
               ))}
             </ul>
+            {narrative && <div className="mt-3 border-t border-stitch-soft pt-3 text-[13px] text-stitch-muted">{narrative}</div>}
           </Card>
+
+          {waterfall && waterfall.length > 0 && (
+            <Expander label="Why this price — full breakdown">
+              <Waterfall rows={waterfall} />
+            </Expander>
+          )}
+
+          {confidenceBreakdown && confidenceBreakdown.length > 0 && (
+            <Expander label="Confidence detail">
+              <ConfidenceBreakdown rows={confidenceBreakdown} />
+            </Expander>
+          )}
+
+          {risks && risks.length > 0 && (
+            <Expander label="Risks">
+              <Risks rows={risks} />
+            </Expander>
+          )}
+
+          {evidence && evidence.length > 0 && (
+            <Expander label="Why we believe this — sources">
+              <Sources rows={evidence} />
+            </Expander>
+          )}
         </>
       )}
 

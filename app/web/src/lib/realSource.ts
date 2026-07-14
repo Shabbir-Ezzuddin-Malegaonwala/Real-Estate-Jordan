@@ -22,7 +22,15 @@ import { fetchAreas, fetchAreaMonitoring, requestResidual } from "./intel";
 import { adaptApiRecommendation } from "./adaptEngine";
 import { loadAmenities } from "./loadData";
 import type { AreaAmenities } from "./poi";
-import type { AreaEntry, AreaMonitoring, RecommendationResult, ResidualBreakdown } from "../types";
+import type {
+  AreaEntry,
+  AreaMonitoring,
+  ConfidenceComponent,
+  EvidenceObject,
+  RecommendationResult,
+  ResidualBreakdown,
+  RiskFactor,
+} from "../types";
 
 // Matches lib/useEngine.ts's DEFAULT_SUBJECT — the representative unit priced
 // when the caller hasn't customised it (kept identical so results agree).
@@ -151,6 +159,71 @@ function toSummary(area: string, r: RecommendationResult, trend: number[]): Area
   };
 }
 
+// Source ranking for the evidence list: Official (gov/statistics) beats
+// Institutional (banks, associations) beats Portal (listing sites) — matches
+// the "Why We Believe This" ordering the UI/UX blueprint calls for.
+function sourceTier(name: string): 0 | 1 | 2 {
+  const n = name.toLowerCase();
+  if (/\b(department of statistics|dos|ministry|municipality|gam|government|central bank|cbj|land\s*(&|and)?\s*survey)\b/.test(n)) return 0;
+  if (/\b(bank|association|refco|jrea|university|institute|chamber)\b/.test(n)) return 1;
+  return 2;
+}
+
+// Evidence objects each carry their own source list, so the same source (e.g.
+// "DoS Building Licenses 2026") is cited by multiple factors. Dedupe by name
+// and record how many factors it backs instead of listing it once per factor.
+function toEvidence(evidenceObjects: EvidenceObject[]): PricingData["evidence"] {
+  const byName = new Map<string, { name: string; url?: string; date?: string; factors: string[] }>();
+  for (const e of evidenceObjects) {
+    for (const s of e.sources) {
+      const key = s.name.trim().toLowerCase();
+      const entry = byName.get(key);
+      if (entry) {
+        if (!entry.factors.includes(e.factor)) entry.factors.push(e.factor);
+        if (!entry.url && s.url && s.url !== "unknown") entry.url = s.url;
+        if (!entry.date && s.capture_date && s.capture_date !== "unknown") entry.date = s.capture_date;
+      } else {
+        byName.set(key, {
+          name: s.name,
+          url: s.url && s.url !== "unknown" ? s.url : undefined,
+          date: s.capture_date && s.capture_date !== "unknown" ? s.capture_date : undefined,
+          factors: [e.factor],
+        });
+      }
+    }
+  }
+  const list = [...byName.values()].sort((a, b) => sourceTier(a.name) - sourceTier(b.name));
+  return list.length > 0
+    ? list.map((s) => ({
+        name: s.name,
+        url: s.url,
+        date: s.date,
+        what: s.factors.length > 1 ? `Used for ${s.factors.length} factors` : s.factors[0],
+      }))
+    : undefined;
+}
+
+// The waterfall only shows market-derived percentage adjustments (kind "pct")
+// — anchors (cost floor, income ceiling) and future-signal positioning don't
+// move today's band, so they'd misrepresent the walk from base to launch price.
+function toWaterfall(evidenceObjects: EvidenceObject[]): PricingData["waterfall"] {
+  const rows = evidenceObjects
+    .filter((e) => e.kind === "pct" && e.adjustment_pct !== 0)
+    .map((e) => ({ factor: e.factor, pct: e.adjustment_pct * 100, positive: e.direction === "increase" }))
+    .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+  return rows.length > 0 ? rows : undefined;
+}
+
+function toConfidenceBreakdown(components?: ConfidenceComponent[]): PricingData["confidenceBreakdown"] {
+  if (!components || components.length === 0) return undefined;
+  return components.map((c) => ({ label: c.label, score: c.score, reason: c.reason || undefined }));
+}
+
+function toRisks(riskFactors: RiskFactor[]): PricingData["risks"] {
+  if (!riskFactors || riskFactors.length === 0) return undefined;
+  return riskFactors.map((r) => ({ factor: r.title, severity: r.severity, detail: r.detail }));
+}
+
 function toPricing(summary: AreaSummary, r: RecommendationResult): PricingData {
   const pctEvidence = r.evidence_objects.filter((e) => (e.kind ?? "pct") === "pct");
   const rows = (pctEvidence.length > 0 ? pctEvidence : r.evidence_objects).slice(0, 5);
@@ -163,7 +236,16 @@ function toPricing(summary: AreaSummary, r: RecommendationResult): PricingData {
     asking: Math.round(c.original_ppm2 ?? c.price_per_m2),
     adjusted: Math.round(c.adjusted_ppm2 ?? c.price_per_m2),
   }));
-  return { summary, reasons, comparables };
+  return {
+    summary,
+    reasons,
+    comparables,
+    waterfall: toWaterfall(r.evidence_objects),
+    evidence: toEvidence(r.evidence_objects),
+    confidenceBreakdown: toConfidenceBreakdown(r.confidence.components),
+    risks: toRisks(r.risk_factors),
+    narrative: r.narrative || undefined,
+  };
 }
 
 function toCostProfit(residual: ResidualBreakdown | null): CostProfitData {

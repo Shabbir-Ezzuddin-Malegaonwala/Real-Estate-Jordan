@@ -31,6 +31,17 @@ export interface PricingData {
   summary: AreaSummary;
   reasons: { ok: boolean; text: string }[];           // why-this-price drivers (✓/✗)
   comparables: { size: number; asking: number; adjusted: number }[];
+  // --- Optional depth (progressive disclosure): real adapter only, mock leaves these undefined ---
+  /** Full per-factor adjustment waterfall behind the price (real evidence_objects, pct-kind only). */
+  waterfall?: { factor: string; pct: number; positive: boolean }[];
+  /** Deduped source list backing the evidence, ordered Official > Institutional > Portal. */
+  evidence?: { name: string; url?: string; date?: string; what?: string }[];
+  /** Sub-scores behind the headline confidence word (data coverage, comp quality, ...). */
+  confidenceBreakdown?: { label: string; score: number; reason?: string }[];
+  /** Risk factors flagged by the engine, with severity. */
+  risks?: { factor: string; severity: "high" | "medium" | "low"; detail: string }[];
+  /** One-paragraph plain-language summary of the pricing decision. */
+  narrative?: string;
 }
 
 /** Cost & Profit view (Land value / Profit margin / Build cost). */
