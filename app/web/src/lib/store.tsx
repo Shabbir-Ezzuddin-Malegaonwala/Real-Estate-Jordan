@@ -55,6 +55,8 @@ export interface AppState {
   subject: Subject;
   // The seller's dropped map pin for "Value my property" ([lng, lat]), or null.
   sellPin: [number, number] | null;
+  // Report language (persisted) — drives LLM/AI output + valuation narration language.
+  language: "en" | "ar";
   view: ViewKey;
   navOpen: boolean;
   infoOpen: boolean;
@@ -89,6 +91,7 @@ interface Persisted {
   chats: ChatSession[];
   unitType: string;
   subject: Subject;
+  language: "en" | "ar";
 }
 
 function isSubject(x: unknown): x is Subject {
@@ -112,6 +115,7 @@ function loadPersisted(userId: string): Persisted | null {
       chats: parsed.chats,
       unitType: parsed.unitType ?? DEFAULT_UNIT,
       subject: isSubject(parsed.subject) ? parsed.subject : { ...DEFAULT_SUBJECT },
+      language: parsed.language === "ar" ? "ar" : "en",
     };
   } catch {
     return null;
@@ -136,6 +140,7 @@ function initState(userId: string): AppState {
     unitType: persisted?.unitType ?? DEFAULT_UNIT,
     subject,
     sellPin: null,
+    language: persisted?.language ?? "en",
     view: DEFAULT_VIEW,
     navOpen: true,
     infoOpen: true,
@@ -150,6 +155,7 @@ type Action =
   | { type: "SET_UNIT"; unit: string }
   | { type: "SET_SUBJECT"; subject: Subject }
   | { type: "SET_SELL_PIN"; pin: [number, number] | null }
+  | { type: "SET_LANGUAGE"; language: "en" | "ar" }
   | { type: "SET_VIEW"; view: ViewKey }
   | { type: "TOGGLE_NAV" }
   | { type: "TOGGLE_INFO" }
@@ -172,6 +178,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, subject: action.subject };
     case "SET_SELL_PIN":
       return { ...state, sellPin: action.pin };
+    case "SET_LANGUAGE":
+      return { ...state, language: action.language };
     case "SET_VIEW":
       return { ...state, view: action.view };
     case "TOGGLE_NAV":
@@ -218,6 +226,7 @@ export interface AppStateContextValue {
   setUnit: (unit: string) => void;
   setSubject: (subject: Subject) => void;
   setSellPin: (pin: [number, number] | null) => void;
+  setLanguage: (language: "en" | "ar") => void;
   setView: (view: ViewKey) => void;
   toggleNav: () => void;
   toggleInfo: () => void;
@@ -238,8 +247,8 @@ export function AppStateProvider({
   const [state, dispatch] = useReducer(reducer, userId, initState);
 
   useEffect(() => {
-    savePersisted(userId, { chats: state.chats, unitType: state.unitType, subject: state.subject });
-  }, [userId, state.chats, state.unitType, state.subject]);
+    savePersisted(userId, { chats: state.chats, unitType: state.unitType, subject: state.subject, language: state.language });
+  }, [userId, state.chats, state.unitType, state.subject, state.language]);
 
   const value = useMemo<AppStateContextValue>(
     () => ({
@@ -255,6 +264,7 @@ export function AppStateProvider({
       },
       setUnit: (unit) => dispatch({ type: "SET_UNIT", unit }),
       setSellPin: (pin) => dispatch({ type: "SET_SELL_PIN", pin }),
+      setLanguage: (language) => dispatch({ type: "SET_LANGUAGE", language }),
       setSubject: (subject) => {
         dispatch({ type: "SET_SUBJECT", subject });
         // Repoint the engine at the new unit, then reprice the selected area and

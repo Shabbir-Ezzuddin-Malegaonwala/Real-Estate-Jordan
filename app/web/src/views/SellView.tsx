@@ -18,12 +18,12 @@ export function SellView() {
   const { state } = useApp();
   const pin = state.sellPin; // [lng, lat]
   const [mode, setMode] = useState<Mode>("building");
+  const [lang, setLang] = useState<Lang>(state.language); // default from Settings
   const [totalArea, setTotalArea] = useState(600);
   const [flats, setFlats] = useState(4);
   const [flatArea, setFlatArea] = useState(175);
   const [plot, setPlot] = useState(500);
   const [finish, setFinish] = useState<Finish>("standard");
-  const [lang, setLang] = useState<Lang>("en");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ValuationResult | null>(null);
   const [err, setErr] = useState<string | null>(null);

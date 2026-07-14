@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { useApp } from "../lib/store";
 import { Card } from "../ui";
 import { ViewHeader } from "./ViewHeader";
 import { getViewMeta } from "./viewMeta";
@@ -43,9 +44,7 @@ function SettingsRow({ label, hint, children }: { label: string; hint?: string; 
 }
 
 export function SettingsView() {
-  const [language, setLanguage] = useState<"English" | "العربية">("English");
-  const [theme, setTheme] = useState<"Light" | "Dark">("Light");
-  const [weeklyEmail, setWeeklyEmail] = useState<"On" | "Off">("On");
+  const { state, setLanguage } = useApp();
   const meta = getViewMeta("settings");
 
   return (
@@ -53,25 +52,33 @@ export function SettingsView() {
       <ViewHeader {...meta} />
       <Card padded={false}>
         <div className="px-4">
-          <SettingsRow label="Language" hint="Numbers & map stay the same">
-            <SegToggle options={["English", "العربية"] as const} value={language} onChange={setLanguage} />
-          </SettingsRow>
-          <SettingsRow label="Theme">
-            <SegToggle options={["Light", "Dark"] as const} value={theme} onChange={setTheme} />
-          </SettingsRow>
-          <SettingsRow label="Weekly email" hint="Market changes for your areas">
-            <SegToggle options={["On", "Off"] as const} value={weeklyEmail} onChange={setWeeklyEmail} />
-          </SettingsRow>
-          <SettingsRow label="Account" hint="Signed in as Mohammad · your chats are private to you">
-            <button
-              type="button"
-              className="rounded-lg border border-stitch-line bg-stitch-soft px-3 py-2 text-sm text-stitch-muted"
-            >
-              Sign out
-            </button>
+          <SettingsRow label="Report language" hint="Language for AI summaries & the property valuation report">
+            <SegToggle
+              options={["English", "العربية"] as const}
+              value={state.language === "ar" ? "العربية" : "English"}
+              onChange={(v) => setLanguage(v === "العربية" ? "ar" : "en")}
+            />
           </SettingsRow>
         </div>
       </Card>
+
+      <Card padded={false}>
+        <div className="px-4">
+          <div className="pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-stitch-muted">Not available yet</div>
+          <SettingsRow label="Dark mode" hint="The interface is light-only for now — planned">
+            <span className="rounded-md bg-stitch-soft px-2.5 py-1 text-xs font-semibold text-stitch-muted">Coming</span>
+          </SettingsRow>
+          <SettingsRow label="Weekly email digest" hint="Needs the mail service — planned">
+            <span className="rounded-md bg-stitch-soft px-2.5 py-1 text-xs font-semibold text-stitch-muted">Coming</span>
+          </SettingsRow>
+          <SettingsRow label="Account & sign-in" hint="Accounts aren't wired yet — chats are stored locally on this device">
+            <span className="rounded-md bg-stitch-soft px-2.5 py-1 text-xs font-semibold text-stitch-muted">Local only</span>
+          </SettingsRow>
+        </div>
+      </Card>
+      <p className="px-1 text-[11px] leading-relaxed text-stitch-muted">
+        Only settings that actually change something are shown as active. The rest are marked honestly until built.
+      </p>
     </div>
   );
 }
