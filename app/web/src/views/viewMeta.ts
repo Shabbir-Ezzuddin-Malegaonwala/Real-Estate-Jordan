@@ -12,12 +12,16 @@ export interface ViewMeta {
 }
 
 const SUBTITLES: Partial<Record<ViewKey, string>> = {
+  opportunity: "Which area gives you the best build opportunity",
+  ranking: "How every covered area ranks by opportunity score",
   price: "What price to sell your units at",
   comps: "Recent nearby sales the price is built on",
   trend: "How the area price moved over 90 days",
   land: "The most you can pay for the land",
   margin: "Your profit if you build and sell",
   build: "Estimated construction cost",
+  scenarios: "Minimum-safe, recommended, and premium launch prices",
+  buildability: "Can you actually build here — structural checklist",
   competitors: "Nearby projects and their launch prices",
   news: "Recent events that affect prices",
   nearby: "What's around the area",

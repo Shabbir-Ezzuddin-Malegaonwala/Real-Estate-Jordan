@@ -44,13 +44,28 @@ export interface PricingData {
   narrative?: string;
 }
 
-/** Cost & Profit view (Land value / Profit margin / Build cost). */
+/** One of the 3 launch scenarios (Minimum-safe / Recommended / Premium launch). */
+export interface LaunchScenario { name: string; price: number; rationale: string }
+
+/** One structural buildability checklist row (Zoning, Slope, Soil, Access, Utilities...). */
+export interface BuildabilityItem {
+  label: string;
+  status: "ok" | "partial" | "caution" | "risk" | "unknown"; // unknown = "Awaiting data — not yet collected"
+  reason: string;
+}
+
+/** Cost & Profit view (Land value / Profit margin / Build cost / Scenarios / Buildability). */
 export interface CostProfitData {
   landValueK: number;            // K JD / dunum
   marginPct: number;             // %
   buildCostJdM2: number;         // JD/m²
   finish: "Basic" | "Standard" | "Luxury";
   plotSizeDunum: number;
+  // --- Optional depth (progressive disclosure): real adapter only, mock leaves these undefined ---
+  /** The 3 launch scenarios (min-safe / recommended / premium), each with a plain-language rationale. */
+  scenarios?: LaunchScenario[];
+  /** Honest structural checklist — "unknown" status where data isn't collected yet, never fabricated. */
+  buildability?: BuildabilityItem[];
 }
 
 /** Market view (Competitors / Market news). */
@@ -80,6 +95,15 @@ export interface AreaBundle {
 /** List item for the search dropdown + the map pins. */
 export interface AreaListItem { name: string; price: number; centroid: [number, number]; }
 
+/** Opportunity view (nationwide "where to build" ranking) — assembled client-side from
+ *  useOpportunity()/useAreas() (lib/useEngine.ts), not a DataSource method (no per-area
+ *  selection required — see views/OpportunityView.tsx). */
+export interface OpportunityData {
+  areas: { name: string; score: number; price: number }[];
+  selectedScore?: number;
+  selectedRank?: number;
+}
+
 /** The data source the UI consumes. Mock now; real adapter later — same interface. */
 export interface DataSource {
   listAreas(): AreaListItem[];
@@ -98,10 +122,13 @@ export interface DataSource {
 export interface NavSub { key: ViewKey; label: string }
 export interface NavGroup { icon: string; label: string; subs: NavSub[] }
 export const NAV: NavGroup[] = [
+  { icon: "🎯", label: "Opportunity", subs: [
+    { key: "opportunity", label: "Where to build" }, { key: "ranking", label: "Area ranking" } ] },
   { icon: "🏷️", label: "Pricing", subs: [
     { key: "price", label: "Launch price" }, { key: "comps", label: "Comparable evidence" }, { key: "trend", label: "Price trend" } ] },
   { icon: "💰", label: "Cost & Profit", subs: [
-    { key: "land", label: "Land value" }, { key: "margin", label: "Profit margin" }, { key: "build", label: "Build cost" } ] },
+    { key: "land", label: "Land value" }, { key: "margin", label: "Profit margin" }, { key: "build", label: "Build cost" },
+    { key: "scenarios", label: "Launch scenarios" }, { key: "buildability", label: "Buildability" } ] },
   { icon: "📊", label: "Market", subs: [
     { key: "competitors", label: "Competitors" }, { key: "news", label: "Market news" } ] },
   { icon: "🗺️", label: "Location", subs: [

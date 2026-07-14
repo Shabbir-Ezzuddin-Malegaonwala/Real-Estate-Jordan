@@ -9,6 +9,7 @@ import { MarketView } from "./MarketView";
 import { LocationView } from "./LocationView";
 import { AssistantView } from "./AssistantView";
 import { SettingsView } from "./SettingsView";
+import { OpportunityView } from "./OpportunityView";
 
 // Routes the shell's InfoPanel to the right view for the current nav
 // selection. Assistant/Settings manage their own header (their sub-state
@@ -19,6 +20,18 @@ export function ViewRouter() {
 
   if (view === "settings") return <SettingsView />;
   if (view === "chatnew" || view === "chathist" || view === "chatopen") return <AssistantView />;
+
+  // Nationwide ranking — doesn't need an area selected (an area only sharpens
+  // the "where does mine rank" callout inside OpportunityView itself).
+  if (view === "opportunity" || view === "ranking") {
+    const meta = getViewMeta(view);
+    return (
+      <div className="flex flex-col gap-3">
+        <ViewHeader {...meta} />
+        <OpportunityView focus={view} />
+      </div>
+    );
+  }
 
   if (!selectedArea) {
     return (
@@ -54,6 +67,8 @@ export function ViewRouter() {
     case "land":
     case "margin":
     case "build":
+    case "scenarios":
+    case "buildability":
       return (
         <div className="flex flex-col gap-3">
           <ViewHeader {...meta} />

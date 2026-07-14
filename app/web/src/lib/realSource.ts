@@ -18,7 +18,7 @@ import type {
   PricingData,
 } from "./contract";
 import { fetchNeighborhoods, requestRecommendation, type SubjectInput } from "./api";
-import { fetchAreas, fetchAreaMonitoring, requestResidual } from "./intel";
+import { fetchAreas, fetchAreaMonitoring, fetchFeasibility, requestResidual } from "./intel";
 import { adaptApiRecommendation } from "./adaptEngine";
 import { loadAmenities } from "./loadData";
 import type { AreaAmenities } from "./poi";
@@ -27,6 +27,7 @@ import type {
   AreaMonitoring,
   ConfidenceComponent,
   EvidenceObject,
+  Feasibility,
   RecommendationResult,
   ResidualBreakdown,
   RiskFactor,
@@ -248,13 +249,51 @@ function toPricing(summary: AreaSummary, r: RecommendationResult): PricingData {
   };
 }
 
-function toCostProfit(residual: ResidualBreakdown | null): CostProfitData {
+// The 3 launch scenarios are exactly the min-safe/recommended/premium band the
+// engine already computes for the recommendation (same numbers as PriceBand) —
+// no separate /scenario call needed, and nothing is fabricated.
+function toScenarios(r: RecommendationResult): CostProfitData["scenarios"] {
+  return [
+    {
+      name: "Minimum-safe",
+      price: Math.round(r.min_safe_jd_m2),
+      rationale: "The defensible floor — still clears even if the market softens.",
+    },
+    {
+      name: "Recommended",
+      price: Math.round(r.recommended_jd_m2),
+      rationale: "The engine's best estimate — balances launch speed against upside.",
+    },
+    {
+      name: "Premium launch",
+      price: Math.round(r.premium_jd_m2),
+      rationale: "The ceiling — achievable with strong differentiation, view, or timing.",
+    },
+  ];
+}
+
+function toBuildability(feasibility: Feasibility | null): CostProfitData["buildability"] {
+  if (!feasibility || feasibility.dimensions.length === 0) return undefined;
+  return feasibility.dimensions.map((d) => ({
+    label: d.label,
+    status: d.status,
+    reason: d.status === "unknown" ? "Awaiting data — not yet collected" : d.reason,
+  }));
+}
+
+function toCostProfit(
+  residual: ResidualBreakdown | null,
+  result: RecommendationResult,
+  feasibility: Feasibility | null,
+): CostProfitData {
   return {
     landValueK: residual ? Math.round(residual.max_land_value_per_m2) : 0,
     marginPct: RESIDUAL_DEFAULTS.profit_pct,
     buildCostJdM2: RESIDUAL_DEFAULTS.construction_cost_per_m2,
     finish: "Standard",
     plotSizeDunum: RESIDUAL_DEFAULTS.buildable_area_m2 / 1000,
+    scenarios: toScenarios(result),
+    buildability: toBuildability(feasibility),
   };
 }
 
@@ -306,9 +345,10 @@ async function buildBundle(area: string): Promise<AreaBundle | null> {
     return null;
   }
 
-  const [residual, monitoring] = await Promise.all([
+  const [residual, monitoring, feasibility] = await Promise.all([
     requestResidual({ neighborhood: area, ...RESIDUAL_DEFAULTS }, result.recommended_jd_m2).catch(() => null),
     fetchAreaMonitoring(area).catch(() => null),
+    fetchFeasibility(area).catch(() => null),
   ]);
 
   const trend = monitoring && monitoring.yearly_median.length > 1
@@ -322,7 +362,7 @@ async function buildBundle(area: string): Promise<AreaBundle | null> {
   return {
     summary,
     pricing: toPricing(summary, result),
-    costProfit: toCostProfit(residual),
+    costProfit: toCostProfit(residual, result, feasibility),
     market: toMarket(monitoring, trend),
     location: toLocation(area),
   };

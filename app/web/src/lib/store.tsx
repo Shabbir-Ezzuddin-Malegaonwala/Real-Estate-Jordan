@@ -14,12 +14,16 @@ import {
 import { dataSource } from "./dataSource";
 
 export type ViewKey =
+  | "opportunity"
+  | "ranking"
   | "price"
   | "comps"
   | "trend"
   | "land"
   | "margin"
   | "build"
+  | "scenarios"
+  | "buildability"
   | "competitors"
   | "news"
   | "nearby"
