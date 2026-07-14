@@ -1,0 +1,222 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo A — Stitch shell</title>
+<style>
+  :root{--blue:#0072B2;--blue-dk:#00598c;--vermil:#D55E00;--green:#009E73;--ink:#1a1d1f;--muted:#5b636b;--line:#e5e7eb;--bg:#eef1f4;--card:#fff;--soft:#f1f5f9;--rail:56px;--railx:210px;--panel:360px}
+  *{box-sizing:border-box;margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+  body{height:100vh;overflow:hidden;color:var(--ink);background:var(--bg)}
+  .app{display:grid;grid-template-columns:var(--rail) 1fr var(--panel);grid-template-rows:52px 1fr;height:100vh;transition:.2s}
+  .app.railopen{grid-template-columns:var(--railx) 1fr var(--panel)}
+  .app.panelclosed{grid-template-columns:var(--rail) 1fr 0}
+  /* top bar */
+  .top{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 16px;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+  .top .brand{font-weight:700}
+  .top .sub{color:var(--muted);font-size:12px}
+  .seg{margin-left:auto;display:flex;background:var(--soft);border-radius:8px;padding:3px}
+  .seg button{border:0;background:transparent;padding:6px 14px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}
+  .seg button.on{background:var(--card);color:var(--blue-dk);box-shadow:0 1px 2px #0001}
+  /* left rail */
+  .rail{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:8px 6px;gap:4px;overflow:hidden}
+  .rail .tgl{border:0;background:transparent;color:var(--muted);font-size:18px;cursor:pointer;padding:8px;border-radius:8px;align-self:flex-start}
+  .rail a{display:flex;align-items:center;gap:12px;padding:10px 10px;border-radius:8px;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:600;font-size:14px}
+  .rail a .ic{font-size:18px;width:22px;text-align:center;flex:none}
+  .rail a:hover{background:var(--soft)}
+  .rail a.on{background:#e7f1fb;color:var(--blue-dk)}
+  .rail a .lbl{opacity:0;transition:.15s}
+  .app.railopen .rail a .lbl{opacity:1}
+  .rail .spacer{flex:1}
+  /* map */
+  .map{position:relative;background:
+    linear-gradient(#e9ede2,#e9ede2);overflow:hidden}
+  .map .grid{position:absolute;inset:0;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:38px 38px}
+  .map .hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
+  .pin{position:absolute;transform:translate(-50%,-50%);cursor:pointer;text-align:center}
+  .pin .dot{width:16px;height:16px;border-radius:50%;background:var(--blue);border:3px solid #fff;box-shadow:0 1px 4px #0003;margin:0 auto}
+  .pin.sel .dot{background:var(--vermil);width:20px;height:20px}
+  .pin .nm{font-size:12px;font-weight:700;color:#333;background:#ffffffcc;border-radius:4px;padding:1px 5px;margin-top:3px;display:inline-block}
+  /* map layers mini panel */
+  .layers{position:absolute;right:12px;top:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;width:180px}
+  .layers h4{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+  .layers label{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer}
+  /* right panel */
+  .panel{background:var(--card);border-left:1px solid var(--line);overflow-y:auto;transition:.2s}
+  .app.panelclosed .panel{opacity:0}
+  .ph{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 6px}
+  .ph .t{font-weight:700}
+  .ph .x{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px}
+  .pad{padding:6px 18px 20px}
+  .empty{color:var(--muted);font-size:14px;padding:40px 18px;text-align:center}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.03em;padding:4px 10px;border-radius:999px;background:#e3f4ee;color:#0a7a5b}
+  .hero{font-size:40px;font-weight:800;color:var(--blue-dk);margin:10px 0 0}
+  .hero small{font-size:15px;color:var(--muted);font-weight:600}
+  .cue{color:var(--blue);font-size:13px;font-weight:600;margin-top:2px}
+  .sec{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .sec>button{width:100%;display:flex;justify-content:space-between;align-items:center;border:0;background:transparent;font-weight:700;font-size:13px;color:var(--ink);cursor:pointer;padding:0}
+  .sec .body{margin-top:10px}
+  .band{position:relative;height:8px;background:#eef3f8;border-radius:6px;margin:24px 6px 30px}
+  .band .fill{position:absolute;height:100%;background:var(--blue);opacity:.25;border-radius:6px}
+  .band .tk{position:absolute;top:-5px;width:2px;height:18px;background:var(--blue-dk)}
+  .band .tk.r{height:22px;top:-7px;width:3px;background:var(--blue)}
+  .band .lb{position:absolute;top:12px;font-size:11px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+  .band .lb b{color:var(--blue-dk)}
+  .conf{font-size:14px}
+  .conf .bars{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+  .conf .bars i{width:16px;height:7px;border-radius:2px;background:#dbe4ee}
+  .conf .bars i.on{background:var(--blue)}
+  .reason{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--soft);font-size:14px}
+  .reason .ck{width:20px;height:20px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+  .reason .ck.y{background:var(--blue)}.reason .ck.n{background:var(--vermil)}
+  .reason .why{margin-left:auto;font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted);cursor:pointer}
+  .cta{width:calc(100% - 36px);margin:16px 18px;padding:14px;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  /* slide-over sections (Chat, Settings) */
+  .over{position:fixed;top:52px;right:0;bottom:0;width:380px;background:var(--card);border-left:1px solid var(--line);box-shadow:-8px 0 24px #0001;transform:translateX(105%);transition:.22s;z-index:20;display:flex;flex-direction:column}
+  .over.show{transform:none}
+  .over h3{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:16px}
+  .over h3 .x{border:0;background:transparent;font-size:18px;color:var(--muted);cursor:pointer}
+  .chatbody{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:85%;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.4}
+  .msg.bot{background:var(--soft);align-self:flex-start}
+  .msg.me{background:#e7f1fb;color:var(--blue-dk);align-self:flex-end}
+  .chatin{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+  .chatin input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+  .chatin button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer}
+  .setrow{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--soft)}
+  .setrow .k{font-weight:600}.setrow .d{font-size:12px;color:var(--muted)}
+  .toggle{display:flex;background:var(--soft);border-radius:8px;padding:3px}
+  .toggle button{border:0;background:transparent;padding:6px 12px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}
+  .toggle button.on{background:#fff;color:var(--blue-dk);box-shadow:0 1px 2px #0001}
+  .scrim{position:fixed;inset:52px 0 0 0;background:#0003;opacity:0;pointer-events:none;transition:.2s;z-index:15}
+  .scrim.show{opacity:1;pointer-events:auto}
+</style></head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <div><div class="brand">Jordan Real Estate</div><div class="sub">Builder workspace</div></div>
+    <div class="seg"><button class="on">Map</button><button>Dashboard</button></div>
+    <div style="color:var(--muted)">◐</div>
+  </div>
+
+  <!-- LEFT RAIL -->
+  <nav class="rail" id="rail">
+    <button class="tgl" onclick="document.getElementById('app').classList.toggle('railopen')">☰</button>
+    <a class="on"><span class="ic">◎</span><span class="lbl">Price</span></a>
+    <a><span class="ic">▤</span><span class="lbl">Map layers</span></a>
+    <a><span class="ic">▦</span><span class="lbl">Feasibility</span></a>
+    <a><span class="ic">📈</span><span class="lbl">Market</span></a>
+    <div class="spacer"></div>
+    <a onclick="openOver('chat')"><span class="ic">💬</span><span class="lbl">Chat</span></a>
+    <a onclick="openOver('set')"><span class="ic">⚙</span><span class="lbl">Settings</span></a>
+  </nav>
+
+  <!-- MAP -->
+  <div class="map">
+    <div class="grid"></div>
+    <div class="hint" id="hint">Click an area to see its launch price</div>
+    <div class="pin" style="left:62%;top:40%" onclick="sel('Abdoun',this)"><div class="dot"></div><div class="nm">Abdoun</div></div>
+    <div class="pin" style="left:30%;top:28%" onclick="sel('Dabouq',this)"><div class="dot"></div><div class="nm">Dabouq</div></div>
+    <div class="pin" style="left:44%;top:62%" onclick="sel('Sweifieh',this)"><div class="dot"></div><div class="nm">Sweifieh</div></div>
+    <div class="pin" style="left:72%;top:66%" onclick="sel('Shmeisani',this)"><div class="dot"></div><div class="nm">Shmeisani</div></div>
+    <div class="pin" style="left:20%;top:52%" onclick="sel('Khalda',this)"><div class="dot"></div><div class="nm">Khalda</div></div>
+    <div class="layers">
+      <h4>Map layers</h4>
+      <label><input type="checkbox" checked> Schools</label>
+      <label><input type="checkbox"> Hospitals</label>
+      <label><input type="checkbox" checked> Transport</label>
+      <label><input type="checkbox"> Opportunity heat</label>
+    </div>
+  </div>
+
+  <!-- RIGHT DECISION PANEL -->
+  <aside class="panel" id="panel">
+    <div class="ph"><span class="t" id="pname">Launch price</span>
+      <button class="x" onclick="document.getElementById('app').classList.add('panelclosed')">✕</button></div>
+    <div id="empty" class="empty">Pick an area on the map to see its recommended launch price and why.</div>
+    <div id="content" style="display:none">
+      <div class="pad">
+        <span class="pill">● READY TO LAUNCH</span>
+        <div class="hero"><span id="price">—</span> <small>JD/m²</small></div>
+        <div class="cue">↗ Stable · 90 days</div>
+      </div>
+      <div class="pad">
+        <div class="band" id="band"></div>
+      </div>
+      <div class="pad">
+        <div class="sec" style="border:0;padding:0">
+          <div class="conf">Good confidence
+            <span class="bars"><i class="on"></i><i class="on"></i><i></i></span>
+            <div class="d" style="color:var(--muted);font-size:12px;margin-top:4px" id="comps"></div>
+          </div>
+        </div>
+        <div class="sec">
+          <button onclick="tog('why')">Why this price <span>▾</span></button>
+          <div class="body" id="why">
+            <div class="reason"><span class="ck y">✓</span> Near public transport <span class="why">Why?</span></div>
+            <div class="reason"><span class="ck y">✓</span> Open view <span class="why">Why?</span></div>
+            <div class="reason"><span class="ck n">✕</span> Irregular plot shape <span class="why">Why?</span></div>
+          </div>
+        </div>
+        <div class="sec">
+          <button onclick="tog('src')">Sources <span>▾</span></button>
+          <div class="body" id="src" style="display:none;font-size:13px;color:var(--muted)">
+            Dept. of Lands · Dept. of Statistics · Bayut / OpenSooq · <a href="#">open ↗</a>
+          </div>
+        </div>
+      </div>
+      <button class="cta">Calculate Feasibility →</button>
+    </div>
+  </aside>
+</div>
+
+<!-- SLIDE-OVER: CHAT (own section) -->
+<div class="scrim" id="scrim" onclick="closeOver()"></div>
+<div class="over" id="chat">
+  <h3>Assistant <button class="x" onclick="closeOver()">✕</button></h3>
+  <div class="chatbody">
+    <div class="msg bot">Ask me about a price. I explain — I never invent numbers.</div>
+    <div class="msg me">Why is Abdoun 918?</div>
+    <div class="msg bot">Similar apartments nearby listed around 1,150; adjusted for a lower floor and calibrated from asking to real prices → 918 JD/m². Based on 12 nearby sales.</div>
+  </div>
+  <div class="chatin"><input placeholder="Ask about a price…"><button>Send</button></div>
+</div>
+
+<!-- SLIDE-OVER: SETTINGS (own section) -->
+<div class="over" id="set">
+  <h3>Settings <button class="x" onclick="closeOver()">✕</button></h3>
+  <div class="setrow"><div><div class="k">Language</div><div class="d">Whole interface; numbers &amp; map stay the same</div></div>
+    <div class="toggle"><button>English</button><button class="on">العربية</button></div></div>
+  <div class="setrow"><div><div class="k">Default map radius</div></div>
+    <div class="toggle"><button>250m</button><button class="on">500m</button><button>1km</button></div></div>
+  <div class="setrow"><div><div class="k">Weekly email</div><div class="d">Market changes for your areas</div></div>
+    <div class="toggle"><button class="on">On</button><button>Off</button></div></div>
+</div>
+
+<script>
+  var DATA={
+    Abdoun:{p:918,ms:597,pr:1239,c:12},Dabouq:{p:950,ms:618,pr:1283,c:12},
+    Sweifieh:{p:839,ms:545,pr:1133,c:12},Shmeisani:{p:696,ms:506,pr:885,c:12},Khalda:{p:672,ms:482,pr:863,c:12}};
+  var AXMIN=450,AXMAX=1300;
+  function pct(v){return((v-AXMIN)/(AXMAX-AXMIN)*100).toFixed(1)}
+  function sel(name,el){
+    document.querySelectorAll('.pin').forEach(function(p){p.classList.remove('sel')});
+    if(el)el.classList.add('sel');
+    var d=DATA[name];
+    document.getElementById('empty').style.display='none';
+    document.getElementById('content').style.display='block';
+    document.getElementById('app').classList.remove('panelclosed');
+    document.getElementById('pname').textContent=name;
+    document.getElementById('price').textContent=d.p.toLocaleString();
+    document.getElementById('comps').textContent='Based on '+d.c+' nearby listings';
+    document.getElementById('hint').style.display='none';
+    document.getElementById('band').innerHTML=
+      '<div class="fill" style="left:'+pct(d.ms)+'%;width:'+(pct(d.pr)-pct(d.ms))+'%"></div>'+
+      '<div class="tk" style="left:'+pct(d.ms)+'%"></div>'+
+      '<div class="tk r" style="left:'+pct(d.p)+'%"></div>'+
+      '<div class="tk" style="left:'+pct(d.pr)+'%"></div>'+
+      '<div class="lb" style="left:'+pct(d.ms)+'%">Min-safe <b>'+d.ms+'</b></div>'+
+      '<div class="lb" style="left:'+pct(d.p)+'%">Rec <b>'+d.p+'</b></div>'+
+      '<div class="lb" style="left:'+pct(d.pr)+'%">Premium <b>'+d.pr+'</b></div>';
+  }
+  function tog(id){var e=document.getElementById(id);e.style.display=e.style.display==='none'?'block':'none'}
+  function openOver(w){closeOver();document.getElementById(w).classList.add('show');document.getElementById('scrim').classList.add('show')}
+  function closeOver(){document.querySelectorAll('.over').forEach(function(o){o.classList.remove('show')});document.getElementById('scrim').classList.remove('show')}
+</script>
+</body></html>

@@ -1,0 +1,192 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo C — map + side panel</title>
+<style>
+  :root{--blue:#0072B2;--blue-dk:#00598c;--vermil:#D55E00;--green:#009E73;--ink:#1a1d1f;--muted:#5b636b;--line:#e7eaee;--bg:#eef1f5;--card:#fff;--soft:#f3f6f9;--panel:420px}
+  *{box-sizing:border-box;margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+  body{height:100vh;overflow:hidden;color:var(--ink);background:var(--bg)}
+  .app{display:grid;grid-template-columns:var(--panel) 1fr;grid-template-rows:56px 1fr;height:100vh}
+  .app.wide{grid-template-columns:56px 1fr}
+  .top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+  .top .burger{border:0;background:transparent;font-size:20px;color:var(--muted);cursor:pointer}
+  .top .brand{font-weight:700}
+  .slicer{margin-left:8px;display:flex;gap:8px;align-items:center}
+  .slicer label{font-size:12px;color:var(--muted)}
+  .slicer select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-weight:600;background:var(--soft)}
+  .top .right{margin-left:auto;display:flex;gap:12px;align-items:center;color:var(--muted)}
+  .live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--green)}
+  .live .d{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  /* LEFT INFO PANEL */
+  .panel{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+  .app.wide .panel{align-items:center}
+  .tabs{display:flex;gap:4px;padding:12px 14px 0}
+  .app.wide .tabs,.app.wide .body,.app.wide .foot .lbl{display:none}
+  .tabs button{flex:1;border:0;background:var(--soft);color:var(--muted);font-weight:700;font-size:13px;padding:9px 0;border-radius:8px 8px 0 0;cursor:pointer}
+  .tabs button.on{background:#e7f1fb;color:var(--blue-dk)}
+  .body{flex:1;overflow-y:auto;padding:14px 16px}
+  .foot{border-top:1px solid var(--line);display:flex;flex-direction:column;padding:6px}
+  .foot a{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:8px;color:var(--muted);font-weight:600;cursor:pointer;font-size:14px}
+  .foot a:hover{background:var(--soft)}
+  .foot a .ic{font-size:18px;width:22px;text-align:center}
+  .railbtn{border:0;background:transparent;font-size:20px;color:var(--muted);cursor:pointer;padding:10px}
+  /* cards inside panel */
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:#e3f4ee;color:#0a7a5b}
+  .big{font-size:40px;font-weight:800;color:var(--blue-dk);margin:8px 0 0}.big small{font-size:15px;color:var(--muted);font-weight:600}
+  .row{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+  svg.spark{width:120px;height:34px}
+  .cap{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;margin-bottom:2px}
+  .card{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .band{position:relative;height:8px;background:#eef3f8;border-radius:6px;margin:24px 4px 30px}
+  .band .fill{position:absolute;height:100%;background:var(--blue);opacity:.22;border-radius:6px}
+  .band .tk{position:absolute;top:-5px;width:2px;height:18px;background:var(--blue-dk)}.band .tk.r{height:22px;top:-7px;width:3px;background:var(--blue)}
+  .band .lb{position:absolute;top:12px;font-size:11px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}.band .lb b{color:var(--blue-dk)}
+  .word{font-size:22px;font-weight:800;color:var(--blue-dk)}
+  .dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}.dots i{width:18px;height:8px;border-radius:3px;background:#dde5ee}.dots i.on{background:var(--blue)}
+  .rr{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px}
+  .rr .ck{width:20px;height:20px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+  .rr .ck.y{background:var(--blue)}.rr .ck.n{background:var(--vermil)}
+  .subtle{color:var(--muted);font-size:13px}
+  .exp>summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--ink);list-style:none;padding:6px 0}
+  .exp>summary::-webkit-details-marker{display:none}
+  .exp>summary:after{content:" ▾";color:var(--muted)}
+  .inp label{font-size:12px;color:var(--muted);font-weight:600}
+  .inp input,.inp select{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--soft);margin-top:4px}
+  .mbar{position:relative;height:24px;border-radius:8px;overflow:hidden;background:#eee;margin:12px 0 6px}
+  .mbar .c{position:absolute;left:0;top:0;bottom:0;background:#f6d3c2;display:flex;align-items:center;padding-left:8px;font-size:12px;font-weight:700;color:#9a3d12}
+  .mbar .p{position:absolute;right:0;top:0;bottom:0;background:#cdeede;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:12px;font-weight:700;color:#0a7a5b}
+  .frow{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--soft);font-size:14px}.frow .dt{color:var(--muted);font-size:11px;width:48px;flex:none}
+  /* MAP (always visible) */
+  .map{position:relative;background:#e9ede2;overflow:hidden}
+  .map .g{position:absolute;inset:0;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:42px 42px}
+  .pin{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:pointer}
+  .pin .dot{min-width:34px;height:26px;padding:0 6px;border-radius:14px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 5px #0003}
+  .pin.sel .dot{background:var(--vermil);transform:scale(1.12)}
+  .pin .nm{font-size:11px;font-weight:700;background:#ffffffcc;border-radius:4px;padding:0 5px;margin-top:2px;display:inline-block}
+  .layers{position:absolute;right:12px;top:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+  .layers h4{font-size:11px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .layers label{display:block;padding:2px 0;cursor:pointer}
+  .maptag{position:absolute;left:12px;top:12px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-weight:700;font-size:13px}
+  .focusring{position:absolute;width:190px;height:190px;border-radius:50%;border:2px solid var(--vermil);background:#d55e0016;transform:translate(-50%,-50%);pointer-events:none;transition:.35s;opacity:0}
+  .map.focused .focusring{opacity:1}
+  .map.focused .pin:not(.sel){opacity:.38;transition:.3s}
+  .mapcard{position:absolute;left:16px;bottom:16px;width:270px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 6px 18px #0002}
+  .mapcard .nm{font-weight:800;font-size:16px}
+  .mapcard .pr{font-size:27px;font-weight:800;color:var(--blue-dk);margin:2px 0}
+  .mapcard .am{display:flex;gap:14px;margin-top:10px;font-size:13px;color:var(--muted)}
+  .mapcard .am b{color:var(--ink)}
+  /* overlay for chat/settings */
+  .over{position:fixed;inset:56px auto 0 0;width:var(--panel);background:#fff;border-right:1px solid var(--line);box-shadow:6px 0 20px #0001;transform:translateX(-105%);transition:.2s;z-index:20;display:flex;flex-direction:column}
+  .over.show{transform:none}
+  .over h3{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;font-size:15px}
+  .over h3 .x{border:0;background:transparent;font-size:18px;color:var(--muted);cursor:pointer}
+  .cbody{flex:1;overflow:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:88%;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.4}
+  .msg.bot{background:var(--soft)}.msg.me{background:#e7f1fb;color:var(--blue-dk);align-self:flex-end}
+  .cin{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}.cin input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px}.cin button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 14px;font-weight:700}
+  .setrow{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--soft)}
+  .toggle{display:flex;background:var(--soft);border-radius:8px;padding:3px}.toggle button{border:0;background:transparent;padding:6px 12px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}.toggle button.on{background:#fff;color:var(--blue-dk)}
+</style></head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <button class="burger" onclick="document.getElementById('app').classList.toggle('wide')">☰</button>
+    <span class="brand">Jordan Real Estate</span>
+    <div class="slicer"><label>Area</label>
+      <select id="area" onchange="setA(this.value)"><option>Abdoun</option><option>Dabouq</option><option>Sweifieh</option><option>Shmeisani</option><option>Khalda</option></select>
+      <select><option>2-bed apartment</option><option>3-bed apartment</option><option>Villa</option></select></div>
+    <div class="right"><span class="live"><span class="d"></span>LIVE</span><span>?</span><span>◐</span></div>
+  </div>
+
+  <!-- LEFT INFO PANEL -->
+  <aside class="panel">
+    <button class="railbtn" style="display:none" id="railbtn">☰</button>
+    <div class="tabs">
+      <button class="on" data-t="price" onclick="tab('price',this)">Price</button>
+      <button data-t="money" onclick="tab('money',this)">Make money?</button>
+      <button data-t="market" onclick="tab('market',this)">Market</button>
+    </div>
+    <div class="body" id="body"></div>
+    <div class="foot">
+      <a onclick="openO('chat')"><span class="ic">💬</span><span class="lbl">Ask a question</span></a>
+      <a onclick="openO('set')"><span class="ic">⚙</span><span class="lbl">Settings</span></a>
+    </div>
+  </aside>
+
+  <!-- MAP always visible -->
+  <div class="map">
+    <div class="g"></div>
+    <div class="maptag" id="tag">Abdoun · 918 JD/m²</div>
+    <div class="layers"><h4>Layers</h4>
+      <label><input type="checkbox" checked> Schools</label>
+      <label><input type="checkbox"> Hospitals</label>
+      <label><input type="checkbox" checked> Transport</label>
+      <label><input type="checkbox"> Opportunity heat</label></div>
+    <div class="focusring" id="ring"></div>
+    <div id="pins"></div>
+    <div class="mapcard" id="mapcard" style="display:none"></div>
+  </div>
+</div>
+
+<!-- overlays -->
+<div class="over" id="chat"><h3>Ask a question <button class="x" onclick="closeO()">✕</button></h3>
+  <div class="cbody">
+    <div class="msg bot">Ask about any price or area — I explain, never invent, and check the live market.</div>
+    <div class="msg me">Buyer says the tower next door sells 1-bed cheaper — why is ours higher?</div>
+    <div class="msg bot">Ours is higher floor, open view, better finish. Adjusting for those, the gap is fair — the cheaper units are lower-floor and older.</div>
+  </div>
+  <div class="cin"><input placeholder="Ask…"><button>Ask</button></div></div>
+<div class="over" id="set"><h3>Settings <button class="x" onclick="closeO()">✕</button></h3>
+  <div class="setrow"><div><b>Language</b><div class="subtle">Numbers &amp; map stay the same</div></div><div class="toggle"><button>English</button><button class="on">العربية</button></div></div>
+  <div class="setrow"><div><b>Weekly email</b></div><div class="toggle"><button class="on">On</button><button>Off</button></div></div></div>
+
+<script>
+  var D={Abdoun:{p:918,ms:597,pr:1239,cw:"Good",cn:2,comps:12,land:480,margin:22,t:[905,910,912,908,915,918,916,918],x:62,y:40},
+  Dabouq:{p:950,ms:618,pr:1283,cw:"Good",cn:2,comps:12,land:510,margin:20,t:[930,940,935,945,948,950,949,950],x:30,y:28},
+  Sweifieh:{p:839,ms:545,pr:1133,cw:"Good",cn:2,comps:12,land:410,margin:24,t:[820,825,830,828,835,839,838,839],x:44,y:62},
+  Shmeisani:{p:696,ms:506,pr:885,cw:"Strong",cn:3,comps:16,land:330,margin:26,t:[690,692,695,694,696,695,696,696],x:72,y:66},
+  Khalda:{p:672,ms:482,pr:863,cw:"Good",cn:2,comps:12,land:300,margin:25,t:[665,668,670,669,672,671,672,672],x:20,y:52}};
+  var AM={Abdoun:{s:17,h:1,t:8},Dabouq:{s:6,h:0,t:3},Sweifieh:{s:11,h:2,t:6},Shmeisani:{s:9,h:3,t:5},Khalda:{s:8,h:1,t:4}};
+  var cur="Abdoun",T="price",AX=[450,1300];
+  function pct(v){return((v-AX[0])/(AX[1]-AX[0])*100).toFixed(1)}
+  function spark(a){var mn=Math.min.apply(0,a),mx=Math.max.apply(0,a);var p=a.map(function(v,i){return(i/(a.length-1)*120).toFixed(1)+","+(34-(v-mn)/(mx-mn||1)*30-2).toFixed(1)}).join(" ");return '<svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none"><polyline points="'+p+'" fill="none" stroke="var(--blue)" stroke-width="2"/></svg>'}
+  function pins(){document.getElementById('pins').innerHTML=Object.keys(D).map(function(n){var d=D[n];return '<div class="pin '+(n===cur?'sel':'')+'" style="left:'+d.x+'%;top:'+d.y+'%" onclick="setA(\''+n+'\')"><div class="dot">'+d.p+'</div><div class="nm">'+n+'</div></div>'}).join('')}
+  function tab(t,el){T=t;document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('on')});if(el)el.classList.add('on');body()}
+  function setA(n){cur=n;var d=D[n],am=AM[n];
+    document.getElementById('area').value=n;
+    document.getElementById('tag').textContent=n+' · '+d.p+' JD/m²';
+    // map immediately focuses on the selected area + shows its details
+    document.querySelector('.map').classList.add('focused');
+    var ring=document.getElementById('ring');ring.style.left=d.x+'%';ring.style.top=d.y+'%';
+    var mc=document.getElementById('mapcard');mc.style.display='block';
+    mc.innerHTML='<div class="nm">'+n+'</div><div class="pr">'+d.p+' <span style="font-size:13px;color:var(--muted)">JD/m²</span></div>'+
+      '<div class="subtle">Safe '+d.ms+' – Premium '+d.pr+' · '+d.cw+' confidence</div>'+
+      '<div class="am"><span>🎓 <b>'+am.s+'</b> schools</span><span>🏥 <b>'+am.h+'</b> hospitals</span><span>🚌 <b>'+am.t+'</b> transport</span></div>';
+    pins();body()}
+  function body(){var d=D[cur],b=document.getElementById('body');
+    if(T==='price'){b.innerHTML=
+      '<div class="status">● READY TO LAUNCH</div>'+
+      '<div class="row"><div><div class="cap" style="margin-top:8px">Recommended launch price</div><div class="big">'+d.p.toLocaleString()+' <small>JD/m²</small></div></div>'+spark(d.t)+'</div>'+
+      '<div class="subtle">↗ Stable · last 90 days</div>'+
+      '<div class="card"><div class="cap">Price range</div><div class="band"><div class="fill" style="left:'+pct(d.ms)+'%;width:'+(pct(d.pr)-pct(d.ms))+'%"></div><div class="tk" style="left:'+pct(d.ms)+'%"></div><div class="tk r" style="left:'+pct(d.p)+'%"></div><div class="tk" style="left:'+pct(d.pr)+'%"></div><div class="lb" style="left:'+pct(d.ms)+'%">Safe <b>'+d.ms+'</b></div><div class="lb" style="left:'+pct(d.p)+'%">Best <b>'+d.p+'</b></div><div class="lb" style="left:'+pct(d.pr)+'%">Premium <b>'+d.pr+'</b></div></div></div>'+
+      '<div class="card"><span class="cap">Confidence</span> <span class="word">'+d.cw+'</span><span class="dots">'+[1,2,3].map(function(i){return'<i class="'+(i<=d.cn?'on':'')+'"></i>'}).join('')+'</span><div class="subtle" style="margin-top:6px">Based on '+d.comps+' nearby sales</div></div>'+
+      '<div class="card"><details class="exp"><summary>Why this price</summary><div class="rr"><span class="ck y">✓</span> Near public transport</div><div class="rr"><span class="ck y">✓</span> Open view</div><div class="rr"><span class="ck n">✕</span> Irregular plot shape</div></details></div>'+
+      '<div class="card"><details class="exp"><summary>Where the numbers come from</summary><div class="subtle" style="padding:6px 0">Dept. of Lands · Dept. of Statistics · CBJ · Bayut/OpenSooq — <a href="#">see full table</a></div></details></div>';}
+    else if(T==='money'){b.innerHTML=
+      '<div class="inp"><label>Plot size</label><input value="1.25 dunum"></div>'+
+      '<div class="inp" style="margin-top:10px"><label>Finish level</label><select><option>Standard</option><option>Luxury</option><option>Basic</option></select></div>'+
+      '<div class="card"><div class="cap">Most you can pay for land</div><div class="big">'+d.land+'K <small>JD/dunum</small></div><div class="subtle">Above this, the project stops making a normal profit.</div></div>'+
+      '<div class="card"><div class="cap">Profit margin</div><div class="big" style="color:var(--green)">'+d.margin+'%</div><div class="mbar"><div class="c" style="width:'+(100-d.margin)+'%">Costs</div><div class="p" style="width:'+d.margin+'%">Profit</div></div></div>'+
+      '<div class="card"><div class="cap">Buildability</div><div class="subtle">Zoning · Slope · Utilities — coming soon</div></div>';}
+    else{b.innerHTML=
+      '<div class="row"><div><div class="cap">This week</div><div class="word">Market stable</div></div><span class="live"><span class="d"></span>LIVE</span></div><div class="subtle">4 changes · 1 worth a look</div>'+
+      '<div class="card"><div class="cap">What happened</div>'+
+      '<div class="frow"><span class="dt">Oct 24</span><div>Competitor launched 150 units nearby at 780 JD/m². <b>Consider holding.</b></div></div>'+
+      '<div class="frow"><span class="dt">Oct 20</span><div>New road approved nearby — usually lifts prices over time.</div></div>'+
+      '<div class="frow"><span class="dt">Oct 15</span><div>Material prices steady this month.</div></div></div>'+
+      '<div class="card"><div class="cap">Price trend (90 days)</div>'+spark(d.t)+'</div>';}
+  }
+  function openO(w){closeO();document.getElementById(w).classList.add('show')}
+  function closeO(){document.querySelectorAll('.over').forEach(function(o){o.classList.remove('show')})}
+  pins();body();
+</script>
+</body></html>

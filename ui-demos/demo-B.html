@@ -1,0 +1,224 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo B — Tile dashboard</title>
+<style>
+  :root{--blue:#0072B2;--blue-dk:#00598c;--vermil:#D55E00;--green:#009E73;--amber:#B45309;--ink:#1a1d1f;--muted:#5b636b;--line:#e7eaee;--bg:#eef1f5;--card:#fff;--soft:#f3f6f9;--rail:64px;--railx:216px}
+  *{box-sizing:border-box;margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+  body{height:100vh;overflow:hidden;color:var(--ink);background:var(--bg)}
+  .app{display:grid;grid-template-columns:var(--railx) 1fr;grid-template-rows:56px 1fr;height:100vh}
+  .app.rail{grid-template-columns:var(--rail) 1fr}
+  /* top bar */
+  .top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 18px;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+  .top .burger{border:0;background:transparent;font-size:20px;color:var(--muted);cursor:pointer}
+  .top .brand{font-weight:700}
+  .slicer{display:flex;align-items:center;gap:8px;margin-left:8px}
+  .slicer label{font-size:12px;color:var(--muted)}
+  .slicer select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-weight:600;color:var(--ink);background:var(--soft)}
+  .top .right{margin-left:auto;display:flex;gap:12px;color:var(--muted);align-items:center}
+  .live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--green)}
+  .live .d{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  /* sidebar */
+  .side{background:var(--card);border-right:1px solid var(--line);padding:10px 8px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+  .side a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;color:var(--muted);cursor:pointer;font-weight:600;font-size:14px;white-space:nowrap}
+  .side a .ic{font-size:18px;width:22px;text-align:center;flex:none}
+  .side a:hover{background:var(--soft)}
+  .side a.on{background:#e7f1fb;color:var(--blue-dk)}
+  .app.rail .side a .lbl{display:none}
+  .side .sp{flex:1}
+  .side .div{height:1px;background:var(--line);margin:6px 8px}
+  /* main */
+  .main{overflow-y:auto;padding:20px 22px}
+  .h1{font-size:20px;font-weight:700}
+  .h1 .q{color:var(--muted);font-weight:400;font-size:14px;margin-left:8px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;position:relative}
+  .tile.w2{grid-column:span 2}.tile.w4{grid-column:span 4}
+  .tile .cap{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:6px}
+  .tile .cap .qm{width:15px;height:15px;border-radius:50%;background:var(--soft);color:var(--muted);font-size:10px;display:inline-flex;align-items:center;justify-content:center;cursor:help;border:1px solid var(--line)}
+  .big{font-size:38px;font-weight:800;color:var(--blue-dk);margin-top:6px}.big small{font-size:15px;color:var(--muted);font-weight:600}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:#e3f4ee;color:#0a7a5b;margin-bottom:2px}
+  .subtle{color:var(--muted);font-size:13px;margin-top:4px}
+  .word{font-size:24px;font-weight:800;color:var(--blue-dk)}
+  .dots{display:inline-flex;gap:4px;margin-top:8px}.dots i{width:20px;height:8px;border-radius:3px;background:#dde5ee}.dots i.on{background:var(--blue)}
+  /* band */
+  .band{position:relative;height:8px;background:#eef3f8;border-radius:6px;margin:26px 6px 30px}
+  .band .fill{position:absolute;height:100%;background:var(--blue);opacity:.22;border-radius:6px}
+  .band .tk{position:absolute;top:-5px;width:2px;height:18px;background:var(--blue-dk)}.band .tk.r{height:22px;top:-7px;width:3px;background:var(--blue)}
+  .band .lb{position:absolute;top:12px;font-size:11px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}.band .lb b{color:var(--blue-dk)}
+  /* reason rows */
+  .rr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--soft);font-size:14px}
+  .rr:last-child{border:0}
+  .rr .ck{width:20px;height:20px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+  .rr .ck.y{background:var(--blue)}.rr .ck.n{background:var(--vermil)}
+  /* sparkline */
+  svg.spark{width:100%;height:44px;margin-top:8px}
+  /* market feed */
+  .feed{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .frow{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:10px 12px;background:var(--soft);border-radius:10px}
+  .frow .dt{font-size:11px;color:var(--muted);flex:none;width:52px}
+  /* margin bar */
+  .mbar{position:relative;height:26px;border-radius:8px;background:linear-gradient(90deg,#fde8dc,#dff3ea);margin:14px 0 8px;overflow:hidden}
+  .mbar .cost{position:absolute;left:0;top:0;bottom:0;background:#f6d3c2;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:700;color:#9a3d12}
+  .mbar .prof{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:12px;font-weight:700;color:#0a7a5b}
+  .inp{display:flex;flex-direction:column;gap:6px}.inp label{font-size:12px;color:var(--muted);font-weight:600}
+  .inp select,.inp input{border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:14px;background:var(--soft)}
+  /* map */
+  .mapwrap{height:calc(100vh - 150px);border-radius:14px;overflow:hidden;position:relative;background:#e9ede2;border:1px solid var(--line)}
+  .mapwrap .grid2{position:absolute;inset:0;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:40px 40px}
+  .pin{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:pointer}
+  .pin .dot{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 1px 5px #0003}
+  .pin .nm{font-size:11px;font-weight:700;background:#fff9;border-radius:4px;padding:0 4px;margin-top:2px;display:inline-block}
+  /* chat */
+  .chat{max-width:720px}
+  .cbody{display:flex;flex-direction:column;gap:12px;margin:12px 0}
+  .msg{max-width:80%;padding:11px 13px;border-radius:12px;font-size:14px;line-height:1.45}
+  .msg.bot{background:var(--card);border:1px solid var(--line);align-self:flex-start}
+  .msg.me{background:#e7f1fb;color:var(--blue-dk);align-self:flex-end}
+  .chip{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:13px;margin:4px 6px 0 0;cursor:pointer}
+  .cin{display:flex;gap:8px;margin-top:10px}.cin input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px 13px}.cin button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 18px;font-weight:700;cursor:pointer}
+  /* settings */
+  .setrow{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--soft);max-width:560px}
+  .toggle{display:flex;background:var(--soft);border-radius:8px;padding:3px}.toggle button{border:0;background:transparent;padding:7px 14px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}.toggle button.on{background:#fff;color:var(--blue-dk);box-shadow:0 1px 2px #0001}
+  /* sources corner + modal */
+  .srcbtn{position:fixed;right:18px;bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;box-shadow:0 2px 10px #0001;z-index:8}
+  .modal{position:fixed;inset:0;background:#0004;display:none;align-items:center;justify-content:center;z-index:20}
+  .modal.show{display:flex}
+  .modal .box{background:#fff;border-radius:14px;width:min(560px,92vw);max-height:80vh;overflow:auto;padding:20px 22px}
+  .modal h3{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .modal .x{border:0;background:transparent;font-size:18px;color:var(--muted);cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}th{color:var(--muted);text-transform:uppercase;font-size:11px}
+  /* tooltip */
+  [data-tip]{position:relative}
+  [data-tip]:hover::after{content:attr(data-tip);position:absolute;left:0;top:calc(100% + 6px);background:#111;color:#fff;font-size:12px;font-weight:400;line-height:1.35;padding:8px 10px;border-radius:8px;width:230px;z-index:30;box-shadow:0 4px 14px #0003}
+</style></head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <button class="burger" onclick="document.getElementById('app').classList.toggle('rail')">☰</button>
+    <span class="brand">Jordan Real Estate</span>
+    <div class="slicer">
+      <label>Area</label>
+      <select id="area" onchange="setArea(this.value)">
+        <option>Abdoun</option><option>Dabouq</option><option>Sweifieh</option><option>Shmeisani</option><option>Khalda</option>
+      </select>
+      <select id="unit"><option>2-bed apartment</option><option>3-bed apartment</option><option>Villa</option></select>
+    </div>
+    <div class="right"><span class="live"><span class="d"></span>LIVE</span><span>?</span><span>◐</span></div>
+  </div>
+
+  <nav class="side">
+    <a class="on" data-sec="price" onclick="go('price',this)"><span class="ic">🏷️</span><span class="lbl">Launch price</span></a>
+    <a data-sec="money" onclick="go('money',this)"><span class="ic">💰</span><span class="lbl">Will it make money?</span></a>
+    <a data-sec="market" onclick="go('market',this)"><span class="ic">📈</span><span class="lbl">Market</span></a>
+    <a data-sec="map" onclick="go('map',this)"><span class="ic">🗺️</span><span class="lbl">Map</span></a>
+    <div class="sp"></div>
+    <div class="div"></div>
+    <a data-sec="chat" onclick="go('chat',this)"><span class="ic">💬</span><span class="lbl">Ask a question</span></a>
+    <a data-sec="set" onclick="go('set',this)"><span class="ic">⚙</span><span class="lbl">Settings</span></a>
+  </nav>
+
+  <main class="main" id="main"></main>
+</div>
+
+<button class="srcbtn" onclick="document.getElementById('modal').classList.add('show')">ⓘ Where the numbers come from</button>
+<div class="modal" id="modal"><div class="box">
+  <h3>Where the numbers come from <button class="x" onclick="document.getElementById('modal').classList.remove('show')">✕</button></h3>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:10px">Every figure traces to a real source. Full list:</p>
+  <table><tr><th>Source</th><th>What it gives</th><th>Updated</th></tr>
+    <tr><td>Dept. of Lands &amp; Survey</td><td>Transaction volumes</td><td>Weekly</td></tr>
+    <tr><td>Dept. of Statistics</td><td>Construction cost</td><td>Monthly</td></tr>
+    <tr><td>Central Bank of Jordan</td><td>Economic indicators</td><td>Monthly</td></tr>
+    <tr><td>Bayut / OpenSooq</td><td>52,663 live listings</td><td>Daily</td></tr>
+    <tr><td>OpenStreetMap</td><td>Schools, hospitals, roads</td><td>Weekly</td></tr>
+  </table>
+</div></div>
+
+<script>
+  var D={
+    Abdoun:{p:918,ms:597,pr:1239,conf:2,confw:"Good",comps:12,land:480,margin:22,trend:[905,910,912,908,915,918,916,918]},
+    Dabouq:{p:950,ms:618,pr:1283,conf:2,confw:"Good",comps:12,land:510,margin:20,trend:[930,940,935,945,948,950,949,950]},
+    Sweifieh:{p:839,ms:545,pr:1133,conf:2,confw:"Good",comps:12,land:410,margin:24,trend:[820,825,830,828,835,839,838,839]},
+    Shmeisani:{p:696,ms:506,pr:885,conf:3,confw:"Strong",comps:16,land:330,margin:26,trend:[690,692,695,694,696,695,696,696]},
+    Khalda:{p:672,ms:482,pr:863,conf:2,confw:"Good",comps:12,land:300,margin:25,trend:[665,668,670,669,672,671,672,672]}};
+  var cur="Abdoun",sec="price";
+  var AX=[450,1300];function pct(v){return((v-AX[0])/(AX[1]-AX[0])*100).toFixed(1)}
+  function spark(a){var mn=Math.min.apply(0,a),mx=Math.max.apply(0,a),w=100,h=40;
+    var pts=a.map(function(v,i){return (i/(a.length-1)*w).toFixed(1)+","+(h-(v-mn)/(mx-mn||1)*h).toFixed(1)}).join(" ");
+    return '<svg class="spark" viewBox="0 0 100 40" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="var(--blue)" stroke-width="2"/></svg>';}
+  function go(s,el){sec=s;document.querySelectorAll('.side a').forEach(function(a){a.classList.remove('on')});if(el)el.classList.add('on');render();}
+  function setArea(a){cur=a;render();}
+  function render(){
+    var d=D[cur],m=document.getElementById('main');
+    if(sec==='price'){m.innerHTML=
+      '<div class="h1">Launch price <span class="q">— what price to sell your units at</span></div>'+
+      '<div class="grid">'+
+        '<div class="tile w2" data-tip="The price to launch your units at, per square metre — our recommendation.">'+
+          '<div class="status">● READY TO LAUNCH</div>'+
+          '<div class="cap">Recommended launch price</div>'+
+          '<div class="big">'+d.p.toLocaleString()+' <small>JD/m²</small></div>'+
+          '<div class="subtle">↗ Stable market</div></div>'+
+        '<div class="tile" data-tip="How much real market evidence backs this price. More evidence = more confident.">'+
+          '<div class="cap">Confidence</div><div class="word">'+d.confw+'</div>'+
+          '<div class="dots">'+[1,2,3].map(function(i){return '<i class="'+(i<=d.conf?'on':'')+'"></i>'}).join('')+'</div>'+
+          '<div class="subtle">'+d.comps+' nearby sales</div></div>'+
+        '<div class="tile" data-tip="How prices moved in this area over the last 90 days.">'+
+          '<div class="cap">Market direction</div>'+spark(d.trend)+'<div class="subtle">Stable · 90 days</div></div>'+
+        '<div class="tile w2" data-tip="Lowest safe price to premium price. Lower sells faster; higher earns more per unit.">'+
+          '<div class="cap">Price range</div>'+
+          '<div class="band"><div class="fill" style="left:'+pct(d.ms)+'%;width:'+(pct(d.pr)-pct(d.ms))+'%"></div>'+
+          '<div class="tk" style="left:'+pct(d.ms)+'%"></div><div class="tk r" style="left:'+pct(d.p)+'%"></div><div class="tk" style="left:'+pct(d.pr)+'%"></div>'+
+          '<div class="lb" style="left:'+pct(d.ms)+'%">Safe <b>'+d.ms+'</b></div><div class="lb" style="left:'+pct(d.p)+'%">Best <b>'+d.p+'</b></div><div class="lb" style="left:'+pct(d.pr)+'%">Premium <b>'+d.pr+'</b></div></div></div>'+
+        '<div class="tile w2" data-tip="The main things pushing this price up or down.">'+
+          '<div class="cap">Why this price</div>'+
+          '<div class="rr"><span class="ck y">✓</span> Near public transport</div>'+
+          '<div class="rr"><span class="ck y">✓</span> Open view</div>'+
+          '<div class="rr"><span class="ck n">✕</span> Irregular plot shape</div></div>'+
+      '</div>';}
+    else if(sec==='money'){var gdv=Math.round(d.p*1000/1000*1.75*100);m.innerHTML=
+      '<div class="h1">Will it make money? <span class="q">— can you afford the land and still profit</span></div>'+
+      '<div class="grid">'+
+        '<div class="tile"><div class="inp"><label>Plot size</label><input value="1.25 dunum"></div></div>'+
+        '<div class="tile"><div class="inp"><label>Finish level</label><select><option>Standard</option><option>Luxury</option><option>Basic</option></select></div></div>'+
+        '<div class="tile w2" data-tip="The most you can pay for the land and still hit a normal profit.">'+
+          '<div class="cap">Most you can pay for land</div><div class="big">'+d.land+'K <small>JD / dunum</small></div>'+
+          '<div class="subtle">Above this, the project stops making a normal profit.</div></div>'+
+        '<div class="tile w2" data-tip="Your profit as a share of total sales value. Developers target 15–25%.">'+
+          '<div class="cap">Profit margin</div><div class="big" style="color:var(--green)">'+d.margin+'%</div>'+
+          '<div class="mbar"><div class="cost" style="width:'+(100-d.margin)+'%">Costs</div><div class="prof" style="width:'+d.margin+'%">Profit</div></div></div>'+
+        '<div class="tile w2" data-tip="Structural checks (zoning, slope, utilities) — data still being collected.">'+
+          '<div class="cap">Buildability checks</div><div class="subtle">Zoning &amp; height · Slope · Utilities — <b>coming soon</b></div></div>'+
+      '</div>';}
+    else if(sec==='market'){m.innerHTML=
+      '<div class="h1">Market <span class="q">— what changed that could affect your price</span></div>'+
+      '<div class="grid"><div class="tile w4" style="display:flex;justify-content:space-between;align-items:center">'+
+        '<div><div class="cap">This week</div><div class="word">Market stable</div><div class="subtle">4 changes · 1 worth a look</div></div>'+
+        '<span class="live"><span class="d"></span>LIVE · updates daily</span></div>'+
+      '<div class="tile w4"><div class="cap">What happened</div><div class="feed">'+
+        '<div class="frow"><span class="dt">Oct 24</span><div>A competitor launched 150 units two blocks away at 780 JD/m². <b>Consider holding your price.</b></div></div>'+
+        '<div class="frow"><span class="dt">Oct 20</span><div>New road project approved nearby — usually lifts prices over time.</div></div>'+
+        '<div class="frow"><span class="dt">Oct 15</span><div>Construction material prices steady this month.</div></div></div></div>'+
+      '<div class="tile w4"><div class="cap">Area price trend (90 days)</div>'+spark(d.trend)+'</div>'+
+      '</div>';}
+    else if(sec==='map'){m.innerHTML=
+      '<div class="h1">Map <span class="q">— your area and what\'s around it</span></div>'+
+      '<div class="mapwrap"><div class="grid2"></div>'+
+        Object.keys(D).map(function(n,i){var x=[62,30,44,72,20][i],y=[40,28,62,66,52][i];
+        return '<div class="pin" style="left:'+x+'%;top:'+y+'%" onclick="document.getElementById(\'area\').value=\''+n+'\';setArea(\''+n+'\')"><div class="dot">'+D[n].p+'</div><div class="nm">'+n+'</div></div>'}).join('')+
+      '</div>';}
+    else if(sec==='chat'){m.innerHTML=
+      '<div class="h1">Ask a question <span class="q">— answers from our data and live market</span></div>'+
+      '<div class="chat"><div class="cbody">'+
+        '<div class="msg bot">Ask me anything about a price or area. I explain — I never invent numbers, and I check the live market.</div>'+
+        '<div class="msg me">A buyer says the tower next door sells 1-bed cheaper — why is ours higher?</div>'+
+        '<div class="msg bot">Your units price higher because they\'re on higher floors with an open view and better finish. Adjusting for those differences, the gap is fair — nearby cheaper units are lower-floor, older finish.</div></div>'+
+        '<div><span class="chip">What\'s the price in Sweifieh?</span><span class="chip">Is Khalda worth building in?</span><span class="chip">What changed this week?</span></div>'+
+        '<div class="cin"><input placeholder="Ask about a price, area, or the market…"><button>Ask</button></div></div>';}
+    else if(sec==='set'){m.innerHTML=
+      '<div class="h1">Settings</div>'+
+      '<div class="setrow"><div><b>Language</b><div class="subtle">Numbers and the map stay the same</div></div><div class="toggle"><button>English</button><button class="on">العربية</button></div></div>'+
+      '<div class="setrow"><div><b>Weekly email</b><div class="subtle">Market changes for your areas</div></div><div class="toggle"><button class="on">On</button><button>Off</button></div></div>'+
+      '<div class="setrow"><div><b>Map radius</b></div><div class="toggle"><button>250m</button><button class="on">500m</button><button>1km</button></div></div>';}
+  }
+  render();
+</script>
+</body></html>

@@ -1,0 +1,174 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo F — responsive + account</title>
+<style>
+  :root{--blue:#0072B2;--blue-dk:#00598c;--vermil:#D55E00;--green:#009E73;--ink:#1a1d1f;--muted:#5b636b;--line:#e7eaee;--bg:#eef1f5;--card:#fff;--soft:#f3f6f9;--nav:236px;--info:380px}
+  *{box-sizing:border-box;margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif}
+  body{height:100vh;overflow:hidden;color:var(--ink);background:var(--bg)}
+  /* base grid collapsed; open classes reveal each sidebar independently */
+  .app{display:grid;grid-template-columns:0 0 1fr;grid-template-rows:54px 1fr;height:100vh;transition:grid-template-columns .18s}
+  .app.navopen{grid-template-columns:var(--nav) 0 1fr}
+  .app.infoopen{grid-template-columns:0 var(--info) 1fr}
+  .app.navopen.infoopen{grid-template-columns:var(--nav) var(--info) 1fr}
+  .top{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--card);border-bottom:1px solid var(--line);z-index:6}
+  .tbtn{border:0;background:transparent;font-size:19px;color:var(--muted);cursor:pointer;padding:6px;border-radius:7px}
+  .tbtn:hover{background:var(--soft)}.tbtn.act{color:var(--blue-dk)}
+  .brand{font-weight:700;font-size:15px;margin-left:2px}.brand small{display:block;font-size:10px;color:var(--muted);font-weight:400;letter-spacing:.05em;text-transform:uppercase}
+  .search{margin-left:12px;flex:1;max-width:460px;min-width:120px;position:relative}
+  .search input{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px 9px 34px;background:var(--soft);font-size:14px}
+  .search .mg{position:absolute;left:11px;top:9px;color:var(--muted)}
+  .search .fall{position:absolute;left:0;right:0;top:42px;background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 6px 18px #0001;padding:8px 10px;font-size:13px;color:var(--muted);display:none;z-index:9}.search .fall b{color:var(--blue-dk);cursor:pointer}
+  .right{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--muted)}
+  .live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--green)}.live .d{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  /* account dropdown */
+  .acctwrap{position:relative}
+  .acct{width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;cursor:pointer}
+  .acctmenu{position:absolute;right:0;top:40px;width:226px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px #0002;padding:6px;display:none;z-index:40}
+  .acctmenu.show{display:block}
+  .acctmenu .ah{padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:4px}.acctmenu .ah b{display:block;color:var(--ink)}.acctmenu .ah span{font-size:12px;color:var(--muted)}
+  .acctmenu a{display:flex;gap:10px;padding:9px 12px;border-radius:8px;font-size:14px;color:var(--ink);cursor:pointer;text-decoration:none}.acctmenu a:hover{background:var(--soft)}
+  .acctmenu .dv{height:1px;background:var(--line);margin:4px 6px}
+  /* nav */
+  .nav{background:var(--card);border-right:1px solid var(--line);overflow-y:auto;overflow-x:hidden;padding:8px}
+  .grp{margin-top:4px}.gh{display:flex;align-items:center;gap:10px;padding:9px 10px;font-weight:700;font-size:13px;cursor:pointer;border-radius:8px;white-space:nowrap}.gh:hover{background:var(--soft)}.gh .ic{font-size:16px;width:20px;text-align:center}.gh .ar{margin-left:auto;color:var(--muted);font-size:11px;transition:.15s}.grp.open .ar{transform:rotate(90deg)}
+  .sub{display:none;padding:2px 0 4px 40px}.grp.open .sub{display:block}.sub a{display:block;padding:7px 10px;border-radius:7px;font-size:13.5px;color:var(--muted);cursor:pointer;white-space:nowrap}.sub a:hover{background:var(--soft)}.sub a.on{background:#e7f1fb;color:var(--blue-dk);font-weight:600}
+  .navdiv{height:1px;background:var(--line);margin:8px 6px}.navlink{display:flex;align-items:center;gap:10px;padding:9px 10px;font-weight:700;font-size:13px;cursor:pointer;border-radius:8px;white-space:nowrap}.navlink:hover{background:var(--soft)}.navlink .ic{font-size:16px;width:20px;text-align:center}
+  /* info */
+  .info{background:var(--bg);border-right:1px solid var(--line);overflow-y:auto;padding:16px}
+  .crumb{font-size:12px;color:var(--muted);font-weight:600}.title{font-size:18px;font-weight:700;margin:2px 0}.titlesub{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px}
+  .cap{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+  .status{display:inline-flex;gap:6px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:#e3f4ee;color:#0a7a5b}
+  .big{font-size:36px;font-weight:800;color:var(--blue-dk);margin-top:6px}.big small{font-size:15px;color:var(--muted);font-weight:600}
+  .band{position:relative;height:8px;background:#eef3f8;border-radius:6px;margin:24px 4px 30px}.band .fill{position:absolute;height:100%;background:var(--blue);opacity:.22;border-radius:6px}.band .tk{position:absolute;top:-5px;width:2px;height:18px;background:var(--blue-dk)}.band .tk.r{height:22px;top:-7px;width:3px;background:var(--blue)}.band .lb{position:absolute;top:12px;font-size:11px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}.band .lb b{color:var(--blue-dk)}
+  .word{font-size:22px;font-weight:800;color:var(--blue-dk)}.dots{display:inline-flex;gap:4px;margin-left:8px}.dots i{width:18px;height:8px;border-radius:3px;background:#dde5ee}.dots i.on{background:var(--blue)}
+  .subtle{color:var(--muted);font-size:13px}
+  .mbar{position:relative;height:24px;border-radius:8px;overflow:hidden;background:#eee;margin:12px 0 4px}.mbar .c{position:absolute;left:0;top:0;bottom:0;background:#f6d3c2;display:flex;align-items:center;padding-left:8px;font-size:12px;font-weight:700;color:#9a3d12}.mbar .p{position:absolute;right:0;top:0;bottom:0;background:#cdeede;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:12px;font-weight:700;color:#0a7a5b}
+  .frow{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--soft);font-size:14px}.frow .dt{color:var(--muted);font-size:11px;width:46px;flex:none}
+  .amrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--soft);font-size:14px}.amrow b{color:var(--blue-dk)}.amrow .l{display:flex;align-items:center;gap:8px}
+  table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}th{color:var(--muted);text-transform:uppercase;font-size:10px}
+  .toggle{display:flex;background:var(--soft);border-radius:8px;padding:3px}.toggle button{border:0;background:transparent;padding:6px 12px;border-radius:6px;font-weight:600;color:var(--muted);cursor:pointer}.toggle button.on{background:#fff;color:var(--blue-dk);box-shadow:0 1px 2px #0001}
+  .setrow{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--soft);gap:12px;flex-wrap:wrap}
+  .clr{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:8px;font-size:13px;color:var(--muted);cursor:pointer}
+  .histlist a{display:block;padding:10px 12px;border-radius:9px;background:var(--card);border:1px solid var(--line);margin-top:8px;cursor:pointer;font-size:14px}.histlist a:hover{border-color:var(--blue)}.histlist a small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+  .cwrap{display:flex;flex-direction:column;height:calc(100vh - 150px)}.cbody{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px 0}.msg{max-width:88%;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.4}.msg.bot{background:var(--card);border:1px solid var(--line)}.msg.me{background:#e7f1fb;color:var(--blue-dk);align-self:flex-end}.cin{display:flex;gap:8px;margin-top:8px}.cin input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px}.cin button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer}
+  /* map */
+  .map{position:relative;background:#e9ede2;overflow:hidden;min-width:0}
+  .map .g{position:absolute;inset:0;background-image:linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);background-size:42px 42px}
+  .pin{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:pointer}.pin .dot{min-width:34px;height:26px;padding:0 6px;border-radius:14px;background:var(--blue);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 1px 5px #0003}.pin.sel .dot{background:var(--vermil);transform:scale(1.12)}.pin .nm{font-size:11px;font-weight:700;background:#ffffffcc;border-radius:4px;padding:0 5px;margin-top:2px;display:inline-block}
+  .map.focused .pin:not(.sel){opacity:.4;transition:.3s}
+  .ring{position:absolute;width:190px;height:190px;border-radius:50%;border:2px solid var(--vermil);background:#d55e0016;transform:translate(-50%,-50%);pointer-events:none;transition:.35s;opacity:0}.map.focused .ring{opacity:1}
+  .mapcard{position:absolute;left:16px;bottom:16px;width:min(280px,80vw);background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 6px 18px #0002;display:none}.mapcard .nm{font-weight:800;font-size:16px}.mapcard .pr{font-size:26px;font-weight:800;color:var(--blue-dk);margin:2px 0}.mapcard .am{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .amchip{display:flex;align-items:center;gap:5px;background:var(--soft);border-radius:8px;padding:6px 9px;font-size:13px;font-weight:700;color:var(--ink);cursor:help;position:relative}
+  [data-tip]:hover::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% + 6px);background:#111;color:#fff;font-weight:400;font-size:11px;white-space:nowrap;padding:5px 8px;border-radius:6px;z-index:20}
+  .mapctl{position:absolute;right:0;top:0;bottom:0;width:min(230px,72vw);background:#fff;border-left:1px solid var(--line);padding:14px;transition:.2s;overflow-y:auto}.map.ctlhide .mapctl{transform:translateX(100%)}
+  .ctltoggle{position:absolute;right:min(230px,72vw);top:12px;background:#fff;border:1px solid var(--line);border-right:0;border-radius:8px 0 0 8px;padding:8px 10px;cursor:pointer;transition:.2s;z-index:2}.map.ctlhide .ctltoggle{right:0;border-right:1px solid var(--line);border-radius:8px}
+  .mapctl h4{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:.05em;margin:12px 0 6px}.mapctl label{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13.5px;cursor:pointer}.mapctl .clr{margin-top:12px;width:100%}
+  /* RESPONSIVE: shrink panels, then overlay on small screens */
+  @media(max-width:1200px){:root{--nav:210px;--info:330px}}
+  @media(max-width:900px){
+    .app,.app.navopen,.app.infoopen,.app.navopen.infoopen{grid-template-columns:1fr}
+    .nav,.info{position:absolute;top:54px;bottom:0;left:0;z-index:30;transform:translateX(-100%);transition:transform .2s;box-shadow:6px 0 20px #0002;width:min(300px,86vw)}
+    .app.navopen .nav{transform:none}.app.infoopen .info{transform:none}
+    .info{width:min(360px,90vw)}
+  }
+</style></head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <button class="tbtn act" id="navtog" title="Menu" onclick="tog('navopen',this)">☰</button>
+    <button class="tbtn act" id="infotog" title="Detail panel" onclick="tog('infoopen',this)">▤</button>
+    <div class="brand">Jordan Real Estate<small>Intelligence</small></div>
+    <div class="search"><span class="mg">🔍</span>
+      <input id="search" list="areas" placeholder="Search an area…" oninput="onSearch(this.value)">
+      <datalist id="areas"><option>Abdoun</option><option>Dabouq</option><option>Sweifieh</option><option>Shmeisani</option><option>Khalda</option></datalist>
+      <div class="fall" id="fall">"<span id="fq"></span>" isn't in our data — <b onclick="go('chatnew')">ask the Assistant</b> to look it up live.</div>
+    </div>
+    <div class="right"><span class="live"><span class="d"></span>LIVE</span><span class="tbtn">?</span><span class="tbtn">◐</span>
+      <div class="acctwrap"><span class="acct" onclick="event.stopPropagation();document.getElementById('acctmenu').classList.toggle('show')">M</span>
+        <div class="acctmenu" id="acctmenu">
+          <div class="ah"><b>Mohammad Jamaal</b><span>mohammad@noble.co</span></div>
+          <a>👤 My profile</a><a>💬 My chats</a><a>⚙ Settings</a><a>🌐 Language · العربية</a><a>❓ Help &amp; support</a>
+          <div class="dv"></div><a>↩ Sign out</a>
+        </div></div>
+    </div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <div class="grp open"><div class="gh" onclick="grp(this)"><span class="ic">🏷️</span>Pricing<span class="ar">▸</span></div>
+      <div class="sub"><a class="on" onclick="go('price',this)">Launch price</a><a onclick="go('comps',this)">Comparable evidence</a><a onclick="go('trend',this)">Price trend</a></div></div>
+    <div class="grp"><div class="gh" onclick="grp(this)"><span class="ic">💰</span>Cost &amp; Profit<span class="ar">▸</span></div>
+      <div class="sub"><a onclick="go('land',this)">Land value</a><a onclick="go('margin',this)">Profit margin</a><a onclick="go('build',this)">Build cost</a></div></div>
+    <div class="grp"><div class="gh" onclick="grp(this)"><span class="ic">📊</span>Market<span class="ar">▸</span></div>
+      <div class="sub"><a onclick="go('comp',this)">Competitors</a><a onclick="go('news',this)">Market news</a></div></div>
+    <div class="grp"><div class="gh" onclick="grp(this)"><span class="ic">🗺️</span>Location<span class="ar">▸</span></div>
+      <div class="sub"><a onclick="go('nearby',this)">Amenities nearby</a><a onclick="go('infra',this)">Infrastructure</a></div></div>
+    <div class="navdiv"></div>
+    <div class="grp"><div class="gh" onclick="grp(this)"><span class="ic">🤖</span>Assistant<span class="ar">▸</span></div>
+      <div class="sub"><a onclick="go('chatnew',this)">＋ New chat</a><a onclick="go('chathist',this)">Chat history</a></div></div>
+    <div class="navlink" onclick="go('set',this)"><span class="ic">⚙</span>Settings</div>
+  </nav>
+
+  <section class="info" id="info"></section>
+
+  <div class="map" id="map">
+    <div class="g"></div><div class="ring" id="ring"></div><div id="pins"></div><div class="mapcard" id="mapcard"></div>
+    <div class="ctltoggle" onclick="document.getElementById('map').classList.toggle('ctlhide')" title="Map controls">⚙</div>
+    <div class="mapctl">
+      <h4>Amenities on map</h4>
+      <label><input type="checkbox" checked> 🎓 Schools</label><label><input type="checkbox"> 🏛️ Universities</label><label><input type="checkbox"> 🏥 Hospitals</label><label><input type="checkbox" checked> 🚌 Bus stops</label><label><input type="checkbox"> 🛒 Shopping</label>
+      <h4>Overlays</h4><label><input type="checkbox"> 🔥 Opportunity heat</label><label><input type="checkbox"> 🛣️ Major roads</label>
+      <button class="clr" onclick="this.closest('.mapctl').querySelectorAll('input').forEach(function(c){c.checked=false})">Clear all</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var D={Abdoun:{p:918,ms:597,pr:1239,cw:"Good",cn:2,comps:12,land:480,margin:22,t:[905,910,912,908,915,918,916,918],x:62,y:40,sc:17,un:3,ho:1,bs:8},
+  Dabouq:{p:950,ms:618,pr:1283,cw:"Good",cn:2,comps:12,land:510,margin:20,t:[930,940,935,945,948,950,949,950],x:30,y:28,sc:6,un:1,ho:0,bs:3},
+  Sweifieh:{p:839,ms:545,pr:1133,cw:"Good",cn:2,comps:12,land:410,margin:24,t:[820,825,830,828,835,839,838,839],x:44,y:62,sc:11,un:2,ho:2,bs:6},
+  Shmeisani:{p:696,ms:506,pr:885,cw:"Strong",cn:3,comps:16,land:330,margin:26,t:[690,692,695,694,696,695,696,696],x:72,y:66,sc:9,un:4,ho:3,bs:5},
+  Khalda:{p:672,ms:482,pr:863,cw:"Good",cn:2,comps:12,land:300,margin:25,t:[665,668,670,669,672,671,672,672],x:20,y:52,sc:8,un:1,ho:1,bs:4}};
+  var CHATS={c1:{t:"Why is Abdoun 918?",when:"2h ago",m:[["me","Why is Abdoun 918?"],["bot","Similar apartments nearby listed ~1,150; adjusted for a lower floor and calibrated to real sale prices → 918 JD/m². Based on 12 nearby sales."]]},
+    c2:{t:"Khalda vs Sweifieh margin",when:"Yesterday",m:[["me","Compare margin: Khalda vs Sweifieh"],["bot","Khalda ~25% vs Sweifieh ~24% — similar. Khalda land is cheaper (300K vs 410K/dunum), which offsets its lower sale price."]]},
+    c3:{t:"What changed this week?",when:"Monday",m:[["me","What changed this week?"],["bot","A competitor launched 150 units nearby at 780 JD/m² — worth reviewing your pricing."]]}};
+  var cur="Abdoun",V="price",AX=[450,1300],openChat=null;
+  function pct(v){return((v-AX[0])/(AX[1]-AX[0])*100).toFixed(1)}
+  function spark(a){var mn=Math.min.apply(0,a),mx=Math.max.apply(0,a);var p=a.map(function(v,i){return(i/(a.length-1)*120).toFixed(1)+","+(34-(v-mn)/(mx-mn||1)*30-2).toFixed(1)}).join(" ");return '<svg style="width:120px;height:34px" viewBox="0 0 120 34" preserveAspectRatio="none"><polyline points="'+p+'" fill="none" stroke="var(--blue)" stroke-width="2"/></svg>'}
+  function pins(){document.getElementById('pins').innerHTML=Object.keys(D).map(function(n){var d=D[n];return '<div class="pin '+(n===cur?'sel':'')+'" style="left:'+d.x+'%;top:'+d.y+'%" onclick="setA(\''+n+'\')"><div class="dot">'+d.p+'</div><div class="nm">'+n+'</div></div>'}).join('')}
+  function tog(cls,btn){var a=document.getElementById('app');a.classList.toggle(cls);btn.classList.toggle('act',a.classList.contains(cls))}
+  function grp(el){el.parentElement.classList.toggle('open')}
+  function go(v,el){V=v;document.querySelectorAll('.nav .sub a,.navlink').forEach(function(a){a.classList.remove('on')});if(el)el.classList.add('on');if(v!=='chatopen')openChat=null;if(!document.getElementById('app').classList.contains('infoopen'))tog('infoopen',document.getElementById('infotog'));info()}
+  function onSearch(q){var hit=Object.keys(D).some(function(n){return n.toLowerCase()===q.toLowerCase()});document.getElementById('fall').style.display=(q.length>2&&!hit)?'block':'none';document.getElementById('fq').textContent=q;if(hit)setA(Object.keys(D).find(function(n){return n.toLowerCase()===q.toLowerCase()}))}
+  function setA(n){cur=n;var d=D[n];document.getElementById('search').value=n;document.getElementById('fall').style.display='none';
+    document.getElementById('map').classList.add('focused');
+    var r=document.getElementById('ring');r.style.left=d.x+'%';r.style.top=d.y+'%';
+    var mc=document.getElementById('mapcard');mc.style.display='block';
+    mc.innerHTML='<div class="nm">'+n+'</div><div class="pr">'+d.p+' <span style="font-size:13px;color:var(--muted)">JD/m²</span></div><div class="subtle">Safe '+d.ms+' – Premium '+d.pr+' · '+d.cw+' confidence</div><div class="am"><span class="amchip" data-tip="Schools within 1 km"><span>🎓</span>'+d.sc+'</span><span class="amchip" data-tip="Universities within 1 km"><span>🏛️</span>'+d.un+'</span><span class="amchip" data-tip="Hospitals within 1 km"><span>🏥</span>'+d.ho+'</span><span class="amchip" data-tip="Bus stops within 1 km"><span>🚌</span>'+d.bs+'</span></div>';
+    pins();info()}
+  var T={price:["Pricing","Launch price","What price to sell your units at"],comps:["Pricing","Comparable evidence","Recent nearby sales the price is built on"],trend:["Pricing","Price trend","How the area price moved over 90 days"],land:["Cost & Profit","Land value","The most you can pay for the land"],margin:["Cost & Profit","Profit margin","Your profit if you build and sell"],build:["Cost & Profit","Build cost","Estimated construction cost"],comp:["Market","Competitors","Nearby projects and their launch prices"],news:["Market","Market news","Recent events that affect prices"],nearby:["Location","Amenities nearby","What's around the area"],infra:["Location","Infrastructure","Roads & transport that lift future prices"],chatnew:["Assistant","New chat",""],chathist:["Assistant","Chat history","Your past questions — open one to continue"],chatopen:["Assistant","",""],set:["Settings","Settings",""]};
+  function hd(){var t=T[V];return '<div class="crumb">'+t[0]+'</div>'+(t[1]?'<div class="title">'+t[1]+'</div>':'')+(t[2]?'<div class="titlesub">'+t[2]+'</div>':'')}
+  function tb(b){b.parentElement.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});b.classList.add('on')}
+  function openC(id){openChat=id;V='chatopen';info()}
+  function info(){var d=D[cur],e=document.getElementById('info'),H=hd();
+    if(V==='price')e.innerHTML=H+'<div class="card"><div class="status">● READY TO LAUNCH</div><div class="cap" style="margin-top:8px">Recommended launch price</div><div class="big">'+d.p.toLocaleString()+' <small>JD/m²</small></div><div class="subtle">↗ Stable · 90 days '+spark(d.t)+'</div></div><div class="card"><div class="cap">Price range</div><div class="band"><div class="fill" style="left:'+pct(d.ms)+'%;width:'+(pct(d.pr)-pct(d.ms))+'%"></div><div class="tk" style="left:'+pct(d.ms)+'%"></div><div class="tk r" style="left:'+pct(d.p)+'%"></div><div class="tk" style="left:'+pct(d.pr)+'%"></div><div class="lb" style="left:'+pct(d.ms)+'%">Safe <b>'+d.ms+'</b></div><div class="lb" style="left:'+pct(d.p)+'%">Best <b>'+d.p+'</b></div><div class="lb" style="left:'+pct(d.pr)+'%">Premium <b>'+d.pr+'</b></div></div></div><div class="card"><span class="cap">Confidence</span> <span class="word">'+d.cw+'</span><span class="dots">'+[1,2,3].map(function(i){return'<i class="'+(i<=d.cn?'on':'')+'"></i>'}).join('')+'</span><div class="subtle" style="margin-top:6px">'+d.comps+' nearby sales</div></div>';
+    else if(V==='comps')e.innerHTML=H+'<div class="card"><table><tr><th>Size</th><th>Asking</th><th>Adjusted</th></tr><tr><td>180 m²</td><td>1,139</td><td>1,139</td></tr><tr><td>172 m²</td><td>1,000</td><td>1,000</td></tr><tr><td>165 m²</td><td>667</td><td>667</td></tr></table><div class="subtle" style="margin-top:8px">12 comparable sales · <a href="#">full list</a></div></div>';
+    else if(V==='trend')e.innerHTML=H+'<div class="card"><div class="big" style="font-size:20px">↗ Stable</div>'+spark(d.t)+'<div class="subtle">Prices moved &lt;2% over 90 days.</div></div>';
+    else if(V==='land')e.innerHTML=H+'<div class="card"><div class="cap">Most you can pay for land</div><div class="big">'+d.land+'K <small>JD/dunum</small></div><div class="subtle">Above this, the project stops making a normal profit.</div></div>';
+    else if(V==='margin')e.innerHTML=H+'<div class="card"><div class="cap">Profit margin</div><div class="big" style="color:var(--green)">'+d.margin+'%</div><div class="mbar"><div class="c" style="width:'+(100-d.margin)+'%">Costs</div><div class="p" style="width:'+d.margin+'%">Profit</div></div><div class="subtle">Developers usually target 15–25%.</div></div>';
+    else if(V==='build')e.innerHTML=H+'<div class="card"><div class="cap">Estimated build cost</div><div class="big">~330 <small>JD/m²</small></div><div class="subtle">Standard finish · official cost data.</div></div>';
+    else if(V==='comp')e.innerHTML=H+'<div class="card"><div class="amrow"><div class="l">Abdoun Terraces</div><b>1,620</b></div><div class="amrow"><div class="l">The Gate</div><b>980</b></div><div class="amrow"><div class="l">Skyline Res.</div><b>1,050</b></div></div>';
+    else if(V==='news')e.innerHTML=H+'<div class="card"><div class="frow"><span class="dt">Oct 24</span><div>Competitor launched 150 units nearby at 780 JD/m². <b>Consider holding.</b></div></div><div class="frow"><span class="dt">Oct 20</span><div>New road approved nearby — usually lifts prices.</div></div></div>';
+    else if(V==='nearby')e.innerHTML=H+'<div class="card"><div class="amrow"><div class="l">🎓 Schools</div><b>'+d.sc+'</b></div><div class="amrow"><div class="l">🏛️ Universities</div><b>'+d.un+'</b></div><div class="amrow"><div class="l">🏥 Hospitals</div><b>'+d.ho+'</b></div><div class="amrow"><div class="l">🚌 Bus stops</div><b>'+d.bs+'</b></div></div>';
+    else if(V==='infra')e.innerHTML=H+'<div class="card"><div class="frow"><span class="dt">2028</span><div>Planned metro line ~1.2 km away — typically lifts prices ~8%.</div></div><div class="frow"><span class="dt">Now</span><div>BRT bus line operational nearby.</div></div></div>';
+    else if(V==='chatnew')e.innerHTML=H+'<div class="cwrap"><div class="cbody"><div class="msg bot">🤖 Ask me about pricing, an area, competitors or the market — I answer from our data and the live market, and never invent numbers.</div></div><div class="cin"><input placeholder="Ask a question…"><button>Ask</button></div></div>';
+    else if(V==='chathist')e.innerHTML=H+'<div class="histlist">'+Object.keys(CHATS).map(function(id){return '<a onclick="openC(\''+id+'\')">'+CHATS[id].t+'<small>'+CHATS[id].when+'</small></a>'}).join('')+'</div>';
+    else if(V==='chatopen'){var c=CHATS[openChat];e.innerHTML='<div class="crumb">Assistant · <a onclick="go(\'chathist\')" style="cursor:pointer;color:var(--blue)">history</a></div><div class="title">'+c.t+'</div><div class="cwrap"><div class="cbody">'+c.m.map(function(x){return '<div class="msg '+x[0]+'">'+(x[0]==='bot'?'🤖 ':'')+x[1]+'</div>'}).join('')+'</div><div class="cin"><input placeholder="Continue this chat…"><button>Send</button></div></div>';}
+    else if(V==='set')e.innerHTML=H+'<div class="setrow"><div><b>Language</b><div class="subtle">Numbers &amp; map stay the same</div></div><div class="toggle"><button onclick="tb(this)">English</button><button class="on" onclick="tb(this)">العربية</button></div></div><div class="setrow"><div><b>Theme</b></div><div class="toggle"><button class="on" onclick="tb(this)">Light</button><button onclick="tb(this)">Dark</button></div></div><div class="setrow"><div><b>Weekly email</b><div class="subtle">Market changes for your areas</div></div><div class="toggle"><button class="on" onclick="tb(this)">On</button><button onclick="tb(this)">Off</button></div></div><div class="setrow"><div><b>Account</b><div class="subtle">Signed in as Mohammad · your chats are private to you</div></div><button class="clr">Sign out</button></div>';
+  }
+  document.addEventListener('click',function(){document.getElementById('acctmenu').classList.remove('show')});
+  // open both sidebars on wide screens; start collapsed on small
+  if(window.innerWidth>900){document.getElementById('app').classList.add('navopen','infoopen')}
+  else{document.getElementById('navtog').classList.remove('act');document.getElementById('infotog').classList.remove('act')}
+  pins();setA('Abdoun');
+</script>
+</body></html>
