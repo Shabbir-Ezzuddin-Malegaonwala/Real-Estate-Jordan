@@ -79,10 +79,30 @@ def _groq(facts: dict[str, Any], language: str) -> str | None:
     return r.json()["choices"][0]["message"]["content"].strip()
 
 
+def _gemini(facts: dict[str, Any], language: str) -> str | None:
+    key = os.environ.get("GOOGLE_API_KEY")
+    if not key or not requests:
+        return None
+    model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+    r = requests.post(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
+        headers={"Content-Type": "application/json"},
+        json={
+            "system_instruction": {"parts": [{"text": _SYSTEM + " " + _lang_instruction(language)}]},
+            "contents": [{"parts": [{"text": "FACTS:\n" + json.dumps(facts, ensure_ascii=False)}]}],
+            "generationConfig": {"temperature": 0.2, "maxOutputTokens": 320},
+        },
+        timeout=30,
+    )
+    if r.status_code != 200:
+        return None
+    return r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+
+
 def narrate(facts: dict[str, Any], language: str = "en") -> str | None:
     """Return an explain-only narration of `facts` in `language`, or None if no
     provider is available. Never raises — the caller falls back to a template."""
-    for provider in (_openai, _groq):
+    for provider in (_openai, _groq, _gemini):
         try:
             out = provider(facts, language)
             if out:
@@ -93,4 +113,8 @@ def narrate(facts: dict[str, Any], language: str = "en") -> str | None:
 
 
 def available() -> bool:
-    return bool(os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY"))
+    return bool(
+        os.environ.get("OPENAI_API_KEY")
+        or os.environ.get("GROQ_API_KEY")
+        or os.environ.get("GOOGLE_API_KEY")
+    )
