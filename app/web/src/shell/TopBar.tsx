@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { mockSource } from "../lib/mock";
+import { dataSource as mockSource } from "../lib/dataSource";
 import { useApp } from "../lib/store";
 
 // Placeholder identity until Phase 6 auth lands — same shape the real account

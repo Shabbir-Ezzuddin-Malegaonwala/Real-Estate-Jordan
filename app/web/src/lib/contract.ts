@@ -73,6 +73,14 @@ export interface AreaListItem { name: string; price: number; centroid: [number, 
 export interface DataSource {
   listAreas(): AreaListItem[];
   getBundle(area: string): AreaBundle | null;
+  /**
+   * Additive, optional (mock doesn't implement it): kicks off an async fetch+cache
+   * for `area` so a later synchronous getBundle() call can return it. Safe to call
+   * repeatedly — implementations must dedupe in-flight/cached work.
+   */
+  prefetch?(area: string): Promise<void>;
+  /** Additive, optional: true once prefetch(area) has resolved and cached data. */
+  ready?(area: string): boolean;
 }
 
 /** Which nav categories/subcategories exist (single source of truth for the sidebar). */

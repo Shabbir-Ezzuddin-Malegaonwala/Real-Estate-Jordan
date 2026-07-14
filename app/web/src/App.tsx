@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { AppStateProvider, useApp } from "./lib/store";
-import { mockSource } from "./lib/mock";
+import { dataSource as mockSource } from "./lib/dataSource";
 import { AppShell } from "./shell/AppShell";
 
 // Runs inside AppStateProvider — auto-selects the first area on first mount

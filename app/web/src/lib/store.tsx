@@ -11,6 +11,7 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
+import { dataSource } from "./dataSource";
 
 export type ViewKey =
   | "price"
@@ -48,6 +49,11 @@ export interface AppState {
   infoOpen: boolean;
   chats: ChatSession[];
   openChatId: string | null;
+  // Bumped when a background dataSource.prefetch(area) resolves. Consumers don't
+  // read this directly — it exists purely to give the context value a new
+  // identity so components re-render and pick up the now-cached real bundle
+  // (getBundle() itself is a plain, un-memoized read; see MapRegion/views/index).
+  dataTick: number;
 }
 
 // No auth yet (Phase 6) — chats/settings are scoped under this placeholder so
@@ -103,6 +109,7 @@ function initState(userId: string): AppState {
     infoOpen: true,
     chats: persisted?.chats ?? [],
     openChatId: null,
+    dataTick: 0,
   };
 }
 
@@ -114,7 +121,8 @@ type Action =
   | { type: "TOGGLE_INFO" }
   | { type: "NEW_CHAT" }
   | { type: "OPEN_CHAT"; id: string }
-  | { type: "ADD_MESSAGE"; message: ChatMessage };
+  | { type: "ADD_MESSAGE"; message: ChatMessage }
+  | { type: "DATA_TICK" };
 
 function newSession(): ChatSession {
   return { id: genId(), title: "New chat", when: new Date().toISOString(), messages: [] };
@@ -159,6 +167,8 @@ function reducer(state: AppState, action: Action): AppState {
       });
       return { ...state, chats, openChatId };
     }
+    case "DATA_TICK":
+      return { ...state, dataTick: state.dataTick + 1 };
     default:
       return state;
   }
@@ -194,7 +204,15 @@ export function AppStateProvider({
   const value = useMemo<AppStateContextValue>(
     () => ({
       state,
-      setArea: (area) => dispatch({ type: "SET_AREA", area }),
+      setArea: (area) => {
+        dispatch({ type: "SET_AREA", area });
+        // Real source only: kicks off the background fetch+cache for this area
+        // and forces one re-render when it lands, so the mock-placeholder
+        // bundle shown meanwhile upgrades to the live one without a poll.
+        if (area) {
+          dataSource.prefetch?.(area).then(() => dispatch({ type: "DATA_TICK" })).catch(() => {});
+        }
+      },
       setUnit: (unit) => dispatch({ type: "SET_UNIT", unit }),
       setView: (view) => dispatch({ type: "SET_VIEW", view }),
       toggleNav: () => dispatch({ type: "TOGGLE_NAV" }),

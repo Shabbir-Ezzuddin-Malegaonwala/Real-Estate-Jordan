@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { mockSource } from "../lib/mock";
+import { dataSource as mockSource } from "../lib/dataSource";
 import { useApp } from "../lib/store";
 import { Card, Tooltip } from "../ui";
 

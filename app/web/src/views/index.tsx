@@ -1,5 +1,5 @@
 import { useApp } from "../lib/store";
-import { mockSource } from "../lib/mock";
+import { dataSource as mockSource } from "../lib/dataSource";
 import { Card } from "../ui";
 import { ViewHeader } from "./ViewHeader";
 import { getViewMeta } from "./viewMeta";
