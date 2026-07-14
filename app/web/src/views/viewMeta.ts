@@ -17,6 +17,7 @@ const SUBTITLES: Partial<Record<ViewKey, string>> = {
   price: "What price to sell your units at",
   comps: "Recent nearby sales the price is built on",
   trend: "How the area price moved over 90 days",
+  sell: "Drop a pin on your building to value it",
   land: "The most you can pay for the land",
   margin: "Your profit if you build and sell",
   build: "Estimated construction cost",

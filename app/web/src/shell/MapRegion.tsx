@@ -12,7 +12,7 @@ import { useMapData } from "./mapData";
 // OpportunityLegend verbatim; only the data wiring and the linked detail card
 // are owned here. See shell/mapData.ts for the load.
 export function MapRegion() {
-  const { state, setArea } = useApp();
+  const { state, setArea, setSellPin } = useApp();
   const selected = state.selectedArea;
   const {
     geo,
@@ -76,6 +76,9 @@ export function MapRegion() {
         poiTypes={poiTypes}
         hiddenTypes={hiddenTypes}
         onLayerLoading={onLayerLoading}
+        sellMode={state.view === "sell"}
+        sellPin={state.sellPin}
+        onSellPin={setSellPin}
       />
 
       <div className="pointer-events-none absolute inset-0 z-10">

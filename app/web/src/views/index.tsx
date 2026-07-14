@@ -12,6 +12,7 @@ import { AssistantView } from "./AssistantView";
 import { SettingsView } from "./SettingsView";
 import { OpportunityView } from "./OpportunityView";
 import { SubjectBar } from "./SubjectBar";
+import { SellView } from "./SellView";
 
 // Routes the shell's InfoPanel to the right view for the current nav
 // selection. Assistant/Settings manage their own header (their sub-state
@@ -31,6 +32,18 @@ export function ViewRouter() {
       <div className="flex flex-col gap-3">
         <ViewHeader {...meta} />
         <OpportunityView focus={view} />
+      </div>
+    );
+  }
+
+  // Seller valuation uses a dropped map pin, not a selected area — render before
+  // the "pick an area" guard.
+  if (view === "sell") {
+    const meta = getViewMeta(view);
+    return (
+      <div className="flex flex-col gap-3">
+        <ViewHeader {...meta} />
+        <SellView />
       </div>
     );
   }

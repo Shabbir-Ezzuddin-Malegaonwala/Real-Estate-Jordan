@@ -25,6 +25,7 @@ export type ViewKey =
   | "build"
   | "scenarios"
   | "buildability"
+  | "sell"
   | "competitors"
   | "news"
   | "nearby"
@@ -52,6 +53,8 @@ export interface AppState {
   // The customisable unit fed to /recommend (size/beds/floor/finish). Changing it
   // reprices the selected area — see setSubject below.
   subject: Subject;
+  // The seller's dropped map pin for "Value my property" ([lng, lat]), or null.
+  sellPin: [number, number] | null;
   view: ViewKey;
   navOpen: boolean;
   infoOpen: boolean;
@@ -132,6 +135,7 @@ function initState(userId: string): AppState {
     selectedArea: null,
     unitType: persisted?.unitType ?? DEFAULT_UNIT,
     subject,
+    sellPin: null,
     view: DEFAULT_VIEW,
     navOpen: true,
     infoOpen: true,
@@ -145,6 +149,7 @@ type Action =
   | { type: "SET_AREA"; area: string | null }
   | { type: "SET_UNIT"; unit: string }
   | { type: "SET_SUBJECT"; subject: Subject }
+  | { type: "SET_SELL_PIN"; pin: [number, number] | null }
   | { type: "SET_VIEW"; view: ViewKey }
   | { type: "TOGGLE_NAV" }
   | { type: "TOGGLE_INFO" }
@@ -165,6 +170,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, unitType: action.unit };
     case "SET_SUBJECT":
       return { ...state, subject: action.subject };
+    case "SET_SELL_PIN":
+      return { ...state, sellPin: action.pin };
     case "SET_VIEW":
       return { ...state, view: action.view };
     case "TOGGLE_NAV":
@@ -210,6 +217,7 @@ export interface AppStateContextValue {
   setArea: (area: string | null) => void;
   setUnit: (unit: string) => void;
   setSubject: (subject: Subject) => void;
+  setSellPin: (pin: [number, number] | null) => void;
   setView: (view: ViewKey) => void;
   toggleNav: () => void;
   toggleInfo: () => void;
@@ -246,6 +254,7 @@ export function AppStateProvider({
         }
       },
       setUnit: (unit) => dispatch({ type: "SET_UNIT", unit }),
+      setSellPin: (pin) => dispatch({ type: "SET_SELL_PIN", pin }),
       setSubject: (subject) => {
         dispatch({ type: "SET_SUBJECT", subject });
         // Repoint the engine at the new unit, then reprice the selected area and

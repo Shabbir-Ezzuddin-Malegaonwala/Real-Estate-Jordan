@@ -109,6 +109,9 @@ export function MapView({
   poiTypes,
   hiddenTypes,
   onLayerLoading,
+  sellMode = false,
+  sellPin = null,
+  onSellPin,
 }: {
   geo: Geo;
   bundle: RecommendationBundle;
@@ -123,6 +126,9 @@ export function MapView({
   poiTypes: PoiType[];
   hiddenTypes: Record<string, string[]>;
   onLayerLoading?: (key: string, loading: boolean) => void;
+  sellMode?: boolean;
+  sellPin?: [number, number] | null;
+  onSellPin?: (pin: [number, number]) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -151,6 +157,9 @@ export function MapView({
   hiddenTypesRef.current = hiddenTypes;
   const onLayerLoadingRef = useRef(onLayerLoading);
   onLayerLoadingRef.current = onLayerLoading;
+  const sellMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const onSellPinRef = useRef(onSellPin);
+  onSellPinRef.current = onSellPin;
   // Cache fetched category/overlay geojson so a theme swap re-adds without refetch.
   const poiDataRef = useRef<Map<string, FeatureCollection>>(new Map());
   const markersRef = useRef<HTMLElement[]>([]);
@@ -349,6 +358,38 @@ export function MapView({
     if (!map || !readyRef.current) return;
     void applyPoi(map);
   }, [poiState, poiTypes, hiddenTypes, applyPoi]);
+
+  // Seller "drop a pin" mode — a draggable 📍 marker whose position feeds the
+  // valuation form (onSellPin). Placed at the current pin, else the selected
+  // area's centre, else the map centre; removed when leaving sell mode.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (!sellMode) {
+      sellMarkerRef.current?.remove();
+      sellMarkerRef.current = null;
+      return;
+    }
+    if (sellMarkerRef.current) return;
+    let lngLat: [number, number];
+    if (sellPin) {
+      lngLat = sellPin;
+    } else {
+      const c = selectedRef.current ? bundleRef.current.results[selectedRef.current]?.centroid : null;
+      lngLat = (c as [number, number]) ?? [map.getCenter().lng, map.getCenter().lat];
+    }
+    const el = document.createElement("div");
+    el.textContent = "📍";
+    el.style.cssText = "font-size:30px;cursor:grab;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))";
+    const marker = new maplibregl.Marker({ element: el, draggable: true, anchor: "bottom" }).setLngLat(lngLat).addTo(map);
+    marker.on("dragend", () => {
+      const p = marker.getLngLat();
+      onSellPinRef.current?.([p.lng, p.lat]);
+    });
+    sellMarkerRef.current = marker;
+    onSellPinRef.current?.(lngLat);
+    map.flyTo({ center: lngLat, zoom: Math.max(map.getZoom(), 13) });
+  }, [sellMode, sellPin]);
 
   // Theme swap — setStyle drops all sources/layers; re-add them on style.load.
   // Markers are DOM overlays that survive setStyle, so they are only restyled.

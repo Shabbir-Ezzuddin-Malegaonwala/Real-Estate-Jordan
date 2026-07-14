@@ -66,6 +66,52 @@ async function tryPost<T>(path: string, body: unknown, ms = 12000): Promise<T | 
   }
 }
 
+// --- Seller property valuation (POST /value-property) -----------------------
+
+export interface ValuationInput {
+  lat: number;
+  lng: number;
+  total_area_m2: number;
+  finish: "basic" | "standard" | "high";
+  mode: "building" | "flat";
+  flats?: number;
+  flat_area_m2?: number;
+  plot_area_m2?: number;
+  language?: "en" | "ar";
+}
+
+export interface ValuationResult {
+  ok: boolean;
+  reason?: string;
+  mode?: string;
+  nearest_area?: string;
+  comps?: number;
+  comp_radius_km?: number;
+  value_per_m2?: number;
+  value_per_m2_low?: number;
+  value_per_m2_high?: number;
+  headline_area_m2?: number;
+  estimated_value_jd?: number;
+  value_low_jd?: number;
+  value_high_jd?: number;
+  per_flat_value_jd?: number;
+  flats?: number;
+  cost_breakdown?: {
+    construction_jd?: number;
+    construction_per_m2?: number;
+    land_jd?: number;
+    land_per_m2?: number;
+    transfer_tax_jd?: number;
+    transfer_tax_pct?: number;
+  };
+  narration?: string | null;
+  llm_available?: boolean;
+}
+
+export async function requestPropertyValuation(input: ValuationInput): Promise<ValuationResult | null> {
+  return tryPost<ValuationResult>("/value-property", input, 45000);
+}
+
 // --- Decomposed confidence --------------------------------------------------
 
 export const COMPONENT_ORDER = [

@@ -143,7 +143,8 @@ export const NAV: NavGroup[] = [
   { icon: "🎯", label: "Opportunity", subs: [
     { key: "opportunity", label: "Where to build" }, { key: "ranking", label: "Area ranking" } ] },
   { icon: "🏷️", label: "Pricing", subs: [
-    { key: "price", label: "Launch price" }, { key: "comps", label: "Comparable evidence" }, { key: "trend", label: "Price trend" } ] },
+    { key: "price", label: "Launch price" }, { key: "comps", label: "Comparable evidence" }, { key: "trend", label: "Price trend" },
+    { key: "sell", label: "Value my property" } ] },
   { icon: "💰", label: "Cost & Profit", subs: [
     { key: "land", label: "Land value" }, { key: "margin", label: "Profit margin" }, { key: "build", label: "Build cost" },
     { key: "scenarios", label: "Launch scenarios" }, { key: "buildability", label: "Buildability" } ] },
