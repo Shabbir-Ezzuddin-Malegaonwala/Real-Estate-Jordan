@@ -28,14 +28,21 @@ export function LocationView({ bundle, focus }: { bundle: AreaBundle; focus: Foc
   const infraCard: ReactNode = (
     <Card key="infra">
       <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-stitch-muted">Infrastructure</div>
-      <div className="flex flex-col">
-        {location.infrastructure.map((f) => (
-          <div key={`${f.when}-${f.text}`} className="flex gap-2.5 border-b border-stitch-soft py-2.5 text-sm last:border-b-0">
-            <span className="w-11 flex-none text-[11px] text-stitch-muted">{f.when}</span>
-            <span className="text-stitch-ink">{f.text}</span>
-          </div>
-        ))}
-      </div>
+      {location.infrastructure.length > 0 ? (
+        <div className="flex flex-col">
+          {location.infrastructure.map((f) => (
+            <div key={`${f.when}-${f.text}`} className="flex gap-2.5 border-b border-stitch-soft py-2.5 text-sm last:border-b-0">
+              <span className="w-11 flex-none text-[11px] text-stitch-muted">{f.when}</span>
+              <span className="text-stitch-ink">{f.text}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-1 text-[13px] leading-relaxed text-stitch-muted">
+          No confirmed infrastructure projects (metro, BRT, road works) are recorded for this
+          area yet. The amenities above are live from the map data.
+        </p>
+      )}
     </Card>
   );
 

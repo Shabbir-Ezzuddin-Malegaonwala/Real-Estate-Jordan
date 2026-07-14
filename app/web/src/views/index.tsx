@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useApp } from "../lib/store";
 import { dataSource as mockSource } from "../lib/dataSource";
 import { Card } from "../ui";
@@ -10,6 +11,7 @@ import { LocationView } from "./LocationView";
 import { AssistantView } from "./AssistantView";
 import { SettingsView } from "./SettingsView";
 import { OpportunityView } from "./OpportunityView";
+import { SubjectBar } from "./SubjectBar";
 
 // Routes the shell's InfoPanel to the right view for the current nav
 // selection. Assistant/Settings manage their own header (their sub-state
@@ -54,44 +56,39 @@ export function ViewRouter() {
 
   const meta = getViewMeta(view);
 
+  let body: ReactNode = null;
   switch (view) {
     case "price":
     case "comps":
     case "trend":
-      return (
-        <div className="flex flex-col gap-3">
-          <ViewHeader {...meta} />
-          <PricingView bundle={bundle} focus={view} />
-        </div>
-      );
+      body = <PricingView bundle={bundle} focus={view} />;
+      break;
     case "land":
     case "margin":
     case "build":
     case "scenarios":
     case "buildability":
-      return (
-        <div className="flex flex-col gap-3">
-          <ViewHeader {...meta} />
-          <CostProfitView bundle={bundle} focus={view} />
-        </div>
-      );
+      body = <CostProfitView bundle={bundle} focus={view} />;
+      break;
     case "competitors":
     case "news":
-      return (
-        <div className="flex flex-col gap-3">
-          <ViewHeader {...meta} />
-          <MarketView bundle={bundle} focus={view} />
-        </div>
-      );
+      body = <MarketView bundle={bundle} focus={view} />;
+      break;
     case "nearby":
     case "infra":
-      return (
-        <div className="flex flex-col gap-3">
-          <ViewHeader {...meta} />
-          <LocationView bundle={bundle} focus={view} />
-        </div>
-      );
+      body = <LocationView bundle={bundle} focus={view} />;
+      break;
     default:
       return null;
   }
+
+  // The subject bar sits above every area-scoped view — the price/cost/market
+  // numbers below are all FOR the unit it describes, so it belongs with them.
+  return (
+    <div className="flex flex-col gap-3">
+      <SubjectBar />
+      <ViewHeader {...meta} />
+      {body}
+    </div>
+  );
 }

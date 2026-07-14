@@ -104,6 +104,18 @@ export interface OpportunityData {
   selectedRank?: number;
 }
 
+/** The subject unit the developer is pricing — the customisable inputs to /recommend.
+ *  Deliberately minimal: the four levers a builder actually sets at launch. */
+export interface Subject {
+  area_m2: number;                               // unit size
+  bedrooms: number;
+  floor_level: number;
+  finish_quality: "basic" | "standard" | "high"; // engine's finish tiers
+}
+
+/** The representative unit priced when the developer hasn't customised anything. */
+export const DEFAULT_SUBJECT: Subject = { area_m2: 175, bedrooms: 3, floor_level: 4, finish_quality: "high" };
+
 /** The data source the UI consumes. Mock now; real adapter later — same interface. */
 export interface DataSource {
   listAreas(): AreaListItem[];
@@ -116,6 +128,12 @@ export interface DataSource {
   prefetch?(area: string): Promise<void>;
   /** Additive, optional: true once prefetch(area) has resolved and cached data. */
   ready?(area: string): boolean;
+  /**
+   * Additive, optional (mock ignores it): sets the subject unit fed to /recommend.
+   * Clears cached bundles when the subject actually changes so the next
+   * prefetch(area) reprices against the new unit.
+   */
+  setSubject?(subject: Subject): void;
 }
 
 /** Which nav categories/subcategories exist (single source of truth for the sidebar). */

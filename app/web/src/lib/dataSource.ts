@@ -4,7 +4,7 @@
 // in main.tsx before the first render, so listAreas() is never empty/stale on
 // mount; getBundle() falls back to the mock per-area until prefetch(area)
 // resolves (triggered on selection — see store.tsx's setArea).
-import type { AreaBundle, AreaListItem, DataSource } from "./contract";
+import type { AreaBundle, AreaListItem, DataSource, Subject } from "./contract";
 import { mockSource } from "./mock";
 import { checkHealth } from "./api";
 import * as real from "./realSource";
@@ -43,5 +43,8 @@ export const dataSource: DataSource = {
   },
   ready(area: string): boolean {
     return mode === "real" ? real.ready(area) : true;
+  },
+  setSubject(subject: Subject): void {
+    if (mode === "real") real.setSubject(subject);
   },
 };

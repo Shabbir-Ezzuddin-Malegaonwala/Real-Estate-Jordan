@@ -17,23 +17,31 @@ function LiveBadge() {
 export function MarketView({ bundle, focus }: { bundle: AreaBundle; focus: Focus }) {
   const { market } = bundle;
 
+  const hasNews = market.news.length > 0;
   const newsCard: ReactNode = (
     <Card key="news">
       <div className="flex items-center justify-between">
         <div className="text-xs font-semibold uppercase tracking-wide text-stitch-muted">Market news</div>
-        <LiveBadge />
+        {hasNews && <LiveBadge />}
       </div>
-      <div className="mt-1 flex flex-col">
-        {market.news.map((n) => (
-          <div key={`${n.date}-${n.text}`} className="flex gap-2.5 border-b border-stitch-soft py-2.5 text-sm last:border-b-0">
-            <span className="w-11 flex-none text-[11px] text-stitch-muted">{n.date}</span>
-            <div>
-              <span className="text-stitch-ink">{n.text}</span>
-              {n.action && <span className="mt-0.5 block font-semibold text-stitch-brand-dark">{n.action}</span>}
+      {hasNews ? (
+        <div className="mt-1 flex flex-col">
+          {market.news.map((n) => (
+            <div key={`${n.date}-${n.text}`} className="flex gap-2.5 border-b border-stitch-soft py-2.5 text-sm last:border-b-0">
+              <span className="w-11 flex-none text-[11px] text-stitch-muted">{n.date}</span>
+              <div>
+                <span className="text-stitch-ink">{n.text}</span>
+                {n.action && <span className="mt-0.5 block font-semibold text-stitch-brand-dark">{n.action}</span>}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-2 text-[13px] leading-relaxed text-stitch-muted">
+          No live market-news feed is connected for this area yet. Competitor prices and the
+          price trend below are live — a dated news feed will appear here once wired.
+        </p>
+      )}
     </Card>
   );
 

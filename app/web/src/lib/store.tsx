@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { dataSource } from "./dataSource";
+import { DEFAULT_SUBJECT, type Subject } from "./contract";
 
 export type ViewKey =
   | "opportunity"
@@ -48,6 +49,9 @@ export interface ChatSession {
 export interface AppState {
   selectedArea: string | null;
   unitType: string;
+  // The customisable unit fed to /recommend (size/beds/floor/finish). Changing it
+  // reprices the selected area — see setSubject below.
+  subject: Subject;
   view: ViewKey;
   navOpen: boolean;
   infoOpen: boolean;
@@ -81,6 +85,18 @@ function storageKey(userId: string): string {
 interface Persisted {
   chats: ChatSession[];
   unitType: string;
+  subject: Subject;
+}
+
+function isSubject(x: unknown): x is Subject {
+  if (typeof x !== "object" || x === null) return false;
+  const s = x as Record<string, unknown>;
+  return (
+    typeof s.area_m2 === "number" &&
+    typeof s.bedrooms === "number" &&
+    typeof s.floor_level === "number" &&
+    (s.finish_quality === "basic" || s.finish_quality === "standard" || s.finish_quality === "high")
+  );
 }
 
 function loadPersisted(userId: string): Persisted | null {
@@ -89,7 +105,11 @@ function loadPersisted(userId: string): Persisted | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<Persisted>;
     if (!Array.isArray(parsed.chats)) return null;
-    return { chats: parsed.chats, unitType: parsed.unitType ?? DEFAULT_UNIT };
+    return {
+      chats: parsed.chats,
+      unitType: parsed.unitType ?? DEFAULT_UNIT,
+      subject: isSubject(parsed.subject) ? parsed.subject : { ...DEFAULT_SUBJECT },
+    };
   } catch {
     return null;
   }
@@ -105,9 +125,13 @@ function savePersisted(userId: string, data: Persisted): void {
 
 function initState(userId: string): AppState {
   const persisted = loadPersisted(userId);
+  const subject = persisted?.subject ?? { ...DEFAULT_SUBJECT };
+  // Seed the real source so first paint prices the persisted (or default) unit.
+  dataSource.setSubject?.(subject);
   return {
     selectedArea: null,
     unitType: persisted?.unitType ?? DEFAULT_UNIT,
+    subject,
     view: DEFAULT_VIEW,
     navOpen: true,
     infoOpen: true,
@@ -120,6 +144,7 @@ function initState(userId: string): AppState {
 type Action =
   | { type: "SET_AREA"; area: string | null }
   | { type: "SET_UNIT"; unit: string }
+  | { type: "SET_SUBJECT"; subject: Subject }
   | { type: "SET_VIEW"; view: ViewKey }
   | { type: "TOGGLE_NAV" }
   | { type: "TOGGLE_INFO" }
@@ -138,6 +163,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, selectedArea: action.area };
     case "SET_UNIT":
       return { ...state, unitType: action.unit };
+    case "SET_SUBJECT":
+      return { ...state, subject: action.subject };
     case "SET_VIEW":
       return { ...state, view: action.view };
     case "TOGGLE_NAV":
@@ -182,6 +209,7 @@ export interface AppStateContextValue {
   state: AppState;
   setArea: (area: string | null) => void;
   setUnit: (unit: string) => void;
+  setSubject: (subject: Subject) => void;
   setView: (view: ViewKey) => void;
   toggleNav: () => void;
   toggleInfo: () => void;
@@ -202,8 +230,8 @@ export function AppStateProvider({
   const [state, dispatch] = useReducer(reducer, userId, initState);
 
   useEffect(() => {
-    savePersisted(userId, { chats: state.chats, unitType: state.unitType });
-  }, [userId, state.chats, state.unitType]);
+    savePersisted(userId, { chats: state.chats, unitType: state.unitType, subject: state.subject });
+  }, [userId, state.chats, state.unitType, state.subject]);
 
   const value = useMemo<AppStateContextValue>(
     () => ({
@@ -218,6 +246,16 @@ export function AppStateProvider({
         }
       },
       setUnit: (unit) => dispatch({ type: "SET_UNIT", unit }),
+      setSubject: (subject) => {
+        dispatch({ type: "SET_SUBJECT", subject });
+        // Repoint the engine at the new unit, then reprice the selected area and
+        // re-render when the fresh bundle lands (same pattern as setArea).
+        dataSource.setSubject?.(subject);
+        const area = state.selectedArea;
+        if (area) {
+          dataSource.prefetch?.(area).then(() => dispatch({ type: "DATA_TICK" })).catch(() => {});
+        }
+      },
       setView: (view) => dispatch({ type: "SET_VIEW", view }),
       toggleNav: () => dispatch({ type: "TOGGLE_NAV" }),
       toggleInfo: () => dispatch({ type: "TOGGLE_INFO" }),

@@ -16,7 +16,9 @@ import type {
   LocationData,
   MarketData,
   PricingData,
+  Subject,
 } from "./contract";
+import { DEFAULT_SUBJECT } from "./contract";
 import { fetchNeighborhoods, requestRecommendation, type SubjectInput } from "./api";
 import { fetchAreas, fetchAreaMonitoring, fetchFeasibility, requestResidual } from "./intel";
 import { adaptApiRecommendation } from "./adaptEngine";
@@ -33,17 +35,32 @@ import type {
   RiskFactor,
 } from "../types";
 
-// Matches lib/useEngine.ts's DEFAULT_SUBJECT — the representative unit priced
-// when the caller hasn't customised it (kept identical so results agree).
-const ENGINE_SUBJECT: Omit<SubjectInput, "neighborhood"> = {
-  area_m2: 175,
-  bedrooms: 3,
-  floor_level: 4,
+// Attributes the developer doesn't set on the SubjectBar — held constant so the
+// four customisable levers (size/beds/floor/finish) are the only thing that moves.
+const FIXED_SUBJECT: Omit<SubjectInput, "neighborhood" | "area_m2" | "bedrooms" | "floor_level" | "finish_quality"> = {
   building_age_years: 0,
   view: "unknown",
   parking: "unknown",
-  finish_quality: "high",
 };
+
+// The current subject unit (mutable — driven by the SubjectBar via setSubject()).
+// Starts at the representative default so an uncustomised session prices the same
+// unit it always did.
+let currentSubject: Subject = { ...DEFAULT_SUBJECT };
+
+// Swaps in a new subject unit. No-op (keeps caches warm) when nothing changed;
+// otherwise drops every cached bundle so the next prefetch(area) reprices.
+export function setSubject(next: Subject): void {
+  const same =
+    next.area_m2 === currentSubject.area_m2 &&
+    next.bedrooms === currentSubject.bedrooms &&
+    next.floor_level === currentSubject.floor_level &&
+    next.finish_quality === currentSubject.finish_quality;
+  if (same) return;
+  currentSubject = { ...next };
+  bundleCache.clear();
+  inflight.clear();
+}
 
 // Matches components/ResidualLandValue.tsx's defaults (the engine's own
 // professional-fees-on-construction convention, 5%).
@@ -339,7 +356,7 @@ function toLocation(area: string): LocationData {
 async function buildBundle(area: string): Promise<AreaBundle | null> {
   let result: RecommendationResult;
   try {
-    const raw = await requestRecommendation({ ...ENGINE_SUBJECT, neighborhood: area });
+    const raw = await requestRecommendation({ ...FIXED_SUBJECT, ...currentSubject, neighborhood: area });
     result = adaptApiRecommendation(raw, "Live API · computed on demand");
   } catch {
     return null;
