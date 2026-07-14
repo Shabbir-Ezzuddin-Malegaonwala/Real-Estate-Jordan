@@ -4,7 +4,6 @@ import { useApp } from "../lib/store";
 import { Card, Tooltip } from "../ui";
 import { MapView } from "../components/MapView";
 import { MapLayers } from "../components/MapLayers";
-import { OpportunityLegend } from "../components/OpportunityLegend";
 import { Toast } from "../components/Toast";
 import { useMapData } from "./mapData";
 
@@ -81,7 +80,6 @@ export function MapRegion() {
           onTogglePoi={togglePoi}
           loading={layerLoading}
         />
-        <OpportunityLegend />
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       </div>
 

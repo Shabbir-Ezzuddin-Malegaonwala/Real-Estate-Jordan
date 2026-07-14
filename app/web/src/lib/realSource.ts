@@ -353,7 +353,16 @@ function toLocation(area: string): LocationData {
   return { verdicts, infrastructure: [] }; // infrastructure timeline not yet wired to a live endpoint
 }
 
+// The engine only prices areas it flagged "covered" (enough comparable sales).
+// Clicking any other mapped Voronoi cell would 422 the /recommend endpoint, so
+// skip the call entirely for non-covered areas (the map still shows their
+// asking-price median via the area-price layer).
+function isCovered(area: string): boolean {
+  return areaListCache.some((a) => a.name === area);
+}
+
 async function buildBundle(area: string): Promise<AreaBundle | null> {
+  if (!isCovered(area)) return null;
   let result: RecommendationResult;
   try {
     const raw = await requestRecommendation({ ...FIXED_SUBJECT, ...currentSubject, neighborhood: area });

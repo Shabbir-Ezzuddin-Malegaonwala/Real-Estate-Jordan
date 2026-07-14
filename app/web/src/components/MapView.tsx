@@ -53,10 +53,23 @@ function areaNameOf(props: Record<string, unknown> | null): string | null {
   return typeof v === "string" ? v : null;
 }
 
+// Distinct fill per area so neighbouring cells read as separate regions at a
+// glance. Soft, mid-light hues that sit under POI icons/labels on the light
+// basemap; a stable name hash keeps an area's colour constant across reloads.
+const AREA_PALETTE = [
+  "#9ec9e2", "#f3c08a", "#a6d8b9", "#cbb0dd", "#f4dd8e", "#eaa985",
+  "#93cbe0", "#f2a9a2", "#8fd0c0", "#dcc3e6", "#b8d99a", "#f6c27a",
+  "#b7c2cc", "#f5b8b0", "#a9dfe0", "#d3b48c",
+];
+function areaColor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AREA_PALETTE[h % AREA_PALETTE.length];
+}
+
 // Joins opportunity scores onto whichever polygon surface we have, stamping
-// `__opp` (score) and `__lown` (low-data flag) per feature so the choropleth
-// paint is source-agnostic. Low-n cells are muted, not hidden — they stay on the
-// gap-free surface but recede so a 4-listing cell never headlines as opportunity.
+// `__opp` (score), `__lown` (low-data flag) and `__fill` (distinct area colour)
+// per feature so the paint is source-agnostic.
 function oppFeatureCollection(
   base: FeatureCollection<Polygon>,
   opportunity: OpportunityScore[],
@@ -75,6 +88,7 @@ function oppFeatureCollection(
           __area: name ?? "",
           __opp: o ? o.score : -1,
           __lown: o?.low_data ? 1 : 0,
+          __fill: areaColor(name ?? ""),
         },
       };
     }),
@@ -224,8 +238,7 @@ export function MapView({
           return;
         }
       }
-      const clickable = ["nbhd-fill"];
-      if (map.getLayer("opp-fill")) clickable.unshift("opp-fill");
+      const clickable = ["opp-fill"].filter((id) => map.getLayer(id));
       const hits = map.queryRenderedFeatures(e.point, { layers: clickable });
       const name = hits.length > 0 ? areaNameOf(hits[0].properties as Record<string, unknown>) : null;
       if (name) {
@@ -234,7 +247,7 @@ export function MapView({
         onOutsideRef.current();
       }
     });
-    for (const lyr of ["opp-fill", "nbhd-fill", "poi", "cmp-pts", "future-pts", "area-prices", "listings"]) {
+    for (const lyr of ["opp-fill", "poi", "cmp-pts", "future-pts", "area-prices", "listings"]) {
       map.on("mouseenter", lyr, () => (map.getCanvas().style.cursor = "pointer"));
       map.on("mouseleave", lyr, () => (map.getCanvas().style.cursor = ""));
     }
@@ -360,7 +373,8 @@ function installLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette, theme: Th
   addBasemap(map, theme);
   addBaseLayers(map, geo, pal);
   addOpportunityLayer(map);
-  addNbhdSourceLayers(map, geo, pal);
+  // Areas are now the Voronoi cells (distinct colour + border via the "opp"
+  // layers above); the old approximate-circle overlay (nbhd-*) is retired.
 }
 
 // Opportunity choropleth over the Voronoi tessellation when present, else the
@@ -370,43 +384,41 @@ function installLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette, theme: Th
 function addOpportunityLayer(map: maplibregl.Map) {
   if (map.getSource("opp")) return;
   map.addSource("opp", { type: "geojson", data: EMPTY });
+  // Each area filled with its own distinct colour so separation is obvious.
   map.addLayer(
     {
       id: "opp-fill",
       type: "fill",
       source: "opp",
-      layout: { visibility: "none" },
       paint: {
-        "fill-color": [
-          "case",
-          ["<", ["to-number", ["get", "__opp"]], 0],
-          "rgba(0,0,0,0)",
-          [
-            "step",
-            ["to-number", ["get", "__opp"]],
-            "#b06a5f",
-            25, "#c98a5f",
-            40, "#e6a94b",
-            52, "#c9a75f",
-            66, "#5fa47f",
-            78, "#3f8f63",
-          ],
-        ],
-        // Low-n cells recede (confidence-as-opacity); trustworthy high-n areas pop.
-        "fill-opacity": ["case", ["==", ["get", "__lown"], 1], 0.12, 0.5],
-        "fill-outline-color": "rgba(255,255,255,0.15)",
+        "fill-color": ["get", "__fill"],
+        "fill-opacity": ["case", ["==", ["get", "__lown"], 1], 0.28, 0.45],
       },
     },
     "poi",
   );
-  // Selection outline for the clicked cell (works for all 290, incl. context).
+  // Crisp border lines between areas (the separation the user asked for).
+  map.addLayer(
+    {
+      id: "opp-border",
+      type: "line",
+      source: "opp",
+      paint: {
+        "line-color": "rgba(60,72,88,0.55)",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 7, 0.4, 11, 0.9, 15, 1.6],
+        "line-opacity": 0.7,
+      },
+    },
+    "poi",
+  );
+  // Selection outline for the clicked cell — its whole shape to its borders.
   map.addLayer(
     {
       id: "opp-sel",
       type: "line",
       source: "opp",
       filter: ["==", ["get", "__area"], "__none__"],
-      paint: { "line-color": "#e6a94b", "line-width": 2.4, "line-opacity": 0.95 },
+      paint: { "line-color": "#1d4ed8", "line-width": 3, "line-opacity": 0.95 },
     },
     "poi",
   );
@@ -503,36 +515,6 @@ function addNbhdMarkers(
     new maplibregl.Marker({ element: el }).setLngLat(polygonCentroid(f.geometry.coordinates)).addTo(map);
     markersRef.current.push(el);
   }
-}
-
-// Fill/line/selection layers, inserted beneath "poi" to preserve z-order
-// (roads < nbhd < poi). No markers here — those are added once and persist.
-function addNbhdSourceLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
-  if (map.getSource("nbhd")) return;
-  map.addSource("nbhd", { type: "geojson", data: geo.neighborhoods });
-  map.addLayer(
-    { id: "nbhd-fill", type: "fill", source: "nbhd", paint: { "fill-color": pal.nbhdFill, "fill-opacity": 0.05 } },
-    "poi",
-  );
-  map.addLayer(
-    {
-      id: "nbhd-line",
-      type: "line",
-      source: "nbhd",
-      paint: { "line-color": pal.nbhdLine, "line-width": 1, "line-dasharray": [3, 2], "line-opacity": 0.7 },
-    },
-    "poi",
-  );
-  map.addLayer(
-    {
-      id: "nbhd-sel",
-      type: "line",
-      source: "nbhd",
-      filter: ["==", ["get", "neighborhood"], "__none__"],
-      paint: { "line-color": pal.nbhdSel, "line-width": 2.2, "line-opacity": 0.95 },
-    },
-    "poi",
-  );
 }
 
 function addBaseLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette) {
@@ -654,8 +636,6 @@ function applySelection(map: maplibregl.Map, selected: string | null, bundle: Re
   if (map.getLayer("opp-sel")) {
     map.setFilter("opp-sel", ["==", ["get", "__area"], selected ?? "__none__"]);
   }
-  if (!map.getLayer("nbhd-sel")) return;
-  map.setFilter("nbhd-sel", ["==", ["get", "neighborhood"], selected ?? "__none__"]);
 
   const r = selected ? bundle.results[selected] : null;
 

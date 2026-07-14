@@ -49,7 +49,13 @@ export function ViewRouter() {
   if (!bundle) {
     return (
       <Card>
-        <div className="text-sm text-stitch-muted">No data yet for &quot;{selectedArea}&quot;.</div>
+        <div className="text-sm font-semibold text-stitch-ink">{selectedArea}</div>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-stitch-muted">
+          This area is mapped, but the engine only computes a full launch-price report for
+          submarkets with enough comparable sales. Its median asking price is shown on the map
+          (the coloured circle / Prices → “Asking price by area”). Pick a covered area to see the
+          full decision report.
+        </p>
       </Card>
     );
   }
