@@ -64,8 +64,12 @@ class AsciiJSONResponse(JSONResponse):
         return json.dumps(_asciify(content), ensure_ascii=True, allow_nan=False,
                           separators=(",", ":")).encode("utf-8")
 
-_ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:4173",
+# Local dev origins by default; set ALLOWED_ORIGINS (comma-separated) to add deployed
+# frontend URLs or test ports without editing code. Merged with the localhost defaults.
+_DEFAULT_ORIGINS = ["http://localhost:5173", "http://localhost:4173",
                     "http://127.0.0.1:5173", "http://127.0.0.1:4173"]
+_ENV_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+_ALLOWED_ORIGINS = _DEFAULT_ORIGINS + _ENV_ORIGINS
 
 
 class Coverage:

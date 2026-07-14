@@ -24,6 +24,22 @@ export default {
         pos: "rgb(var(--c-pos) / <alpha-value>)",
         neg: "rgb(var(--c-neg) / <alpha-value>)",
         warn: "rgb(var(--c-warn) / <alpha-value>)",
+        // Stitch design-system tokens (white+blue, ≤2 accents) for the new
+        // ui/ + ui/charts/ primitives — Demo-G visual reference. Namespaced
+        // under `stitch` so it can't collide with the CSS-variable tokens
+        // above (ink/line/warn already exist for the dark terminal theme).
+        stitch: {
+          brand: "#0072B2",
+          "brand-dark": "#00598c",
+          warn: "#D55E00",
+          green: "#009E73",
+          ink: "#1a1d1f",
+          muted: "#5b636b",
+          line: "#e7eaee",
+          bg: "#eef1f5",
+          card: "#ffffff",
+          soft: "#f3f6f9",
+        },
       },
       fontFamily: {
         sans: ['"IBM Plex Sans"', "system-ui", "sans-serif"],
