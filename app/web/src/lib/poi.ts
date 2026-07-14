@@ -2,25 +2,51 @@
 // both read these tables so a category is defined once. Colours are mid-saturation
 // so they read on both the light and dark basemaps.
 
+// A POI GROUP = one lazily-loaded geojson file (poi_<group>.geojson). Each feature
+// inside carries its own curated `type` + `emoji` (see scrapers/poi_taxonomy.py),
+// so the map draws a per-type icon; the group is just the toggle + file unit.
 export interface PoiCategory {
   key: string;
   label: string;
   color: string;
-  icon: string; // emoji — used in the control legend + amenity panel, NOT on the GL map
+  icon: string; // group emoji — legend/amenity panel only, NOT the per-point map icon
   file: string;
 }
 
 export const POI_CATEGORIES: PoiCategory[] = [
   { key: "education", label: "Education", color: "#5fb2c9", icon: "🎓", file: "/data/poi_education.geojson" },
   { key: "health", label: "Health", color: "#c9736f", icon: "🏥", file: "/data/poi_health.geojson" },
+  { key: "food", label: "Food & Leisure", color: "#d0894f", icon: "🍽️", file: "/data/poi_food.geojson" },
   { key: "shopping", label: "Shopping", color: "#e6a94b", icon: "🛍️", file: "/data/poi_shopping.geojson" },
-  { key: "food_leisure", label: "Food & Leisure", color: "#d0894f", icon: "🍽️", file: "/data/poi_food_leisure.geojson" },
   { key: "recreation", label: "Recreation", color: "#5fa47f", icon: "🌳", file: "/data/poi_recreation.geojson" },
   { key: "religious", label: "Religious", color: "#8b93a4", icon: "🕌", file: "/data/poi_religious.geojson" },
   { key: "transport", label: "Transport", color: "#c9a75f", icon: "🚌", file: "/data/poi_transport.geojson" },
   { key: "services", label: "Services", color: "#7f8fd0", icon: "🏦", file: "/data/poi_services.geojson" },
-  { key: "negative", label: "Negatives", color: "#b06a8f", icon: "⚠️", file: "/data/poi_negative.geojson" },
+  { key: "negative", label: "Nuisances", color: "#b06a8f", icon: "⚠️", file: "/data/poi_negative.geojson" },
 ];
+
+// The curated place-types inside the groups (loaded from poi_types.json at runtime).
+export interface PoiType { key: string; label: string; emoji: string; group: string; }
+export type AreaPoiCounts = Record<string, Record<string, number>>; // area -> type -> count
+
+export async function loadPoiTypes(): Promise<PoiType[]> {
+  try {
+    const r = await fetch("/data/poi_types.json", { cache: "no-store" });
+    const m = (await r.json()) as { types: PoiType[] };
+    return Array.isArray(m.types) ? m.types : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function loadAreaPoiCounts(): Promise<AreaPoiCounts> {
+  try {
+    const r = await fetch("/data/area_poi_counts.json", { cache: "no-store" });
+    return (await r.json()) as AreaPoiCounts;
+  } catch {
+    return {};
+  }
+}
 
 export interface GeoOverlay {
   key: string;
@@ -38,8 +64,8 @@ export const GEO_OVERLAYS: GeoOverlay[] = [
   { key: "major_roads", label: "Major roads", icon: "🛣️", file: "/data/major_roads.geojson", kind: "line", color: "#b8804a" },
 ];
 
-// Default-on so the map is informative but not cluttered on first load.
-export const DEFAULT_POI_ON = ["transport", "education"];
+// Default-on groups so the map is informative but not cluttered on first load.
+export const DEFAULT_POI_ON = ["education", "food"];
 
 // --- Per-area amenity counts (area_amenities.json, keyed by neighborhood) ------
 

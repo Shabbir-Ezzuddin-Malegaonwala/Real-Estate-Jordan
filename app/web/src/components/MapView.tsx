@@ -21,8 +21,8 @@ import {
 import type { Theme } from "../lib/theme";
 import { jd } from "../lib/format";
 import type { LayerState } from "./MapLayers";
-import { POI_CATEGORIES, GEO_OVERLAYS } from "../lib/poi";
-import { addLayerFor, setLayerVisible, raisePoiPoints, lyrId, srcId, configFor } from "../lib/mapPoiLayers";
+import { POI_CATEGORIES, GEO_OVERLAYS, type PoiType } from "../lib/poi";
+import { addLayerFor, setLayerVisible, raisePoiPoints, lyrId, srcId, configFor, registerTypeIcons, setHiddenTypes } from "../lib/mapPoiLayers";
 
 const ALL_POI_KEYS = [...POI_CATEGORIES.map((c) => c.key), ...GEO_OVERLAYS.map((o) => o.key)];
 
@@ -106,6 +106,8 @@ export function MapView({
   opportunity,
   showOpportunity,
   poiState,
+  poiTypes,
+  hiddenTypes,
   onLayerLoading,
 }: {
   geo: Geo;
@@ -118,6 +120,8 @@ export function MapView({
   opportunity: OpportunityScore[];
   showOpportunity: boolean;
   poiState: Record<string, boolean>;
+  poiTypes: PoiType[];
+  hiddenTypes: Record<string, string[]>;
   onLayerLoading?: (key: string, loading: boolean) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -141,6 +145,10 @@ export function MapView({
   showOppRef.current = showOpportunity;
   const poiStateRef = useRef(poiState);
   poiStateRef.current = poiState;
+  const poiTypesRef = useRef(poiTypes);
+  poiTypesRef.current = poiTypes;
+  const hiddenTypesRef = useRef(hiddenTypes);
+  hiddenTypesRef.current = hiddenTypes;
   const onLayerLoadingRef = useRef(onLayerLoading);
   onLayerLoadingRef.current = onLayerLoading;
   // Cache fetched category/overlay geojson so a theme swap re-adds without refetch.
@@ -152,6 +160,7 @@ export function MapView({
   // refs so it stays stable and is safe to call from map events + effects.
   const applyPoi = useCallback(async (map: maplibregl.Map) => {
     const state = poiStateRef.current;
+    registerTypeIcons(map, poiTypesRef.current); // idempotent; ensures per-type images exist
     for (const key of ALL_POI_KEYS) {
       if (!state[key]) {
         setLayerVisible(map, key, false);
@@ -164,7 +173,7 @@ export function MapView({
           if (!cfg) continue;
           onLayerLoadingRef.current?.(key, true);
           try {
-            const res = await fetch(cfg.file);
+            const res = await fetch(cfg.file, { cache: "no-store" });
             data = (await res.json()) as FeatureCollection;
             poiDataRef.current.set(key, data);
           } catch {
@@ -176,6 +185,7 @@ export function MapView({
         if (!map.getSource(srcId(key))) addLayerFor(map, key, data);
       }
       setLayerVisible(map, key, true);
+      setHiddenTypes(map, key, hiddenTypesRef.current[key] ?? []); // per-type filtering
     }
     raisePoiPoints(map);
   }, []);
@@ -228,12 +238,12 @@ export function MapView({
         const poiHit = map.queryRenderedFeatures(e.point, { layers: poiLayers })[0];
         if (poiHit) {
           const p = poiHit.properties as Record<string, unknown>;
-          const cfg = configFor(String(p.category ?? ""));
-          const dot = cfg && "color" in cfg ? cfg.color : "#5fb2c9";
+          const emoji = p.emoji ? `${String(p.emoji)} ` : "";
+          const kind = String(p.subcategory || p.type || "").replace(/_/g, " ");
           popup(
             map,
             e.lngLat,
-            `<b>${esc(String(p.name || "POI"))}</b><br/><span style="color:${dot}">${esc(String(p.subcategory || p.category))}</span> · <span style="color:#8a94a5">${esc(String(p.neighborhood ?? ""))}</span>`,
+            `<b>${emoji}${esc(String(p.name || "POI"))}</b><br/><span style="color:#8a94a5">${esc(kind)}${p.neighborhood ? " · " + esc(String(p.neighborhood)) : ""}</span>`,
           );
           return;
         }
@@ -338,7 +348,7 @@ export function MapView({
     const map = mapRef.current;
     if (!map || !readyRef.current) return;
     void applyPoi(map);
-  }, [poiState, applyPoi]);
+  }, [poiState, poiTypes, hiddenTypes, applyPoi]);
 
   // Theme swap — setStyle drops all sources/layers; re-add them on style.load.
   // Markers are DOM overlays that survive setStyle, so they are only restyled.

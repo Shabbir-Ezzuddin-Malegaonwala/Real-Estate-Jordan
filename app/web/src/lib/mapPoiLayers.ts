@@ -1,10 +1,9 @@
 import type maplibregl from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import { POI_CATEGORIES, GEO_OVERLAYS, type PoiCategory, type GeoOverlay } from "./poi";
+import { POI_CATEGORIES, GEO_OVERLAYS, type PoiCategory, type GeoOverlay, type PoiType } from "./poi";
 
-// POI points render from this zoom up. Set to a regional zoom (not street level)
-// so toggling a category shows its points immediately at the default/metro view —
-// MapLibre only draws the in-viewport subset, so the full 69k stays performant.
+// POI points render from this zoom up (regional), so toggling a group shows its
+// points at the default/metro view — MapLibre only draws the in-viewport subset.
 export const POI_MINZOOM = 8;
 
 export const srcId = (key: string) => `poi-src-${key}`;
@@ -13,11 +12,17 @@ export const lyrId = (key: string) => `poi-lyr-${key}`;
 const CATEGORY_BY_KEY = new Map(POI_CATEGORIES.map((c) => [c.key, c]));
 const OVERLAY_BY_KEY = new Map(GEO_OVERLAYS.map((o) => [o.key, o]));
 
-// --- Emoji icons rendered to canvas images (NOT a glyph/text-field symbol, which
-// depends on the external glyph CDN and can blank the map — see MapView's marker
-// note). icon-image symbols use these locally-added images, so no glyph dependency.
+export function configFor(key: string): PoiCategory | GeoOverlay | undefined {
+  return CATEGORY_BY_KEY.get(key) ?? OVERLAY_BY_KEY.get(key);
+}
+export function isOverlay(key: string): boolean {
+  return OVERLAY_BY_KEY.has(key);
+}
+
+// --- Per-TYPE emoji icons (canvas images via addImage — glyph-free, so the map
+// can't blank if the glyph CDN is down). One image per curated type; each point
+// draws its own via icon-image ["get","type"], with a neutral dot fallback. ------
 const ICON_PX = 48;
-const poiIconId = (key: string) => `poi-icon-${key}`;
 
 function emojiImageData(emoji: string): ImageData | null {
   const canvas = document.createElement("canvas");
@@ -32,61 +37,58 @@ function emojiImageData(emoji: string): ImageData | null {
   return ctx.getImageData(0, 0, ICON_PX, ICON_PX);
 }
 
-// Idempotent — adds the category's emoji as a map image once (re-added after a
-// setStyle drops it, since map.hasImage() is then false).
-function ensurePoiIcon(map: maplibregl.Map, key: string, emoji: string): boolean {
-  const id = poiIconId(key);
-  if (map.hasImage(id)) return true;
-  const img = emojiImageData(emoji);
-  if (!img) return false;
-  map.addImage(id, { width: ICON_PX, height: ICON_PX, data: img.data }, { pixelRatio: 2 });
-  return true;
+function dotImageData(): ImageData | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = ICON_PX;
+  canvas.height = ICON_PX;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.beginPath();
+  ctx.arc(ICON_PX / 2, ICON_PX / 2, ICON_PX * 0.24, 0, Math.PI * 2);
+  ctx.fillStyle = "#6b7280";
+  ctx.fill();
+  return ctx.getImageData(0, 0, ICON_PX, ICON_PX);
 }
 
-export function configFor(key: string): PoiCategory | GeoOverlay | undefined {
-  return CATEGORY_BY_KEY.get(key) ?? OVERLAY_BY_KEY.get(key);
-}
-export function isOverlay(key: string): boolean {
-  return OVERLAY_BY_KEY.has(key);
+// Registers the fallback dot + one image per type. Idempotent (skips existing),
+// so it is safe to call again after a setStyle drops the image registry.
+export function registerTypeIcons(map: maplibregl.Map, types: PoiType[]): void {
+  if (!map.hasImage("poi-dot")) {
+    const d = dotImageData();
+    if (d) map.addImage("poi-dot", { width: ICON_PX, height: ICON_PX, data: d.data }, { pixelRatio: 2 });
+  }
+  for (const t of types) {
+    if (map.hasImage(t.key)) continue;
+    const img = emojiImageData(t.emoji);
+    if (img) map.addImage(t.key, { width: ICON_PX, height: ICON_PX, data: img.data }, { pixelRatio: 2 });
+  }
 }
 
-// Adds the source + layer for a POI category (circle) or a geo overlay (fill/line).
-// Idempotent — returns early if the source already exists (e.g. after theme swap
-// the caller re-adds from cached data).
+const ICON_IMAGE: maplibregl.ExpressionSpecification = [
+  "coalesce",
+  ["image", ["get", "type"]],
+  ["image", "poi-dot"],
+];
+
+// Adds the source + layer for a POI group (symbol, per-type icon) or a geo overlay
+// (fill/line). Idempotent — returns early if the source already exists.
 export function addLayerFor(map: maplibregl.Map, key: string, data: FeatureCollection): void {
   if (map.getSource(srcId(key))) return;
   const cat = CATEGORY_BY_KEY.get(key);
   if (cat) {
     map.addSource(srcId(key), { type: "geojson", data });
-    // Prefer emoji icons; fall back to coloured dots if the canvas image failed.
-    if (ensurePoiIcon(map, key, cat.icon)) {
-      map.addLayer({
-        id: lyrId(key),
-        type: "symbol",
-        source: srcId(key),
-        minzoom: POI_MINZOOM,
-        layout: {
-          "icon-image": poiIconId(key),
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 8, 0.22, 12, 0.4, 16, 0.7],
-          "icon-allow-overlap": false, // collision-declutter: overlapping icons hide
-          "icon-padding": 2,
-        },
-      });
-    } else {
-      map.addLayer({
-        id: lyrId(key),
-        type: "circle",
-        source: srcId(key),
-        minzoom: POI_MINZOOM,
-        paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.4, 16, 6],
-          "circle-color": cat.color,
-          "circle-opacity": 0.85,
-          "circle-stroke-width": 0.6,
-          "circle-stroke-color": "rgba(255,255,255,0.55)",
-        },
-      });
-    }
+    map.addLayer({
+      id: lyrId(key),
+      type: "symbol",
+      source: srcId(key),
+      minzoom: POI_MINZOOM,
+      layout: {
+        "icon-image": ICON_IMAGE,
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 8, 0.22, 12, 0.42, 16, 0.72],
+        "icon-allow-overlap": false, // collision-declutter: overlapping icons hide
+        "icon-padding": 2,
+      },
+    });
     return;
   }
   const ov = OVERLAY_BY_KEY.get(key);
@@ -116,6 +118,18 @@ export function addLayerFor(map: maplibregl.Map, key: string, data: FeatureColle
 export function setLayerVisible(map: maplibregl.Map, key: string, visible: boolean): void {
   const id = lyrId(key);
   if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+}
+
+// Hides specific types within a group's symbol layer (per-type filtering). Empty
+// set (or none hidden) clears the filter so all types show.
+export function setHiddenTypes(map: maplibregl.Map, groupKey: string, hidden: string[]): void {
+  const id = lyrId(groupKey);
+  if (!map.getLayer(id)) return;
+  if (hidden.length === 0) {
+    map.setFilter(id, null);
+  } else {
+    map.setFilter(id, ["!", ["in", ["get", "type"], ["literal", hidden]]]);
+  }
 }
 
 // Keeps POI points above the overlay fills regardless of toggle order.

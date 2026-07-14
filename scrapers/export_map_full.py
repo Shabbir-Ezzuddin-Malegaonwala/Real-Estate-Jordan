@@ -19,14 +19,12 @@ import statistics as st
 from collections import defaultdict
 from pathlib import Path
 
+from poi_taxonomy import classify, types_manifest, TYPE_INFO
+
 DB = "C:/Rubicon/Real-Estate-Jordan/db/jordan_re.sqlite"
 SRC = Path("data/processed")
 PUB = Path("app/web/public/data")
 
-# DB categories that map 1:1 to a poi_<key>.geojson the frontend already consumes
-# (see app/web/src/lib/poi.ts). "unknown" POIs are dropped — they carry no label.
-CATS = {"education", "health", "shopping", "food_leisure",
-        "recreation", "religious", "transport", "services", "negative"}
 JORDAN = (29.0, 33.6, 34.8, 39.4)  # lat_min, lat_max, lng_min, lng_max
 
 
@@ -46,22 +44,46 @@ def _in_jordan(lat: float, lng: float) -> bool:
 
 
 def export_pois(c: sqlite3.Connection) -> dict:
-    buckets: dict[str, list] = defaultdict(list)
+    """Classify every POI into a curated type (poi_taxonomy) and bucket by GROUP.
+    Noise (no matching type) is dropped. Each feature carries type/emoji/group so
+    the map can draw a per-type emoji. Also builds area_poi_counts.json."""
+    groups: dict[str, list] = defaultdict(list)
+    counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    kept = 0
+    dropped = 0
+    per_type: dict[str, int] = defaultdict(int)
     for cat, sub, name, name_ar, lat, lng, nb in c.execute(
         "SELECT category, subcategory, name, name_ar, lat, lng, neighborhood "
         "FROM poi_extended WHERE lat IS NOT NULL AND lng IS NOT NULL"
     ):
-        if cat not in CATS or not _in_jordan(lat, lng):
+        if not _in_jordan(lat, lng):
             continue
-        buckets[cat].append({
+        t = classify(sub, name, cat)
+        if t is None:
+            dropped += 1
+            continue
+        info = TYPE_INFO[t]
+        grp = info["group"]
+        groups[grp].append({
             "type": "Feature",
-            "properties": {"category": cat, "subcategory": sub or "",
-                           "name": name or "", "name_ar": name_ar or "", "neighborhood": nb or ""},
+            "properties": {"type": t, "emoji": info["emoji"], "group": grp,
+                           "name": name or "", "name_ar": name_ar or "",
+                           "neighborhood": nb or "", "subcategory": sub or ""},
             "geometry": {"type": "Point", "coordinates": [round(lng, 6), round(lat, 6)]},
         })
-    for cat, feats in buckets.items():
-        _write(f"poi_{cat}.geojson", _fc(feats))
-    return {k: len(v) for k, v in sorted(buckets.items(), key=lambda kv: -len(kv[1]))}
+        kept += 1
+        per_type[t] += 1
+        if nb:
+            counts[nb][t] += 1
+
+    for grp, feats in groups.items():
+        _write(f"poi_{grp}.geojson", _fc(feats))
+    _write("poi_types.json", types_manifest())
+    _write("area_poi_counts.json", {k: dict(v) for k, v in counts.items()})
+    print(f"POIs kept={kept} dropped(noise)={dropped} across {len(groups)} groups; "
+          f"areas with counts={len(counts)}")
+    return {"per_group": {g: len(f) for g, f in sorted(groups.items(), key=lambda kv: -len(kv[1]))},
+            "top_types": dict(sorted(per_type.items(), key=lambda kv: -kv[1])[:12])}
 
 
 def export_listings(c: sqlite3.Connection) -> int:
@@ -122,8 +144,8 @@ def main() -> None:
     listings = export_listings(c)
     areas = export_area_prices(c)
     c.close()
-    print("POIs per category:", pois)
-    print("total POIs:", sum(pois.values()))
+    print("POIs per group:", pois["per_group"])
+    print("top types:", pois["top_types"])
     print("listing points:", listings)
     print("area price points:", areas)
 

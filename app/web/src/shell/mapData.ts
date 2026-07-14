@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { loadGeo, loadRecommendations, type GeoLayers } from "../lib/loadData";
 import { checkHealth, fetchNeighborhoods, type NeighborhoodMeta } from "../lib/api";
 import { fetchAreas, fetchOpportunity } from "../lib/intel";
-import { DEFAULT_POI_ON } from "../lib/poi";
+import { DEFAULT_POI_ON, loadPoiTypes, loadAreaPoiCounts, type PoiType, type AreaPoiCounts } from "../lib/poi";
 import type { LayerState } from "../components/MapLayers";
 import type { AreaEntry, OpportunityScore, RecommendationBundle } from "../types";
 
@@ -52,6 +52,11 @@ export interface MapData {
   togglePoi: (key: string) => void;
   layerLoading: Record<string, boolean>;
   onLayerLoading: (key: string, loading: boolean) => void;
+  // Curated place-types + per-area counts + per-type visibility (see poi_taxonomy).
+  poiTypes: PoiType[];
+  areaCounts: AreaPoiCounts;
+  hiddenTypes: Record<string, string[]>; // group -> hidden type keys
+  toggleType: (group: string, type: string) => void;
 }
 
 export function useMapData(): MapData {
@@ -64,15 +69,22 @@ export function useMapData(): MapData {
     Object.fromEntries(DEFAULT_POI_ON.map((k) => [k, true])),
   );
   const [layerLoading, setLayerLoading] = useState<Record<string, boolean>>({});
+  const [poiTypes, setPoiTypes] = useState<PoiType[]>([]);
+  const [areaCounts, setAreaCounts] = useState<AreaPoiCounts>({});
+  const [hiddenTypes, setHiddenTypes] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const [g, b] = await Promise.all([loadGeo(), loadRecommendations()]);
+        const [g, b, types, counts] = await Promise.all([
+          loadGeo(), loadRecommendations(), loadPoiTypes(), loadAreaPoiCounts(),
+        ]);
         if (!alive) return;
         setGeo(g);
         setBundle(b);
+        setPoiTypes(types);
+        setAreaCounts(counts);
 
         let meta: Record<string, NeighborhoodMeta> = {};
         const ok = await checkHealth();
@@ -102,6 +114,16 @@ export function useMapData(): MapData {
   const togglePoi = (key: string) => setPoiState((s) => ({ ...s, [key]: !s[key] }));
   const onLayerLoading = (key: string, loading: boolean) =>
     setLayerLoading((s) => ({ ...s, [key]: loading }));
+  // A type is hidden when present in hiddenTypes[group]; toggling adds/removes it.
+  const toggleType = (group: string, type: string) =>
+    setHiddenTypes((s) => {
+      const cur = s[group] ?? [];
+      const next = cur.includes(type) ? cur.filter((t) => t !== type) : [...cur, type];
+      return { ...s, [group]: next };
+    });
 
-  return { geo, bundle, opportunity, error, layers, setLayers, poiState, togglePoi, layerLoading, onLayerLoading };
+  return {
+    geo, bundle, opportunity, error, layers, setLayers, poiState, togglePoi,
+    layerLoading, onLayerLoading, poiTypes, areaCounts, hiddenTypes, toggleType,
+  };
 }

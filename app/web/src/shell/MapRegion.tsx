@@ -25,6 +25,10 @@ export function MapRegion() {
     togglePoi,
     layerLoading,
     onLayerLoading,
+    poiTypes,
+    areaCounts,
+    hiddenTypes,
+    toggleType,
   } = useMapData();
 
   const [toast, setToast] = useState<string | null>(null);
@@ -69,6 +73,8 @@ export function MapRegion() {
         opportunity={opportunity}
         showOpportunity
         poiState={poiState}
+        poiTypes={poiTypes}
+        hiddenTypes={hiddenTypes}
         onLayerLoading={onLayerLoading}
       />
 
@@ -79,6 +85,11 @@ export function MapRegion() {
           poiState={poiState}
           onTogglePoi={togglePoi}
           loading={layerLoading}
+          poiTypes={poiTypes}
+          areaCounts={areaCounts}
+          hiddenTypes={hiddenTypes}
+          onToggleType={toggleType}
+          selectedArea={selected}
         />
         {toast && <Toast message={toast} onClose={() => setToast(null)} />}
       </div>

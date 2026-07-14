@@ -25,16 +25,20 @@ const geo = [
   // the app falls back to the 5 approximate circles if these are absent.
   "neighborhoods_voronoi.geojson",
   "opportunity_heatmap.geojson",
-  // Nationwide OSM POI layers (toggleable) + geographic features. Sourced from Overpass.
+  // Nationwide POI layers, one file per GROUP; each feature carries its curated
+  // type + emoji (scrapers/poi_taxonomy.py). Plus the taxonomy manifest and the
+  // per-area type counts the layer panel reads.
   "poi_education.geojson",
   "poi_health.geojson",
   "poi_shopping.geojson",
-  "poi_food_leisure.geojson",
+  "poi_food.geojson",
   "poi_recreation.geojson",
   "poi_religious.geojson",
   "poi_transport.geojson",
   "poi_services.geojson",
   "poi_negative.geojson",
+  "poi_types.json",
+  "area_poi_counts.json",
   "water.geojson",
   "green.geojson",
   "major_roads.geojson",
