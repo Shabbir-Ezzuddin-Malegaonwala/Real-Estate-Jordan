@@ -128,10 +128,9 @@ export function ChatPanel({
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                submit();
+                submit(); // submit() itself no-ops while busy, so this can't send early
               }
             }}
-            disabled={busy}
           />
           <button
             onClick={submit}

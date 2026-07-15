@@ -55,9 +55,10 @@ export function Message({ m, onPickSource }: { m: ChatMessage; onPickSource: (s:
   );
 }
 
-// Minimal, safe markdown -> HTML. Escapes first, then applies a small set of
-// inline/block rules (bold, italic, inline code, headings, bullet/number lists,
-// links, paragraphs). No raw HTML from the model ever reaches the DOM.
+// Minimal, safe markdown -> HTML. Everything is HTML-escaped FIRST, then a small
+// set of rules is applied — so no raw HTML from the model ever reaches the DOM.
+// Handles: fenced code blocks, headings, blockquotes, bullet/number lists, GFM
+// pipe tables, bold/italic/inline-code/links, and paragraphs.
 function renderMarkdown(src: string): string {
   const esc = (s: string) =>
     s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]!);
@@ -70,16 +71,56 @@ function renderMarkdown(src: string): string {
       .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
         '<a href="$2" target="_blank" rel="noreferrer noopener" class="text-cyan underline">$1</a>');
 
+  // Pull out fenced code blocks first (```), so their contents aren't parsed as
+  // markdown. Splitting on ``` makes odd-indexed segments the code. A still-open
+  // fence during streaming just renders as a growing code block — which is fine.
+  const segments = src.split(/```/);
+  return segments
+    .map((seg, i) => {
+      if (i % 2 === 1) {
+        let body = seg;
+        const nl = body.indexOf("\n");
+        if (nl !== -1 && /^[A-Za-z0-9_+-]{1,15}$/.test(body.slice(0, nl).trim())) {
+          body = body.slice(nl + 1); // drop a leading language line (e.g. ```sql)
+        }
+        return `<pre class="my-2 overflow-x-auto rounded bg-surface p-2 text-2xs leading-relaxed text-ink-dim"><code>${esc(body.replace(/\n$/, ""))}</code></pre>`;
+      }
+      return renderBlocks(seg, inline);
+    })
+    .join("");
+}
+
+function renderBlocks(src: string, inline: (s: string) => string): string {
   const lines = src.split("\n");
   const out: string[] = [];
   let list: "ul" | "ol" | null = null;
   const closeList = () => { if (list) { out.push(`</${list}>`); list = null; } };
+  const cells = (r: string) =>
+    r.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map((c) => c.trim());
 
-  for (const raw of lines) {
-    const line = raw.trimEnd();
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trimEnd();
     if (!line.trim()) { closeList(); continue; }
+
+    // GFM pipe table: header row, a |---|---| separator, then body rows.
+    const next = lines[i + 1] ?? "";
+    if (line.includes("|") && next.includes("|") && /^[\s|:-]*-{2,}[\s|:-]*$/.test(next)) {
+      closeList();
+      const head = cells(line);
+      let j = i + 2;
+      const rows: string[][] = [];
+      while (j < lines.length && lines[j].includes("|") && lines[j].trim()) { rows.push(cells(lines[j])); j++; }
+      const th = head.map((c) => `<th class="border border-line px-2 py-1 text-left font-semibold text-ink">${inline(c)}</th>`).join("");
+      const body = rows.map((r) => `<tr>${r.map((c) => `<td class="border border-line px-2 py-1">${inline(c)}</td>`).join("")}</tr>`).join("");
+      out.push(`<div class="my-2 overflow-x-auto"><table class="w-full border-collapse text-2xs"><thead><tr>${th}</tr></thead><tbody>${body}</tbody></table></div>`);
+      i = j - 1;
+      continue;
+    }
+
     const h = line.match(/^(#{1,4})\s+(.*)$/);
     if (h) { closeList(); out.push(`<div class="mt-2 font-semibold text-ink">${inline(h[2])}</div>`); continue; }
+    const bq = line.match(/^\s*>\s?(.*)$/);
+    if (bq) { closeList(); out.push(`<blockquote class="my-1 border-l-2 border-line pl-3 text-ink-dim">${inline(bq[1])}</blockquote>`); continue; }
     const ul = line.match(/^\s*[-*]\s+(.*)$/);
     if (ul) { if (list !== "ul") { closeList(); out.push('<ul class="ml-4 list-disc space-y-0.5">'); list = "ul"; } out.push(`<li>${inline(ul[1])}</li>`); continue; }
     const ol = line.match(/^\s*\d+\.\s+(.*)$/);
