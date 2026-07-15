@@ -16,6 +16,11 @@ def _conn(db_path):
     return c
 
 
+def _has_table(cur, name: str) -> bool:
+    return cur.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)).fetchone() is not None
+
+
 def _series_signal(cur, indicator: str, label: str) -> dict | None:
     """Latest value of a macro time-series + its % change vs ~a year earlier."""
     rows = cur.execute(
@@ -39,6 +44,9 @@ def _series_signal(cur, indicator: str, label: str) -> dict | None:
 def key_signals(db_path: str) -> list[dict]:
     """A few glanceable market gauges (real, sourced) with up/down — the 'ticker'."""
     c = _conn(db_path); cur = c.cursor()
+    if not _has_table(cur, "macro_series"):
+        c.close()
+        return []
     out = []
     for ind, lbl in [
         ("Real estate price index - General", "Property prices"),
@@ -57,6 +65,15 @@ def market_overview(db_path: str, days: int = 30) -> dict:
     competitor activity — all from real change events + sourced competitor data."""
     since = (dt.date.today() - dt.timedelta(days=days)).isoformat()
     c = _conn(db_path); cur = c.cursor()
+    if not _has_table(cur, "market_changes"):
+        # Pipeline change-log absent (e.g. a core-only DB) — honest empty overview,
+        # never a 500 that the browser would surface as a CORS/console error.
+        c.close()
+        return {"totals": {"window_days": days, "new_listings": 0, "price_increases": 0,
+                           "price_drops": 0, "delisted": 0, "total_events": 0,
+                           "avg_increase_pct": None, "avg_drop_pct": None},
+                "active_areas": [], "recent_events": [], "competitors": [], "news": [],
+                "last_update": None, "key_signals": key_signals(db_path)}
 
     def n(where, args=()):
         return cur.execute(f"SELECT COUNT(*) FROM market_changes WHERE detected_at>=? {where}", (since, *args)).fetchone()[0]

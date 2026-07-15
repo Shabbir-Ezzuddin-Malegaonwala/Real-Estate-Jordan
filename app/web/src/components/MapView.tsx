@@ -547,6 +547,38 @@ function markerCss(pal: MapPalette): string {
   return `font:600 11px "IBM Plex Sans",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:${pal.markerColor};text-shadow:${pal.markerShadow};pointer-events:none;white-space:nowrap;`;
 }
 
+// Secondary labels (every other area cell across Jordan) read lighter and smaller
+// than the curated primary labels, so the map fills with names without shouting.
+function markerCssSecondary(pal: MapPalette): string {
+  return `font:500 10px "IBM Plex Sans",sans-serif;letter-spacing:.04em;color:${pal.markerColor};opacity:.72;text-shadow:${pal.markerShadow};pointer-events:none;white-space:nowrap;`;
+}
+
+// Largest span of a polygon ring in degrees — a proxy for how much map room the
+// cell owns. Big (sparse, outer-Jordan) cells earn an early label; tiny (dense
+// Amman) cells only reveal on zoom-in, so labels never collide into mush.
+function cellSpanDeg(coords: number[][][]): number {
+  const ring = coords[0] ?? [];
+  if (ring.length === 0) return 0;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const [x, y] of ring) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  return Math.max(maxX - minX, maxY - minY);
+}
+
+// Bigger cell → lower reveal zoom. Tuned so outer-governorate cells (Aqaba, Ma'an,
+// Karak…) name themselves at the country view while Amman's fine mesh waits.
+function spanToMinZoom(span: number): number {
+  if (span >= 0.15) return 6.5;
+  if (span >= 0.07) return 8;
+  if (span >= 0.035) return 9.5;
+  if (span >= 0.015) return 11;
+  return 12.5;
+}
+
 // Neighbourhood labels are DOM markers, NOT a symbol layer. A glyph-dependent
 // symbol layer on this source fails to tile whenever the external glyph CDN is
 // unreachable, which silently drops ALL of the source's layers (fill/line) and
@@ -560,26 +592,44 @@ function addNbhdMarkers(
   markersRef: { current: HTMLElement[] },
 ) {
   const css = markerCss(pal);
+  const curated = new Set<string>();
   for (const f of geo.neighborhoods.features) {
+    const name = f.properties.neighborhood;
+    curated.add(name.trim().toLowerCase());
     const el = document.createElement("div");
-    el.textContent = f.properties.neighborhood;
+    el.textContent = name;
     el.style.cssText = css;
-    el.dataset.kind = (f.properties as { kind?: string }).kind ?? "amman_submarket";
+    const isCity = (f.properties as { kind?: string }).kind === "city";
+    el.dataset.minzoom = String(isCity ? 7.3 : 11);
+    new maplibregl.Marker({ element: el }).setLngLat(polygonCentroid(f.geometry.coordinates)).addTo(map);
+    markersRef.current.push(el);
+  }
+  // Every OTHER area cell nationwide (the Voronoi tessellation) — so the whole of
+  // Jordan reads as named, not just Amman. Size-gated: large outer cells label at
+  // the country view, dense inner cells reveal on zoom-in. Skip names already shown
+  // as a curated label to avoid doubling.
+  const secondaryCss = markerCssSecondary(pal);
+  for (const f of geo.voronoi?.features ?? []) {
+    const name = (f.properties as { neighborhood?: string }).neighborhood;
+    if (!name || curated.has(name.trim().toLowerCase())) continue;
+    if (f.geometry.type !== "Polygon") continue;
+    const el = document.createElement("div");
+    el.textContent = name;
+    el.style.cssText = secondaryCss;
+    el.dataset.minzoom = String(spanToMinZoom(cellSpanDeg(f.geometry.coordinates)));
     new maplibregl.Marker({ element: el }).setLngLat(polygonCentroid(f.geometry.coordinates)).addTo(map);
     markersRef.current.push(el);
   }
 }
 
-// Show area labels only where they don't collide into mush: city labels from a
-// regional zoom, dense Amman submarket labels only once zoomed in. Below that,
-// the basemap's own clean city/town labels carry the wide view (Google-Maps style).
+// Each label carries its own reveal zoom (dataset.minzoom): governorate capitals
+// and big outer cells from the country view, dense Amman names on zoom-in. This
+// fills the whole map with names while never letting them collide into mush.
 function updateLabelVisibility(map: maplibregl.Map, markersRef: { current: HTMLElement[] }) {
   const z = map.getZoom();
   for (const el of markersRef.current) {
-    const isCity = el.dataset.kind === "city";
-    // Governorate capitals from a regional zoom (whole country reads "named");
-    // dense Amman submarkets only once zoomed in, so they never pile into mush.
-    el.style.display = (isCity ? z >= 7.3 : z >= 11) ? "" : "none";
+    const minZoom = Number(el.dataset.minzoom ?? "11");
+    el.style.display = z >= minZoom ? "" : "none";
   }
 }
 
