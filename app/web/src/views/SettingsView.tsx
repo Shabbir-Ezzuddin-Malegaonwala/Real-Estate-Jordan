@@ -52,13 +52,18 @@ export function SettingsView() {
       <ViewHeader {...meta} />
       <Card padded={false}>
         <div className="px-4">
-          <SettingsRow label="Report language" hint="Language for AI summaries & the property valuation report">
+          <SettingsRow label="Report language" hint="Language for AI summaries, the Assistant, and the property valuation report">
             <SegToggle
               options={["English", "العربية"] as const}
               value={state.language === "ar" ? "العربية" : "English"}
               onChange={(v) => setLanguage(v === "العربية" ? "ar" : "en")}
             />
           </SettingsRow>
+        </div>
+        <div className="mx-4 mb-3 rounded-lg bg-[#e3f4ee] px-3 py-2 text-[12.5px] text-[#0a7a5b]" dir={state.language === "ar" ? "rtl" : "ltr"}>
+          ✓ {state.language === "ar"
+            ? "سيرد المساعد وتقارير التقييم باللغة العربية."
+            : "The Assistant and valuation reports will answer in English."}
         </div>
       </Card>
 

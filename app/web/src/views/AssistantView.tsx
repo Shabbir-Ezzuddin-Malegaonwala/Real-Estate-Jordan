@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "../lib/store";
 import type { ChatMessage } from "../lib/store";
 import { askAssistant } from "../lib/intel";
@@ -37,23 +37,63 @@ function ChatBubble({ message }: { message: ChatMessage }) {
   );
 }
 
-function Composer({ placeholder, onSend, disabled }: { placeholder: string; onSend: (text: string) => void; disabled?: boolean }) {
+function Composer({ placeholder, onSend, disabled, lang }: { placeholder: string; onSend: (text: string) => void; disabled?: boolean; lang: "en" | "ar" }) {
   const [text, setText] = useState("");
+  const [listening, setListening] = useState(false);
+  const recRef = useRef<unknown>(null);
+
   function submit() {
     const trimmed = text.trim();
     if (!trimmed || disabled) return;
     onSend(trimmed);
     setText("");
   }
+
+  // Voice input via the browser's Web Speech API — transcribes into the box so the
+  // user can review/edit before sending. Silently no-ops if unsupported.
+  function toggleMic() {
+    const SR = (window as unknown as { SpeechRecognition?: new () => never; webkitSpeechRecognition?: new () => never });
+    const Ctor = SR.SpeechRecognition ?? SR.webkitSpeechRecognition;
+    if (!Ctor) { setText((t) => t || ""); alert("Voice input isn't supported in this browser — try Chrome."); return; }
+    if (listening) { (recRef.current as { stop: () => void } | null)?.stop(); return; }
+    const rec = new (Ctor as unknown as new () => {
+      lang: string; interimResults: boolean; continuous: boolean;
+      onresult: (e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void; onend: () => void; onerror: () => void;
+      start: () => void; stop: () => void;
+    })();
+    rec.lang = lang === "ar" ? "ar-JO" : "en-US";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e) => {
+      let s = "";
+      for (let i = 0; i < e.results.length; i++) s += e.results[i][0].transcript;
+      setText(s);
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recRef.current = rec;
+    setListening(true);
+    rec.start();
+  }
+
   return (
-    <div className="mt-2 flex gap-2">
+    <div className="mt-2 flex flex-none gap-2">
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit()}
-        placeholder={placeholder}
+        placeholder={listening ? "Listening… speak now" : placeholder}
         className="flex-1 rounded-lg border border-stitch-line bg-stitch-card px-3 py-2.5 text-sm"
       />
+      <button
+        type="button"
+        onClick={toggleMic}
+        title="Speak your question"
+        aria-label="Voice input"
+        className={`grid w-10 flex-none place-items-center rounded-lg border text-lg ${listening ? "animate-pulse border-red-400 bg-red-50 text-red-600" : "border-stitch-line bg-stitch-card text-stitch-muted hover:bg-stitch-soft"}`}
+      >
+        🎤
+      </button>
       <button type="button" onClick={submit} disabled={disabled} className="rounded-lg bg-stitch-brand px-4 text-sm font-bold text-white disabled:opacity-40">
         Send
       </button>
@@ -131,7 +171,7 @@ export function AssistantView() {
       );
     }
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex h-[calc(100vh-72px)] flex-col gap-3">
         <ViewHeader
           category="Assistant"
           crumbExtra={
@@ -142,13 +182,13 @@ export function AssistantView() {
           }
           title={session.title}
         />
-        <div className="flex max-h-[55vh] flex-col gap-2.5 overflow-y-auto pr-1">
+        <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
           {session.messages.map((m, i) => (
             <ChatBubble key={i} message={m} />
           ))}
           {pending && <Thinking />}
         </div>
-        <Composer placeholder={selectedArea ? `Ask about ${selectedArea}…` : "Continue this chat…"} onSend={(t) => send(t)} disabled={pending} />
+        <Composer placeholder={selectedArea ? `Ask about ${selectedArea}…` : "Continue this chat…"} onSend={(t) => send(t)} disabled={pending} lang={language} />
       </div>
     );
   }
@@ -156,9 +196,9 @@ export function AssistantView() {
   // chatnew — empty conversation + input; sending transitions into chatopen.
   const meta = getViewMeta("chatnew");
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex h-[calc(100vh-72px)] flex-col gap-3">
       <ViewHeader {...meta} />
-      <div className="flex max-h-[55vh] flex-col gap-2.5 overflow-y-auto pr-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-1">
         <ChatBubble
           message={{
             role: "bot",
@@ -169,7 +209,7 @@ export function AssistantView() {
         />
         {pending && <Thinking />}
       </div>
-      <Composer placeholder="Ask a question…" onSend={(t) => send(t, true)} disabled={pending} />
+      <Composer placeholder="Ask a question…" onSend={(t) => send(t, true)} disabled={pending} lang={language} />
     </div>
   );
 }

@@ -26,7 +26,8 @@ export function Sidebar() {
   }
 
   return (
-    <nav className="w-full p-2">
+    <nav className="flex h-full w-full flex-col p-2">
+      <div className="flex-1 overflow-y-auto">
       {GROUPS.map((g, i) => (
         <div key={g.label} className="mt-1">
           <button
@@ -63,19 +64,20 @@ export function Sidebar() {
           )}
         </div>
       ))}
+      </div>
 
-      <div className="my-2 h-px bg-stitch-line" />
-
-      <button
-        type="button"
-        onClick={() => setView("settings")}
-        className={`flex w-full items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-left text-[13px] font-bold ${
-          state.view === "settings" ? "text-stitch-brand-dark" : "text-stitch-ink hover:bg-stitch-soft"
-        }`}
-      >
-        <span className="w-5 text-center text-base">⚙</span>
-        Settings
-      </button>
+      <div className="mt-2 border-t border-stitch-line pt-2">
+        <button
+          type="button"
+          onClick={() => setView("settings")}
+          className={`flex w-full items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-left text-[13px] font-bold ${
+            state.view === "settings" ? "text-stitch-brand-dark" : "text-stitch-ink hover:bg-stitch-soft"
+          }`}
+        >
+          <span className="w-5 text-center text-base">⚙</span>
+          Settings
+        </button>
+      </div>
     </nav>
   );
 }
