@@ -112,6 +112,18 @@ export async function requestPropertyValuation(input: ValuationInput): Promise<V
   return tryPost<ValuationResult>("/value-property", input, 45000);
 }
 
+// --- Grounded assistant (POST /ask) -----------------------------------------
+
+export interface AskResult {
+  answer: string | null;
+  facts?: Record<string, unknown>;
+  llm_available?: boolean;
+}
+
+export async function askAssistant(question: string, area: string | null, language: "en" | "ar"): Promise<AskResult | null> {
+  return tryPost<AskResult>("/ask", { question, area: area ?? undefined, language }, 45000);
+}
+
 // --- Decomposed confidence --------------------------------------------------
 
 export const COMPONENT_ORDER = [

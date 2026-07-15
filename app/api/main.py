@@ -364,6 +364,13 @@ class ResidualRequest(BaseModel):
     developer_profit_pct: float = Field(builder.DEVELOPER_PROFIT_PCT_DEFAULT, ge=0, le=1)
 
 
+class AskRequest(BaseModel):
+    """A free-text question for the grounded assistant, optionally about an area."""
+    question: str = Field(..., min_length=1, max_length=500)
+    area: Optional[str] = None
+    language: Literal["en", "ar"] = "en"
+
+
 class ValuePropertyRequest(BaseModel):
     """A seller drops a pin (lat/lng) on their building and describes it."""
     lat: float = Field(..., ge=29, le=34)
@@ -429,6 +436,55 @@ def post_residual_land_value(req: ResidualRequest):
         cost_source=cost_source, gdv_defaulted=gdv_defaulted, cost_defaulted=cost_defaulted,
         construction_caveat=caveat)
     return {"neighborhood": canonical, **result}
+
+
+def _ask_facts(area: Optional[str]) -> dict[str, Any]:
+    """Gather REAL facts for the assistant to answer from (never fabricated)."""
+    facts: dict[str, Any] = {"market": "Amman, Jordan"}
+    if not area:
+        return facts
+    cov: Coverage = app.state.coverage
+    canonical = cov.resolve(area) or area
+    facts["area"] = canonical
+    if cov.resolve(area):
+        try:
+            subj = Subject(neighborhood=canonical, property_type="apartment", area_m2=175, finish_quality="high")
+            rd = recommend(subj, app.state.bundle).to_dict()
+            if rd.get("recommended_price_jd_m2", 0) > 0:
+                facts["engine_recommended_jd_m2"] = round(rd["recommended_price_jd_m2"])
+                facts["price_range_jd_m2"] = [round(rd.get("min_safe_price_jd_m2", 0)), round(rd.get("premium_price_jd_m2", 0))]
+                conf = rd.get("confidence")
+                if isinstance(conf, dict):
+                    facts["confidence"] = conf.get("level")
+        except Exception:
+            pass
+    import sqlite3
+    import statistics as st
+    c = sqlite3.connect(_DB_PATH)
+    try:
+        rows = c.execute(
+            "SELECT price_jd, area_m2 FROM listings WHERE neighborhood=? AND listing_type='sale' "
+            "AND property_type='apartment' AND price_jd>0 AND area_m2>0", (canonical,)).fetchall()
+        ppm = [p / a for p, a in rows if 50 < p / a < 5000]
+        if ppm:
+            facts["median_asking_sale_jd_m2"] = round(st.median(ppm))
+            facts["sale_listings_count"] = len(ppm)
+        lp = c.execute("SELECT price_typical_jd_m2 FROM re_land_prices WHERE canonical_neighborhood=? OR area_en=? LIMIT 1",
+                       (canonical, canonical)).fetchone()
+        if lp and lp[0] and str(lp[0]).upper() != "NULL":
+            facts["land_price_jd_m2"] = float(lp[0])
+    except Exception:
+        pass
+    finally:
+        c.close()
+    return facts
+
+
+@app.post("/ask")
+def post_ask(req: AskRequest):
+    facts = _ask_facts(req.area)
+    answer = llm.ask(req.question, facts, req.language)
+    return {"answer": answer, "facts": facts, "llm_available": llm.available()}
 
 
 @app.post("/value-property")

@@ -1,12 +1,12 @@
-"""Explain-only LLM narration for the seller valuation.
+"""Explain-only LLM layer: valuation narration + a grounded Q&A assistant.
 
-STRUCTURAL GUARDRAIL (the manager's rule): the model may ONLY rephrase the numbers
-we pass it into clear prose in the requested language. It must never invent, change,
-or add a number. The engine owns every figure; the LLM owns only the words.
+STRUCTURAL GUARDRAIL (the manager's rule): the model may ONLY use the FACTS we
+pass it — never invent, change, or add a number. The engine owns every figure;
+the LLM owns only the words. If the answer isn't in the facts, it must say so.
 
-Keys come from the environment (.env, gitignored). Provider order: OpenAI -> Groq
--> Gemini; if none is configured/reachable, narrate() returns None and the API
-falls back to a plain templated sentence, so the product never depends on the LLM.
+Keys come from the environment (.env, gitignored). Provider order OpenAI -> Groq
+-> Gemini; if none is reachable, functions return None and the caller falls back
+to a plain template, so the product never depends on the LLM.
 """
 from __future__ import annotations
 import json
@@ -18,68 +18,42 @@ try:
 except Exception:  # pragma: no cover
     requests = None  # type: ignore
 
-_SYSTEM = (
-    "You are a real-estate valuation report writer for Jordan. You will be given a "
-    "JSON object of FACTS (prices, areas, counts, dates) that were computed by a "
-    "pricing engine. Write a short, clear explanation for a property owner. "
-    "ABSOLUTE RULES: (1) Use ONLY numbers present in the FACTS — never invent, round "
-    "differently, estimate, or add any figure. (2) If a fact is missing, do not "
-    "mention it. (3) No investment advice or guarantees; describe what the numbers "
-    "mean. Write 3-5 sentences."
-)
+
+def _lang(language: str) -> str:
+    return "Reply in Arabic." if str(language).lower().startswith("ar") else "Reply in English."
 
 
-def _lang_instruction(language: str) -> str:
-    return "Write the reply in Arabic." if str(language).lower().startswith("ar") else "Write the reply in English."
-
-
-def _openai(facts: dict[str, Any], language: str) -> str | None:
+def _openai(system: str, user: str) -> str | None:
     key = os.environ.get("OPENAI_API_KEY")
     if not key or not requests:
         return None
     r = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        json={
-            "model": os.environ.get("OPENAI_MODEL", "gpt-4o-mini"),
-            "temperature": 0.2,
-            "max_tokens": 320,
-            "messages": [
-                {"role": "system", "content": _SYSTEM + " " + _lang_instruction(language)},
-                {"role": "user", "content": "FACTS:\n" + json.dumps(facts, ensure_ascii=False)},
-            ],
-        },
+        json={"model": os.environ.get("OPENAI_MODEL", "gpt-4o-mini"), "temperature": 0.2,
+              "max_tokens": 380, "messages": [{"role": "system", "content": system},
+                                              {"role": "user", "content": user}]},
         timeout=30,
     )
-    if r.status_code != 200:
-        return None
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return r.json()["choices"][0]["message"]["content"].strip() if r.status_code == 200 else None
 
 
-def _groq(facts: dict[str, Any], language: str) -> str | None:
+def _groq(system: str, user: str) -> str | None:
     key = os.environ.get("GROQ_API_KEY")
     if not key or not requests:
         return None
     r = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        json={
-            "model": os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
-            "temperature": 0.2,
-            "max_tokens": 320,
-            "messages": [
-                {"role": "system", "content": _SYSTEM + " " + _lang_instruction(language)},
-                {"role": "user", "content": "FACTS:\n" + json.dumps(facts, ensure_ascii=False)},
-            ],
-        },
+        json={"model": os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"), "temperature": 0.2,
+              "max_tokens": 380, "messages": [{"role": "system", "content": system},
+                                              {"role": "user", "content": user}]},
         timeout=30,
     )
-    if r.status_code != 200:
-        return None
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return r.json()["choices"][0]["message"]["content"].strip() if r.status_code == 200 else None
 
 
-def _gemini(facts: dict[str, Any], language: str) -> str | None:
+def _gemini(system: str, user: str) -> str | None:
     key = os.environ.get("GOOGLE_API_KEY")
     if not key or not requests:
         return None
@@ -87,11 +61,9 @@ def _gemini(facts: dict[str, Any], language: str) -> str | None:
     r = requests.post(
         f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
         headers={"Content-Type": "application/json"},
-        json={
-            "system_instruction": {"parts": [{"text": _SYSTEM + " " + _lang_instruction(language)}]},
-            "contents": [{"parts": [{"text": "FACTS:\n" + json.dumps(facts, ensure_ascii=False)}]}],
-            "generationConfig": {"temperature": 0.2, "maxOutputTokens": 320},
-        },
+        json={"system_instruction": {"parts": [{"text": system}]},
+              "contents": [{"parts": [{"text": user}]}],
+              "generationConfig": {"temperature": 0.2, "maxOutputTokens": 380}},
         timeout=30,
     )
     if r.status_code != 200:
@@ -99,12 +71,10 @@ def _gemini(facts: dict[str, Any], language: str) -> str | None:
     return r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
 
 
-def narrate(facts: dict[str, Any], language: str = "en") -> str | None:
-    """Return an explain-only narration of `facts` in `language`, or None if no
-    provider is available. Never raises — the caller falls back to a template."""
+def _chat(system: str, user: str) -> str | None:
     for provider in (_openai, _groq, _gemini):
         try:
-            out = provider(facts, language)
+            out = provider(system, user)
             if out:
                 return out
         except Exception:
@@ -112,9 +82,29 @@ def narrate(facts: dict[str, Any], language: str = "en") -> str | None:
     return None
 
 
+def narrate(facts: dict[str, Any], language: str = "en") -> str | None:
+    system = (
+        "You are a real-estate valuation report writer for Jordan. Write a short, clear "
+        "explanation (3-5 sentences) of the given FACTS for a property owner. Use ONLY numbers "
+        "present in the FACTS — never invent, re-round, estimate, or add a figure. No investment "
+        "advice. " + _lang(language)
+    )
+    return _chat(system, "FACTS:\n" + json.dumps(facts, ensure_ascii=False))
+
+
+def ask(question: str, facts: dict[str, Any], language: str = "en") -> str | None:
+    system = (
+        "You are a helpful real-estate analyst for Jordan (Amman market). Answer the user's "
+        "question using ONLY the FACTS provided. Rules: (1) never invent, change, or estimate a "
+        "number that isn't in FACTS; (2) if the FACTS don't contain the answer, say you don't have "
+        "that data yet rather than guessing; (3) be concise (2-4 sentences); (4) no guarantees or "
+        "investment advice. " + _lang(language)
+    )
+    user = f"FACTS:\n{json.dumps(facts, ensure_ascii=False)}\n\nQUESTION: {question}"
+    return _chat(system, user)
+
+
 def available() -> bool:
     return bool(
-        os.environ.get("OPENAI_API_KEY")
-        or os.environ.get("GROQ_API_KEY")
-        or os.environ.get("GOOGLE_API_KEY")
+        os.environ.get("OPENAI_API_KEY") or os.environ.get("GROQ_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     )
