@@ -46,6 +46,7 @@ const DEFAULT_LAYERS: LayerState = {
 // sync with scrapers/emit_national.py so the precomputed brief and the form agree.
 const DEFAULT_SUBJECT: SubjectInput = {
   neighborhood: "",
+  property_type: "apartment",
   area_m2: 175,
   bedrooms: 3,
   floor_level: 4,

@@ -4,6 +4,13 @@ import type { SubjectInput } from "../lib/api";
 const VIEW = ["unknown", "none", "city", "garden", "mountain", "panoramic"];
 const PARKING = ["unknown", "none", "open", "covered"];
 const FINISH = ["unknown", "basic", "standard", "high", "luxury"];
+// Residential (apartment/villa) vs commercial — commercial prices higher, and the
+// engine uses only same-type comparables, so this materially changes the price.
+const PROPERTY_TYPE: [string, string][] = [
+  ["apartment", "Apartment · residential"],
+  ["villa", "Villa · residential"],
+  ["commercial", "Commercial · offices & shops"],
+];
 
 // The subject property the builder is pricing. Editing any field recomputes
 // (debounced upstream); "Analyze" forces an immediate recompute.
@@ -57,6 +64,23 @@ export function SubjectForm({
           ))}
         </select>
       </Field>
+
+      <div className="mt-2">
+        <Field id="f-type" label="Property type">
+          <select
+            id="f-type"
+            value={subject.property_type ?? "apartment"}
+            onChange={str("property_type")}
+            className="input"
+          >
+            {PROPERTY_TYPE.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
         <Field id="f-area" label="Size (m²)">

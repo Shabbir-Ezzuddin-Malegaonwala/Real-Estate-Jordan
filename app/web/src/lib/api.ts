@@ -20,6 +20,9 @@ export interface NeighborhoodMeta {
 // the rest sharpen the estimate when known.
 export interface SubjectInput {
   neighborhood: string;
+  // apartment | villa are residential; commercial (offices/shops) prices higher.
+  // Drives which comparables the engine uses. Defaults to apartment.
+  property_type?: "apartment" | "villa" | "commercial" | "land";
   area_m2: number;
   floor_level?: number;
   total_floors?: number;
