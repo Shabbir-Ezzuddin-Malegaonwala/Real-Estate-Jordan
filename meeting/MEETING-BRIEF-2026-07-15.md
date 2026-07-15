@@ -65,6 +65,22 @@ Compiled from Mohammad Bhai Jamaal's WhatsApp + two voice notes (transcripts
 Goal: she trusts the sources + methodology, is comfortable, understands there's real
 work left to productionalize, and tells us what she wants next.
 
+## Pricing methodology — talking points (from Kartikeya's side, demo-safe + honest)
+Kartikeya presents this section; these are the lines to lean on:
+1. **Comparable-sales method** — how a good appraiser works, but at scale and
+   consistently — **bounded by a cost floor (DoS build cost) and an income ceiling
+   (area yield).** Transparent, inspectable, not a black box.
+2. Every number is **provenance-stamped** (source file, comp count, snapshot date)
+   and carries a **confidence rating (H/M/L)** with plain reasons.
+3. The differentiator is **honesty**: attributes we can't derive from the market
+   (finish, smart-home) are marked **"not derivable"** rather than faked — we never
+   invent a premium.
+4. Built on **~52.6k real Jordanian listings** + DoS official cost + per-area yields
+   + spatial context — bottom-up Jordanian data, **not a global model with a
+   "Jordan" switch.**
+5. We state the limits openly (asking- not transaction-prices; thin premium comps) —
+   that **candour is the trust story** with a developer client.
+
 ## Data sources — the authenticity list (for the client's trust)
 Real, sourced — NOT random numbers:
 - **Property listings (build the model):** Bayut, OpenSooq (+ Homes, EurekaJo,
