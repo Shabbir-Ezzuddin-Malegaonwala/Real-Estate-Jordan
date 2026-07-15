@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { AreaBundle, BuildabilityItem, LaunchScenario } from "../lib/contract";
+import { requestResidual } from "../lib/intel";
 import { Card, Tile } from "../ui";
 import { HBarList, MarginBar } from "../ui/charts";
 
@@ -60,8 +61,77 @@ function BuildabilityCard({ items }: { items: BuildabilityItem[] }) {
   );
 }
 
+// Editable inputs that re-run the residual-land-value calc for THIS area, so the
+// land value / margin / build cost react to the developer's own plot/cost/profit.
+function InputsPanel({
+  area, gdv, defaults, onResult,
+}: {
+  area: string;
+  gdv: number;
+  defaults: { buildable: number; construction: number; profit: number; finish: string };
+  onResult: (landValueK: number | null, profit: number, construction: number) => void;
+}) {
+  const [buildable, setBuildable] = useState(defaults.buildable);
+  const [construction, setConstruction] = useState(defaults.construction);
+  const [profit, setProfit] = useState(defaults.profit);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function analyse() {
+    setLoading(true);
+    setErr(null);
+    const r = await requestResidual(
+      { neighborhood: area, buildable_area_m2: buildable, construction_cost_per_m2: construction,
+        finance_pct: 6, fees_pct: 5, profit_pct: profit },
+      gdv,
+    );
+    setLoading(false);
+    if (!r || typeof r.max_land_value_per_m2 !== "number") {
+      setErr("Couldn't recompute — is the API running?");
+      onResult(null, profit, construction);
+      return;
+    }
+    onResult(Math.round(r.max_land_value_per_m2), profit, construction);
+  }
+
+  const fld = "w-full rounded-md border border-stitch-soft px-2 py-1.5 text-sm text-stitch-ink focus:border-stitch-brand focus:outline-none";
+  const lbl = "mb-1 block text-[11px] font-semibold uppercase tracking-wide text-stitch-muted";
+  return (
+    <Card>
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-stitch-muted">Your inputs — press Analyse</div>
+      <div className="grid grid-cols-3 gap-2">
+        <div>
+          <label className={lbl} htmlFor="cp-build">Buildable (m²)</label>
+          <input id="cp-build" type="number" min={100} className={fld} value={buildable} onChange={(e) => setBuildable(Number(e.target.value) || 0)} />
+        </div>
+        <div>
+          <label className={lbl} htmlFor="cp-cost">Build JD/m²</label>
+          <input id="cp-cost" type="number" min={100} className={fld} value={construction} onChange={(e) => setConstruction(Number(e.target.value) || 0)} />
+        </div>
+        <div>
+          <label className={lbl} htmlFor="cp-profit">Target profit %</label>
+          <input id="cp-profit" type="number" min={5} max={50} className={fld} value={profit} onChange={(e) => setProfit(Number(e.target.value) || 0)} />
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-3">
+        <button type="button" onClick={analyse} disabled={loading}
+          className="rounded-md bg-stitch-brand px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-40">
+          {loading ? "Analysing…" : "Analyse"}
+        </button>
+        <span className="text-[12px] text-stitch-muted">Land value below updates for a {gdv.toLocaleString()} JD/m² sale.</span>
+      </div>
+      {err && <p className="mt-2 text-[12.5px] text-red-600">{err}</p>}
+    </Card>
+  );
+}
+
 export function CostProfitView({ bundle, focus }: { bundle: AreaBundle; focus: Focus }) {
   const { costProfit, summary } = bundle;
+  // Live overrides from the InputsPanel (null until the user presses Analyse).
+  const [landK, setLandK] = useState<number | null>(null);
+  const [profitPct, setProfitPct] = useState<number>(costProfit.marginPct);
+  const [buildJdM2, setBuildJdM2] = useState<number>(costProfit.buildCostJdM2);
+  const shownLandK = landK ?? costProfit.landValueK;
   // Fallback scenarios when the real adapter hasn't populated costProfit.scenarios
   // (or in mock mode) — derived from the same min/rec/premium band shown in Pricing,
   // so the sub-view still renders honestly instead of going blank.
@@ -84,18 +154,18 @@ export function CostProfitView({ bundle, focus }: { bundle: AreaBundle; focus: F
     land: (
       <Tile
         label="Land value — most you can pay"
-        value={costProfit.landValueK.toLocaleString()}
+        value={shownLandK.toLocaleString()}
         unit="K JD/dunum"
         tone="brand"
-        hint="Above this, the project stops making a normal profit."
+        hint={landK != null ? "Recomputed from your inputs — above this the project stops making your target profit." : "Above this, the project stops making a normal profit. Press Analyse to use your own inputs."}
       />
     ),
     margin: (
       <Card>
         <div className="text-xs font-semibold uppercase tracking-wide text-stitch-muted">Profit margin</div>
-        <div className="mt-1 text-[32px] font-bold leading-none text-stitch-green">{costProfit.marginPct}%</div>
+        <div className="mt-1 text-[32px] font-bold leading-none text-stitch-green">{profitPct}%</div>
         <div className="mt-3">
-          <MarginBar costPct={100 - costProfit.marginPct} profitPct={costProfit.marginPct} />
+          <MarginBar costPct={100 - profitPct} profitPct={profitPct} />
         </div>
         <div className="mt-2 text-[13px] text-stitch-muted">Developers usually target 15–25%.</div>
       </Card>
@@ -103,7 +173,7 @@ export function CostProfitView({ bundle, focus }: { bundle: AreaBundle; focus: F
     build: (
       <Tile
         label="Estimated build cost"
-        value={`~${costProfit.buildCostJdM2.toLocaleString()}`}
+        value={`~${buildJdM2.toLocaleString()}`}
         unit="JD/m²"
         hint={`${costProfit.finish} finish · from official cost data.`}
       />
@@ -116,22 +186,15 @@ export function CostProfitView({ bundle, focus }: { bundle: AreaBundle; focus: F
 
   return (
     <div className="flex flex-col gap-3">
+      <InputsPanel
+        area={summary.name}
+        gdv={summary.price}
+        defaults={{ buildable: Math.round(costProfit.plotSizeDunum * 1000), construction: costProfit.buildCostJdM2, profit: costProfit.marginPct, finish: costProfit.finish }}
+        onResult={(k, p, c) => { setLandK(k); setProfitPct(p); setBuildJdM2(c); }}
+      />
       {order.map((k) => (
         <div key={k}>{tiles[k]}</div>
       ))}
-      <Card>
-        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-stitch-muted">Inputs</div>
-        <div className="flex flex-col gap-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-stitch-muted">Plot size</span>
-            <span className="font-semibold text-stitch-ink">{costProfit.plotSizeDunum} dunum</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-stitch-muted">Finish</span>
-            <span className="font-semibold text-stitch-ink">{costProfit.finish}</span>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }
