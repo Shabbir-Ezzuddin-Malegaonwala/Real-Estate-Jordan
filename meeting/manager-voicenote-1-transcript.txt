@@ -1,0 +1,19 @@
+Speaker 1 [0:00 - 0:30]: I think the order will be that you first show the dashboard, very high level. You just tell okay, how to use the dashboard for getting pricing. Just talk about two, three main things in the dashboard and then say, okay, we'll come to the dashboard later. And let's first understand the data sources and the pricing methodology behind the data sources and then we'll go deeper into the dashboard. The reason being if you show the dashboard then she'll be excited, okay, so this is like already
+
+Speaker 1 [0:30 - 0:40]: giving what I want and then she'll be more interested to understand the data sources and she'll be more interested to understand the pricing methodology so that's the reason you give it high level and then
+
+Speaker 1 [0:41 - 1:11]: in and then find find in the and after showing high level methodology about like show all the data sources what about data you're getting okay don't tell them don't tell her that you have already implemented fully recurring pipeline like crunch your pipeline don't tell her this is something which you will tell so it is the first POC so you won't claim that everything is done otherwise it will be a problem so just tell her that these are the data sources now we have identified the data source in the next
+
+Speaker 1 [1:11 - 1:41]: steps we can make a full recurring before when we are deploying to the production then it will be a fully recurring pipeline which will run every day or every hour or whatever based on the type of data and it will keep on updated. So that's actually production deployment work which we will do next. So that keep it don't tell that you have done that part okay. And then go to the pricing methodology. In the pricing methodology also tell high level what is the methodology. Okay we need not give the exact details the detail methodology
+
+Speaker 1 [1:41 - 2:11]: medical model is not required. It's a PUC. We are not sharing the exact mathematical model, but tell her the overall approach which should be very, very clear to her and understanding. Same thing data sources, make it very clear. She should understand high-level categories of data sources, how it will be used, and then parasite methodology and how overall structure looks like. The idea is that the individual listing from open through by youth and those things should is built to build is used to build the model.
+
+Speaker 1 [2:11 - 2:17]: And government data is used to validate those numbers. That's one high-level story. And then
+
+Speaker 1 [2:18 - 2:39]: Uh, there are sources with granular data and there are sources with not so granular data. So sources with granular data is used to get an idea for the coefficients for individual parameters and then the bigger data set is used to get the overall prediction about the pricing. So.
+
+Speaker 1 [2:41 - 2:59]: the data which is the the most of the data is used for prediction. The granular data which is less still there is used for all different types of features and parameters coefficient. So all data is used to validate it. And so on. So think in that direction and make it very simple.
+
+Speaker 2 [3:00 - 3:00]: Okay
+
+Speaker 1 [3:00 - 3:09]: And then finally, go into more detail on the dashboard and explain other advanced features also of the dashboard. This is how we should do it.
