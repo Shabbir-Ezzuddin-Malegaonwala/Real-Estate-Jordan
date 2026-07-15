@@ -96,12 +96,49 @@ def ask(question: str, facts: dict[str, Any], language: str = "en") -> str | Non
     system = (
         "You are a helpful real-estate analyst for Jordan (Amman market). Answer the user's "
         "question using ONLY the FACTS provided. Rules: (1) never invent, change, or estimate a "
-        "number that isn't in FACTS; (2) if the FACTS don't contain the answer, say you don't have "
-        "that data yet rather than guessing; (3) be concise (2-4 sentences); (4) no guarantees or "
-        "investment advice. " + _lang(language)
+        "number that isn't in FACTS; (2) be concise (2-4 sentences); (3) no guarantees or "
+        "investment advice. IMPORTANT: if the FACTS do not contain what's needed to answer, reply "
+        "with EXACTLY the token NEED_WEB and nothing else — do NOT apologise or explain. " + _lang(language)
     )
     user = f"FACTS:\n{json.dumps(facts, ensure_ascii=False)}\n\nQUESTION: {question}"
     return _chat(system, user)
+
+
+def _tavily_search(query: str, max_results: int = 4) -> list[dict[str, Any]] | None:
+    key = os.environ.get("TAVILY_API_KEY")
+    if not key or not requests:
+        return None
+    try:
+        r = requests.post(
+            "https://api.tavily.com/search",
+            json={"api_key": key, "query": query, "max_results": max_results, "search_depth": "basic"},
+            timeout=25,
+        )
+        return r.json().get("results", []) if r.status_code == 200 else None
+    except Exception:
+        return None
+
+
+def web_answer(question: str, language: str = "en") -> dict[str, Any] | None:
+    """Fallback when our data can't answer: search the web (Tavily) and synthesize
+    an answer FROM the results only, flagged as web-sourced with citations."""
+    results = _tavily_search(f"{question} Jordan Amman real estate 2026")
+    if not results:
+        return None
+    ctx = "\n\n".join(
+        f"[{i + 1}] {r.get('title', '')}\n{r.get('content', '')[:600]}\nURL: {r.get('url', '')}"
+        for i, r in enumerate(results)
+    )
+    system = (
+        "Answer a Jordan real-estate question using ONLY these WEB SEARCH RESULTS (our own database "
+        "did not have it). Be concise (2-4 sentences). Begin with 'From a web search: '. Use only "
+        "what the results say; if they don't answer it, say so. Do not add numbers not in the results. "
+        + _lang(language)
+    )
+    ans = _chat(system, f"WEB RESULTS:\n{ctx}\n\nQUESTION: {question}")
+    if not ans:
+        return None
+    return {"answer": ans, "sources": [r.get("url") for r in results if r.get("url")][:4]}
 
 
 def available() -> bool:

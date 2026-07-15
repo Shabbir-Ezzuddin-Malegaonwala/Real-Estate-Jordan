@@ -38,6 +38,8 @@ export type ViewKey =
 export interface ChatMessage {
   role: "user" | "bot";
   text: string;
+  fromInternet?: boolean; // answered from a web search (not our data)
+  sources?: string[];     // source URLs when fromInternet
 }
 
 export interface ChatSession {
@@ -57,6 +59,8 @@ export interface AppState {
   sellPin: [number, number] | null;
   // Report language (persisted) — drives LLM/AI output + valuation narration language.
   language: "en" | "ar";
+  // A question queued for the Assistant (e.g. from a search miss) — consumed once.
+  pendingAsk: string | null;
   view: ViewKey;
   navOpen: boolean;
   infoOpen: boolean;
@@ -141,6 +145,7 @@ function initState(userId: string): AppState {
     subject,
     sellPin: null,
     language: persisted?.language ?? "en",
+    pendingAsk: null,
     view: DEFAULT_VIEW,
     navOpen: true,
     infoOpen: true,
@@ -156,6 +161,7 @@ type Action =
   | { type: "SET_SUBJECT"; subject: Subject }
   | { type: "SET_SELL_PIN"; pin: [number, number] | null }
   | { type: "SET_LANGUAGE"; language: "en" | "ar" }
+  | { type: "SET_PENDING_ASK"; question: string | null }
   | { type: "SET_VIEW"; view: ViewKey }
   | { type: "TOGGLE_NAV" }
   | { type: "TOGGLE_INFO" }
@@ -180,6 +186,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, sellPin: action.pin };
     case "SET_LANGUAGE":
       return { ...state, language: action.language };
+    case "SET_PENDING_ASK":
+      return { ...state, pendingAsk: action.question };
     case "SET_VIEW":
       return { ...state, view: action.view };
     case "TOGGLE_NAV":
@@ -227,6 +235,7 @@ export interface AppStateContextValue {
   setSubject: (subject: Subject) => void;
   setSellPin: (pin: [number, number] | null) => void;
   setLanguage: (language: "en" | "ar") => void;
+  setPendingAsk: (question: string | null) => void;
   setView: (view: ViewKey) => void;
   toggleNav: () => void;
   toggleInfo: () => void;
@@ -265,6 +274,7 @@ export function AppStateProvider({
       setUnit: (unit) => dispatch({ type: "SET_UNIT", unit }),
       setSellPin: (pin) => dispatch({ type: "SET_SELL_PIN", pin }),
       setLanguage: (language) => dispatch({ type: "SET_LANGUAGE", language }),
+      setPendingAsk: (question) => dispatch({ type: "SET_PENDING_ASK", question }),
       setSubject: (subject) => {
         dispatch({ type: "SET_SUBJECT", subject });
         // Repoint the engine at the new unit, then reprice the selected area and

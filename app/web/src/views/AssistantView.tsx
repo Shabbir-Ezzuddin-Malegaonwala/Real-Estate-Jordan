@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "../lib/store";
 import type { ChatMessage } from "../lib/store";
 import { askAssistant } from "../lib/intel";
@@ -10,6 +10,10 @@ function formatWhen(iso: string): string {
   return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+function hostOf(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return url; }
+}
+
 function ChatBubble({ message }: { message: ChatMessage }) {
   const isBot = message.role === "bot";
   return (
@@ -18,7 +22,17 @@ function ChatBubble({ message }: { message: ChatMessage }) {
         isBot ? "self-start border border-stitch-line bg-stitch-card text-stitch-ink" : "self-end bg-[#e7f1fb] text-stitch-brand-dark"
       }`}
     >
-      {isBot ? `🤖 ${message.text}` : message.text}
+      {isBot && message.fromInternet && (
+        <span className="mb-1 inline-block rounded bg-[#fdf0dd] px-1.5 py-0.5 text-[10px] font-bold uppercase text-[#b06a1a]">🌐 from the web</span>
+      )}
+      <div>{isBot ? `🤖 ${message.text}` : message.text}</div>
+      {isBot && message.sources && message.sources.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[11px]">
+          {message.sources.map((u, i) => (
+            <a key={i} href={u} target="_blank" rel="noreferrer" className="text-stitch-brand hover:underline">{hostOf(u)}</a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -52,9 +66,20 @@ function Thinking() {
 }
 
 export function AssistantView() {
-  const { state, openChat, addMessage, setView } = useApp();
+  const { state, openChat, addMessage, setView, setPendingAsk } = useApp();
   const { view, chats, openChatId, selectedArea, language } = state;
   const [pending, setPending] = useState(false);
+
+  // A search miss ("area not in our data → ask the Assistant") queues a question;
+  // consume it once and auto-ask (which triggers the web fallback if needed).
+  useEffect(() => {
+    if (state.pendingAsk) {
+      const q = state.pendingAsk;
+      setPendingAsk(null);
+      void send(q, true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.pendingAsk]);
 
   // Ask the grounded assistant (real facts, explain-only). Adds the user's message,
   // shows a thinking state, then appends the answer (or an honest failure line).
@@ -68,7 +93,7 @@ export function AssistantView() {
       || (res && !res.llm_available
         ? "The assistant isn't connected to a language model yet — add a key and I'll answer from the live data."
         : "I couldn't reach the market data just now — please try again.");
-    addMessage({ role: "bot", text: answer });
+    addMessage({ role: "bot", text: answer, fromInternet: res?.from_internet, sources: res?.sources });
   }
 
   if (view === "chathist") {

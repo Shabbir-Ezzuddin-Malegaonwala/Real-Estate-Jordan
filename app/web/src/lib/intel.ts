@@ -116,6 +116,9 @@ export async function requestPropertyValuation(input: ValuationInput): Promise<V
 
 export interface AskResult {
   answer: string | null;
+  source?: "data" | "web" | "none";
+  from_internet?: boolean;
+  sources?: string[];
   facts?: Record<string, unknown>;
   llm_available?: boolean;
 }

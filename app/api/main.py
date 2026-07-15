@@ -497,7 +497,20 @@ def get_market_brief():
 def post_ask(req: AskRequest):
     facts = _ask_facts(req.area)
     answer = llm.ask(req.question, facts, req.language)
-    return {"answer": answer, "facts": facts, "llm_available": llm.available()}
+    # Internet fallback (manager's rule): if our data can't answer, the model
+    # returns NEED_WEB — then we web-search and flag that we did.
+    if answer and answer.strip().upper().startswith("NEED_WEB"):
+        web = llm.web_answer(req.question, req.language)
+        if web:
+            return {"answer": web["answer"], "source": "web", "from_internet": True,
+                    "sources": web["sources"], "facts": facts, "llm_available": llm.available()}
+        answer = None  # web unavailable -> honest empty below
+    if not answer:
+        answer = "I don't have that in our data, and a web lookup wasn't available just now."
+        return {"answer": answer, "source": "none", "from_internet": False,
+                "facts": facts, "llm_available": llm.available()}
+    return {"answer": answer, "source": "data", "from_internet": False,
+            "facts": facts, "llm_available": llm.available()}
 
 
 @app.post("/value-property")

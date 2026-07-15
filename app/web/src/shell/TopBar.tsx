@@ -9,7 +9,7 @@ const ACCOUNT_EMAIL = "mohammad@noble.co";
 const ACCOUNT_INITIAL = "M";
 
 export function TopBar() {
-  const { state, setArea, setView, toggleNav, toggleInfo } = useApp();
+  const { state, setArea, setView, toggleNav, toggleInfo, setPendingAsk } = useApp();
   const areas = useMemo(() => mockSource.listAreas(), []);
 
   const [query, setQuery] = useState("");
@@ -39,6 +39,8 @@ export function TopBar() {
   }
 
   function askAssistant() {
+    const q = query.trim();
+    if (q) setPendingAsk(`Tell me about ${q} in Jordan real estate — price and market.`);
     setView("chatnew");
     setSearchOpen(false);
   }
