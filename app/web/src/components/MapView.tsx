@@ -577,7 +577,9 @@ function updateLabelVisibility(map: maplibregl.Map, markersRef: { current: HTMLE
   const z = map.getZoom();
   for (const el of markersRef.current) {
     const isCity = el.dataset.kind === "city";
-    el.style.display = (isCity ? z >= 8.5 : z >= 11) ? "" : "none";
+    // Governorate capitals from a regional zoom (whole country reads "named");
+    // dense Amman submarkets only once zoomed in, so they never pile into mush.
+    el.style.display = (isCity ? z >= 7.3 : z >= 11) ? "" : "none";
   }
 }
 
