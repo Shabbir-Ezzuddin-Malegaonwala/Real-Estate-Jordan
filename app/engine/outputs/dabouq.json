@@ -1,5 +1,5 @@
 {
-  "location_id": "demo-dabouq",
+  "location_id": null,
   "neighborhood": "Dabouq",
   "property_type": "apartment",
   "min_safe_price_jd_m2": 617.8,
@@ -7,13 +7,88 @@
   "premium_price_jd_m2": 1283.0,
   "confidence": {
     "label": "M",
-    "numeric": 0.605,
+    "numeric": 0.493,
     "interval_jd_m2": [
       617.8,
       1283.0
-    ]
+    ],
+    "components": {
+      "data_coverage": {
+        "score": 100,
+        "reason": "12 comparable(s) after outlier filtering; full weight at 8+"
+      },
+      "comp_quality": {
+        "score": 21,
+        "reason": "adjusted comparables vary 28% (tighter = higher quality)"
+      },
+      "gov_evidence": {
+        "score": 75,
+        "reason": "CBJ price index present but lagged; construction-cost floor available"
+      },
+      "future_signals": {
+        "score": 14,
+        "reason": "development score 0.408 from collected infrastructure/policy evidence (saturates at 3.0)"
+      },
+      "market_freshness": {
+        "score": null,
+        "reason": "comparables carry no listing dates — freshness not scorable"
+      }
+    }
   },
   "evidence_objects": [
+    {
+      "factor": "Finish quality (high)",
+      "adjustment": "-12.6%",
+      "confidence": "Low",
+      "method": "paired median differential (n_high=9, n_luxury=156)",
+      "datasets": [
+        "listings"
+      ],
+      "sources": [
+        {
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/flat-roof-with-terrace-for-sale-in-dabouq-with-a-total-area-of-375m/HMM-S-5843",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-with-a-terrace-for-sale-in-dabouq-174m/HMM-S-7518",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/dd53de73-e047-4f1d-9a8c-8a5b5e7e2638",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/ground-floor-apartment-with-a-garden-for-sale-in-dabouq-172m/HMM-S-7515",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/2dd010a3-f197-423e-b84d-8e5dfef158a9",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "Homes-Jordan",
+          "url": "https://www.homes-jordan.com/en/sale/apartments/apartment-for-sale-in-dabouq-with-a-building-area-of-170m/HMM-S-6643",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "EurekaJo",
+          "url": "https://eurekajo.com/Realestates/Details/f8acc7be-cebe-434f-b2f9-e9aa5e75a4c1",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "AbuJudom",
+          "url": "https://www.abujudom.com/Property/Details/33954/High-End-Roof-for-Sale-in-Dabouq-%7C-Under-Construction-in-Prime-Area",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Subject's finish quality ('high') lists -12.6% vs the typical unit in Dabouq, from matched-pair evidence."
+    },
     {
       "factor": "Size (per m²)",
       "adjustment": "-0.0% per unit",
@@ -86,10 +161,28 @@
       "explanation": "Portal prices are asking prices, not sales. A documented 5–15% gap is applied to estimate the transaction level."
     },
     {
-      "factor": "Income approach ceiling",
-      "adjustment": "757 JD/m²",
+      "factor": "Cost approach floor",
+      "adjustment": "175 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (79.3%, citywide rents vs sales)",
+      "method": "Value = replacement construction cost − depreciation (new-build ≈ 0)",
+      "datasets": [
+        "cost_benchmarks"
+      ],
+      "sources": [
+        {
+          "name": "DoS Building Licenses (Greater Amman Municipality)",
+          "url": "https://dosweb.dos.gov.jo/industry/building-licenses/",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "A rational buyer will not pay below the cost to rebuild: standard construction ≈ 175 JD/m². This sets the minimum-safe price."
+    },
+    {
+      "factor": "Income approach ceiling",
+      "adjustment": "580 JD/m²",
+      "confidence": "Medium",
+      "method": "income approach: annual rent ÷ derived market yield (8.6%, citywide rents vs sales; this area's observed yield 4.8%)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -97,11 +190,11 @@
         {
           "name": "listings (rentals)",
           "url": "internal://listings",
-          "capture_date": "2026-07-07"
+          "capture_date": "2026-07-10"
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (79.3%). Above ≈ 757 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (8.6%). Above ≈ 580 JD/m² the unit stops clearing to investors."
     },
     {
       "factor": "Competitive positioning",
@@ -237,6 +330,24 @@
       ],
       "category": "future_signal",
       "explanation": "Dabouq is an elite low-density villa enclave near royal residences; strict green/villa zoning (often 39% construction cap) enforces calm, privacy and panoramic views.. Stated effect: no price impact stated by source (interpretation by engine). Supports holding the launch at the top of the observed range."
+    },
+    {
+      "factor": "Future signal: Amman Metro - planning/feasibility only (NOT built)",
+      "adjustment": "positioning (no point premium)",
+      "confidence": "L",
+      "method": "future-signal weighting (proximity × timeline certainty × source trust)",
+      "datasets": [
+        "evidence_items"
+      ],
+      "sources": [
+        {
+          "name": "Transit Guide (Amman Metro)",
+          "url": "https://transitguide.org/amman-metro/",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "future_signal",
+      "explanation": "Amman Metro remains at feasibility/planning stage; a CREM (China Railway) study confirmed the topography is viable. No funding, route or construction start. Operational mass transit today is the BRT, not a metro.. Stated effect: speculative - no committed timeline. Supports holding the launch at the top of the observed range."
     }
   ],
   "comparables": [
@@ -258,6 +369,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 4,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 320000.0,
       "price_per_m2": 1828.6,
       "adjustments_applied": []
     },
@@ -286,6 +405,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 190000.0,
       "price_per_m2": 1092.0,
       "adjustments_applied": [
         "Size (per m²)"
@@ -316,6 +443,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 158000.0,
       "price_per_m2": 892.7,
       "adjustments_applied": [
         "Size (per m²)"
@@ -346,6 +481,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 198000.0,
       "price_per_m2": 1151.2,
       "adjustments_applied": [
         "Size (per m²)"
@@ -376,6 +519,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 210000.0,
       "price_per_m2": 1220.9,
       "adjustments_applied": [
         "Size (per m²)"
@@ -406,6 +557,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 200000.0,
       "price_per_m2": 1176.5,
       "adjustments_applied": [
         "Size (per m²)"
@@ -436,6 +595,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "unknown",
+      "bedrooms": 2,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 210000.0,
       "price_per_m2": 1235.3,
       "adjustments_applied": [
         "Size (per m²)"
@@ -466,6 +633,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 4,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 380000.0,
       "price_per_m2": 2235.3,
       "adjustments_applied": [
         "Size (per m²)"
@@ -496,6 +671,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 187000.0,
       "price_per_m2": 1113.1,
       "adjustments_applied": [
         "Size (per m²)"
@@ -526,6 +709,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 235000.0,
       "price_per_m2": 1291.2,
       "adjustments_applied": [
         "Size (per m²)"
@@ -556,6 +747,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 5,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 250000.0,
       "price_per_m2": 1373.6,
       "adjustments_applied": [
         "Size (per m²)"
@@ -586,6 +785,14 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "unknown",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "unknown",
+      "price_jd": 230000.0,
       "price_per_m2": 1223.4,
       "adjustments_applied": [
         "Size (per m²)"
@@ -594,14 +801,19 @@
   ],
   "risk_factors": [
     {
-      "factor": "Investor ceiling below price",
-      "severity": "medium",
-      "detail": "Income ceiling (757) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+      "factor": "Subject attributes unknown",
+      "severity": "low",
+      "detail": "furnishing not supplied — those premiums could not be applied."
     },
     {
-      "factor": "No cost-approach floor",
-      "severity": "low",
-      "detail": "No construction-cost benchmark for this spec class — the minimum-safe price rests on the comparison band alone."
+      "factor": "Investor ceiling below price",
+      "severity": "medium",
+      "detail": "Income ceiling (580) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+    },
+    {
+      "factor": "Valuation methods diverge",
+      "severity": "medium",
+      "detail": "Comparison, cost and income approaches disagree (PDF: divergence is informative)."
     },
     {
       "factor": "View premium unavailable",
@@ -638,24 +850,24 @@
     {
       "name": "Premium launch",
       "recommended_price_jd_m2": 1283.0,
-      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.36). Enables the 'raise later, never cut' strategy under strong demand."
+      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.408). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a luxury apartment in Dabouq (~175 m²), the recommended launch price is 950 JD/m², within a defensible range of 618–1283 JD/m² (confidence: M, 0.60; 80% interval 618–1283). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~1051 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: income ceiling ≈ 757. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.36) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Income ceiling (757) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers.",
-  "computed_date": "2026-07-07",
+  "narrative": "For a high apartment in Dabouq (~175 m²), the recommended launch price is 950 JD/m², within a defensible range of 618–1283 JD/m² (confidence: M, 0.49; 80% interval 618–1283). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~1051 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: cost floor ≈ 175, income ceiling ≈ 580. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.408) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: furnishing not supplied — those premiums could not be applied.",
+  "computed_date": "2026-07-10",
   "method_values": {
     "comparison_asking": 1056.0,
     "comparison_comp_draw": 1319.5,
     "submarket_anchor_ppm2": 1050.6,
     "comparison": 950.4,
-    "cost_floor": null,
-    "income_ceiling": 757.0,
-    "development_score": 0.36,
+    "cost_floor": 174.7,
+    "income_ceiling": 579.7,
+    "development_score": 0.408,
     "confidence_components": {
       "data_density": 1.0,
       "dispersion": 0.214,
       "recency": 0.5,
-      "method_agreement": 0.622,
+      "method_agreement": 0.0,
       "source_quality": 0.6
     },
     "selection_notes": [
@@ -672,7 +884,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Low",
         "sample_size": 165,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "citywide",
         "property_type": "apartment",
         "notes": "baseline=luxury; citywide fallback — submarket sample insufficient"
@@ -684,7 +896,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Low",
         "sample_size": 3520,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "citywide",
         "property_type": "apartment",
         "notes": "baseline=no; citywide fallback — submarket sample insufficient"
@@ -696,7 +908,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Low",
         "sample_size": 3287,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "citywide",
         "property_type": "apartment",
         "notes": "baseline=no; citywide fallback — submarket sample insufficient"
@@ -708,7 +920,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 49,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Dabouq",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit; absolute floor_level (total_floors unavailable from portals)"
@@ -720,7 +932,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 47,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Dabouq",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit"
@@ -732,11 +944,55 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 394,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Dabouq",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit"
       }
     ]
+  },
+  "attribute_coverage": {
+    "bedrooms": {
+      "fill_rate": 0.975,
+      "n": 384,
+      "status": "ok"
+    },
+    "bathrooms": {
+      "fill_rate": 0.939,
+      "n": 370,
+      "status": "ok"
+    },
+    "floor_level": {
+      "fill_rate": 0.124,
+      "n": 49,
+      "status": "not_derivable"
+    },
+    "building_age_years": {
+      "fill_rate": 0.119,
+      "n": 47,
+      "status": "not_derivable"
+    },
+    "view": {
+      "fill_rate": 0.005,
+      "n": 2,
+      "status": "not_derivable"
+    },
+    "parking": {
+      "fill_rate": 0.127,
+      "n": 50,
+      "status": "not_derivable"
+    },
+    "finish_quality": {
+      "fill_rate": 0.145,
+      "n": 57,
+      "status": "not_derivable"
+    }
+  },
+  "provenance": {
+    "data_source_file": "db/jordan_re.sqlite",
+    "listings_row_count": 52647,
+    "listings_snapshot_hash": "730cf18bd5f7b5b9",
+    "engine_git_sha": "4bb708a",
+    "generated_at": "2026-07-10"
   }
 }

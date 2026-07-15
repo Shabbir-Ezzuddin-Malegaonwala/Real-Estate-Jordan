@@ -1,37 +1,74 @@
 {
-  "location_id": "demo-khalda",
+  "location_id": null,
   "neighborhood": "Khalda",
   "property_type": "apartment",
-  "min_safe_price_jd_m2": 501.8,
-  "recommended_price_jd_m2": 671.5,
-  "premium_price_jd_m2": 841.2,
+  "min_safe_price_jd_m2": 473.9,
+  "recommended_price_jd_m2": 686.0,
+  "premium_price_jd_m2": 898.0,
   "confidence": {
-    "label": "H",
-    "numeric": 0.764,
+    "label": "M",
+    "numeric": 0.584,
     "interval_jd_m2": [
-      501.8,
-      841.2
-    ]
+      473.9,
+      898.0
+    ],
+    "components": {
+      "data_coverage": {
+        "score": 100,
+        "reason": "12 comparable(s) after outlier filtering; full weight at 8+"
+      },
+      "comp_quality": {
+        "score": 26,
+        "reason": "adjusted comparables vary 26% (tighter = higher quality)"
+      },
+      "gov_evidence": {
+        "score": 75,
+        "reason": "CBJ price index present but lagged; construction-cost floor available"
+      },
+      "future_signals": {
+        "score": 18,
+        "reason": "development score 0.528 from collected infrastructure/policy evidence (saturates at 3.0)"
+      },
+      "market_freshness": {
+        "score": 94,
+        "reason": "average comparable age ~1 months (ideal ≤12)"
+      }
+    }
   },
   "evidence_objects": [
     {
-      "factor": "Furnishing",
-      "adjustment": "+0.0%",
-      "confidence": "Medium",
-      "method": "paired median differential (n_full=20, n_no=151)",
+      "factor": "Finish quality (high)",
+      "adjustment": "-8.5%",
+      "confidence": "Low",
+      "method": "paired median differential (n_high=4, n_luxury=42)",
       "datasets": [
         "listings"
       ],
       "sources": [
         {
           "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103357.html",
+          "url": "https://www.bayut.jo/en/property/details-101470.html",
           "capture_date": "2026-07-07"
         },
         {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103225.html",
-          "capture_date": "2026-07-07"
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283211276",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283567900",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282990680",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282888800",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
@@ -45,27 +82,12 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283418552",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283127348",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977678",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282581186",
+          "url": "https://jo.opensooq.com/en/search/282440902",
           "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
-      "explanation": "Subject sits at the submarket-typical furnishing; comps differing on this attribute were adjusted by the derived differential."
+      "explanation": "Subject's finish quality ('high') lists -8.5% vs the typical unit in Khalda, from matched-pair evidence."
     },
     {
       "factor": "Floor level",
@@ -78,13 +100,28 @@
       "sources": [
         {
           "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103357.html",
+          "url": "https://www.bayut.jo/en/property/details-101470.html",
           "capture_date": "2026-07-07"
         },
         {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103225.html",
-          "capture_date": "2026-07-07"
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283211276",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283567900",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282990680",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282888800",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
@@ -98,27 +135,65 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283418552",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283127348",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977678",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282581186",
+          "url": "https://jo.opensooq.com/en/search/282440902",
           "capture_date": "2026-07-08"
         }
       ],
       "category": "current_state",
-      "explanation": "Each unit of floor level moves price/m² by -1.8% (finish-controlled regression); subject value = 3."
+      "explanation": "Each unit of floor level moves price/m² by -1.8% (finish-controlled regression); subject value = 4."
+    },
+    {
+      "factor": "Building age",
+      "adjustment": "-1.8% per unit",
+      "confidence": "Medium",
+      "method": "OLS slope of price/m² vs building_age_years (n=41)",
+      "datasets": [
+        "listings"
+      ],
+      "sources": [
+        {
+          "name": "Bayut",
+          "url": "https://www.bayut.jo/en/property/details-101470.html",
+          "capture_date": "2026-07-07"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283211276",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283567900",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282990680",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282888800",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282841742",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282780720",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282440902",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "Each unit of building age moves price/m² by -1.8% (finish-controlled regression); subject value = 0."
     },
     {
       "factor": "Size (per m²)",
@@ -131,13 +206,28 @@
       "sources": [
         {
           "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103357.html",
+          "url": "https://www.bayut.jo/en/property/details-101470.html",
           "capture_date": "2026-07-07"
         },
         {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103225.html",
-          "capture_date": "2026-07-07"
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283211276",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283567900",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282990680",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282888800",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
@@ -151,22 +241,7 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283418552",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283127348",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977678",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282581186",
+          "url": "https://jo.opensooq.com/en/search/282440902",
           "capture_date": "2026-07-08"
         }
       ],
@@ -192,10 +267,28 @@
       "explanation": "Portal prices are asking prices, not sales. A documented 5–15% gap is applied to estimate the transaction level."
     },
     {
-      "factor": "Income approach ceiling",
-      "adjustment": "638 JD/m²",
+      "factor": "Cost approach floor",
+      "adjustment": "175 JD/m²",
       "confidence": "Medium",
-      "method": "income approach: annual rent ÷ derived market yield (79.3%, citywide rents vs sales)",
+      "method": "Value = replacement construction cost − depreciation (new-build ≈ 0)",
+      "datasets": [
+        "cost_benchmarks"
+      ],
+      "sources": [
+        {
+          "name": "DoS Building Licenses (Greater Amman Municipality)",
+          "url": "https://dosweb.dos.gov.jo/industry/building-licenses/",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "current_state",
+      "explanation": "A rational buyer will not pay below the cost to rebuild: standard construction ≈ 175 JD/m². This sets the minimum-safe price."
+    },
+    {
+      "factor": "Income approach ceiling",
+      "adjustment": "502 JD/m²",
+      "confidence": "Medium",
+      "method": "income approach: annual rent ÷ derived market yield (8.6%, citywide rents vs sales; this area's observed yield 5.6%)",
       "datasets": [
         "listings (rentals)"
       ],
@@ -203,11 +296,11 @@
         {
           "name": "listings (rentals)",
           "url": "internal://listings",
-          "capture_date": "2026-07-07"
+          "capture_date": "2026-07-10"
         }
       ],
       "category": "current_state",
-      "explanation": "Investment buyers cap price at rent ÷ required yield (79.3%). Above ≈ 638 JD/m² the unit stops clearing to investors."
+      "explanation": "Investment buyers cap price at rent ÷ required yield (8.6%). Above ≈ 502 JD/m² the unit stops clearing to investors."
     },
     {
       "factor": "Market composition (context)",
@@ -220,13 +313,28 @@
       "sources": [
         {
           "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103357.html",
+          "url": "https://www.bayut.jo/en/property/details-101470.html",
           "capture_date": "2026-07-07"
         },
         {
-          "name": "Bayut",
-          "url": "https://www.bayut.jo/en/property/details-103225.html",
-          "capture_date": "2026-07-07"
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283211276",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/283567900",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282990680",
+          "capture_date": "2026-07-08"
+        },
+        {
+          "name": "OpenSooq",
+          "url": "https://jo.opensooq.com/en/search/282888800",
+          "capture_date": "2026-07-08"
         },
         {
           "name": "OpenSooq",
@@ -240,22 +348,7 @@
         },
         {
           "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283418552",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/283127348",
-          "capture_date": "2026-07-07"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282977678",
-          "capture_date": "2026-07-08"
-        },
-        {
-          "name": "OpenSooq",
-          "url": "https://jo.opensooq.com/en/search/282581186",
+          "url": "https://jo.opensooq.com/en/search/282440902",
           "capture_date": "2026-07-08"
         }
       ],
@@ -325,66 +418,235 @@
       ],
       "category": "future_signal",
       "explanation": "Khalda is a family-oriented suburban district with wide streets, easy parking, good schools and arterial access; low tenant turnover and utilitarian price/m2 efficiency.. Stated effect: no price impact stated by source (interpretation by engine). Supports holding the launch at the top of the observed range."
+    },
+    {
+      "factor": "Future signal: Amman Metro - planning/feasibility only (NOT built)",
+      "adjustment": "positioning (no point premium)",
+      "confidence": "L",
+      "method": "future-signal weighting (proximity × timeline certainty × source trust)",
+      "datasets": [
+        "evidence_items"
+      ],
+      "sources": [
+        {
+          "name": "Transit Guide (Amman Metro)",
+          "url": "https://transitguide.org/amman-metro/",
+          "capture_date": "2026-07-08"
+        }
+      ],
+      "category": "future_signal",
+      "explanation": "Amman Metro remains at feasibility/planning stage; a CREM (China Railway) study confirmed the topography is viable. No funding, route or construction start. Operational mass transit today is the BRT, not a metro.. Stated effect: speculative - no committed timeline. Supports holding the launch at the top of the observed range."
     }
   ],
   "comparables": [
     {
-      "listing_id": "bayut-103357",
+      "listing_id": "bayut-101470",
       "neighborhood": "Khalda",
-      "area_m2": 190.0,
-      "original_ppm2": 700.0,
-      "time_adjusted_ppm2": 700.0,
-      "adjusted_ppm2": 699.5,
+      "area_m2": 160.0,
+      "original_ppm2": 906.2,
+      "time_adjusted_ppm2": 906.2,
+      "adjusted_ppm2": 906.9,
       "gross_adjustment": 0.0008,
-      "reconciliation_weight": 4.9074,
-      "similarity": 0.958,
-      "listing_date": "2026-06-25",
+      "reconciliation_weight": 4.9258,
+      "similarity": 0.96,
+      "listing_date": "2026-07-01",
       "adjustments": [
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.1%",
+          "adjustment": "+0.1%",
           "method": "derived OLS slope",
-          "detail": "comp=190.0 -> subject=175"
+          "detail": "comp=160.0 -> subject=175"
         }
       ],
       "source": {
         "name": "Bayut",
-        "url": "https://www.bayut.jo/en/property/details-103357.html",
+        "url": "https://www.bayut.jo/en/property/details-101470.html",
         "capture_date": "2026-07-07"
       },
       "seller_type": "agent",
-      "price_per_m2": 700.0,
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": null,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "covered",
+      "furnishing": "no",
+      "price_jd": 145000.0,
+      "price_per_m2": 906.2,
       "adjustments_applied": [
         "Size (per m²)"
       ]
     },
     {
-      "listing_id": "bayut-103225",
+      "listing_id": "opensooq2-283211276",
       "neighborhood": "Khalda",
-      "area_m2": 186.0,
-      "original_ppm2": 618.3,
-      "time_adjusted_ppm2": 618.3,
-      "adjusted_ppm2": 617.9,
-      "gross_adjustment": 0.0006,
-      "reconciliation_weight": 4.9,
-      "similarity": 0.966,
-      "listing_date": "2026-06-23",
+      "area_m2": 144.0,
+      "original_ppm2": 590.3,
+      "time_adjusted_ppm2": 590.3,
+      "adjusted_ppm2": 591.2,
+      "gross_adjustment": 0.0016,
+      "reconciliation_weight": 4.8817,
+      "similarity": 0.92,
+      "listing_date": "2026-06-27",
       "adjustments": [
         {
           "factor": "Size (per m²)",
-          "adjustment": "-0.1%",
+          "adjustment": "+0.2%",
           "method": "derived OLS slope",
-          "detail": "comp=186.0 -> subject=175"
+          "detail": "comp=144.0 -> subject=175"
         }
       ],
       "source": {
-        "name": "Bayut",
-        "url": "https://www.bayut.jo/en/property/details-103225.html",
-        "capture_date": "2026-07-07"
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283211276",
+        "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
-      "price_per_m2": 618.3,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floor_level": 4,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 85000.0,
+      "price_per_m2": 590.3,
       "adjustments_applied": [
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-283567900",
+      "neighborhood": "Khalda",
+      "area_m2": 134.0,
+      "original_ppm2": 664.2,
+      "time_adjusted_ppm2": 664.2,
+      "adjusted_ppm2": 653.5,
+      "gross_adjustment": 0.016,
+      "reconciliation_weight": 4.5945,
+      "similarity": 0.9,
+      "listing_date": "2026-07-04",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=134.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/283567900",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 89000.0,
+      "price_per_m2": 664.2,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-282990680",
+      "neighborhood": "Khalda",
+      "area_m2": 130.0,
+      "original_ppm2": 807.7,
+      "time_adjusted_ppm2": 807.7,
+      "adjusted_ppm2": 794.9,
+      "gross_adjustment": 0.0158,
+      "reconciliation_weight": 4.5301,
+      "similarity": 0.884,
+      "listing_date": "2026-06-22",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.2%",
+          "method": "derived OLS slope",
+          "detail": "comp=130.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282990680",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 105000.0,
+      "price_per_m2": 807.7,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-282888800",
+      "neighborhood": "Khalda",
+      "area_m2": 120.0,
+      "original_ppm2": 500.0,
+      "time_adjusted_ppm2": 500.0,
+      "adjusted_ppm2": 492.3,
+      "gross_adjustment": 0.0153,
+      "reconciliation_weight": 4.5293,
+      "similarity": 0.86,
+      "listing_date": "2026-06-20",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.3%",
+          "method": "derived OLS slope",
+          "detail": "comp=120.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/282888800",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 60000.0,
+      "price_per_m2": 500.0,
+      "adjustments_applied": [
+        "Floor level",
         "Size (per m²)"
       ]
     },
@@ -394,12 +656,18 @@
       "area_m2": 163.0,
       "original_ppm2": 552.1,
       "time_adjusted_ppm2": 552.1,
-      "adjusted_ppm2": 552.5,
-      "gross_adjustment": 0.0006,
-      "reconciliation_weight": 4.8742,
-      "similarity": 0.962,
+      "adjusted_ppm2": 542.5,
+      "gross_adjustment": 0.0175,
+      "reconciliation_weight": 4.4785,
+      "similarity": 0.96,
       "listing_date": "2026-06-19",
       "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
         {
           "factor": "Size (per m²)",
           "adjustment": "+0.1%",
@@ -413,8 +681,17 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 90000.0,
       "price_per_m2": 552.1,
       "adjustments_applied": [
+        "Floor level",
         "Size (per m²)"
       ]
     },
@@ -424,12 +701,18 @@
       "area_m2": 168.0,
       "original_ppm2": 434.5,
       "time_adjusted_ppm2": 434.5,
-      "adjusted_ppm2": 434.7,
-      "gross_adjustment": 0.0004,
-      "reconciliation_weight": 4.8741,
-      "similarity": 0.973,
+      "adjusted_ppm2": 426.8,
+      "gross_adjustment": 0.0178,
+      "reconciliation_weight": 4.4676,
+      "similarity": 0.972,
       "listing_date": "2026-06-18",
       "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
         {
           "factor": "Size (per m²)",
           "adjustment": "+0.0%",
@@ -443,230 +726,17 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 73000.0,
       "price_per_m2": 434.5,
       "adjustments_applied": [
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq2-283418552",
-      "neighborhood": "Khalda",
-      "area_m2": 180.0,
-      "original_ppm2": 822.2,
-      "time_adjusted_ppm2": 822.2,
-      "adjusted_ppm2": 807.1,
-      "gross_adjustment": 0.0184,
-      "reconciliation_weight": 4.5457,
-      "similarity": 0.985,
-      "listing_date": "2026-07-01",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-1.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=2 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=180.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283418552",
-        "capture_date": "2026-07-08"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 822.2,
-      "adjustments_applied": [
         "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq-283127348",
-      "neighborhood": "Khalda",
-      "area_m2": 190.0,
-      "original_ppm2": 842.1,
-      "time_adjusted_ppm2": 842.1,
-      "adjusted_ppm2": 826.2,
-      "gross_adjustment": 0.0189,
-      "reconciliation_weight": 4.5014,
-      "similarity": 0.958,
-      "listing_date": "2026-06-25",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-1.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=2 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.1%",
-          "method": "derived OLS slope",
-          "detail": "comp=190.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/283127348",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 842.1,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq2-282977678",
-      "neighborhood": "Khalda",
-      "area_m2": 185.0,
-      "original_ppm2": 459.5,
-      "time_adjusted_ppm2": 459.5,
-      "adjusted_ppm2": 450.9,
-      "gross_adjustment": 0.0186,
-      "reconciliation_weight": 4.4897,
-      "similarity": 0.968,
-      "listing_date": "2026-06-22",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-1.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=2 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.1%",
-          "method": "derived OLS slope",
-          "detail": "comp=185.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282977678",
-        "capture_date": "2026-07-08"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 459.5,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq2-282581186",
-      "neighborhood": "Khalda",
-      "area_m2": 180.0,
-      "original_ppm2": 444.4,
-      "time_adjusted_ppm2": 444.4,
-      "adjusted_ppm2": 436.3,
-      "gross_adjustment": 0.0184,
-      "reconciliation_weight": 4.4496,
-      "similarity": 0.976,
-      "listing_date": "2026-06-14",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-1.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=2 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "-0.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=180.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282581186",
-        "capture_date": "2026-07-08"
-      },
-      "seller_type": "private",
-      "price_per_m2": 444.4,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "opensooq2-282347070",
-      "neighborhood": "Khalda",
-      "area_m2": 165.0,
-      "original_ppm2": 484.8,
-      "time_adjusted_ppm2": 484.8,
-      "adjusted_ppm2": 476.3,
-      "gross_adjustment": 0.0176,
-      "reconciliation_weight": 4.4367,
-      "similarity": 0.961,
-      "listing_date": "2026-06-09",
-      "adjustments": [
-        {
-          "factor": "Floor level",
-          "adjustment": "-1.8%",
-          "method": "derived OLS slope",
-          "detail": "comp=2 -> subject=3"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.1%",
-          "method": "derived OLS slope",
-          "detail": "comp=165.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "OpenSooq",
-        "url": "https://jo.opensooq.com/en/search/282347070",
-        "capture_date": "2026-07-08"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 484.8,
-      "adjustments_applied": [
-        "Floor level",
-        "Size (per m²)"
-      ]
-    },
-    {
-      "listing_id": "bayut-99604",
-      "neighborhood": "Khalda",
-      "area_m2": 170.0,
-      "original_ppm2": 735.3,
-      "time_adjusted_ppm2": 735.3,
-      "adjusted_ppm2": 675.9,
-      "gross_adjustment": 0.0808,
-      "reconciliation_weight": 3.4561,
-      "similarity": 0.975,
-      "listing_date": "2026-06-13",
-      "adjustments": [
-        {
-          "factor": "Furnishing",
-          "adjustment": "-8.1%",
-          "method": "derived median differential",
-          "detail": "comp=full -> subject=no"
-        },
-        {
-          "factor": "Size (per m²)",
-          "adjustment": "+0.0%",
-          "method": "derived OLS slope",
-          "detail": "comp=170.0 -> subject=175"
-        }
-      ],
-      "source": {
-        "name": "Bayut",
-        "url": "https://www.bayut.jo/en/property/details-99604.html",
-        "capture_date": "2026-07-07"
-      },
-      "seller_type": "agent",
-      "price_per_m2": 735.3,
-      "adjustments_applied": [
-        "Furnishing",
         "Size (per m²)"
       ]
     },
@@ -676,17 +746,17 @@
       "area_m2": 185.0,
       "original_ppm2": 502.7,
       "time_adjusted_ppm2": 502.7,
-      "adjusted_ppm2": 461.7,
-      "gross_adjustment": 0.0815,
-      "reconciliation_weight": 3.4381,
-      "similarity": 0.962,
+      "adjusted_ppm2": 493.3,
+      "gross_adjustment": 0.0186,
+      "reconciliation_weight": 4.4106,
+      "similarity": 0.961,
       "listing_date": "2026-06-11",
       "adjustments": [
         {
-          "factor": "Furnishing",
-          "adjustment": "-8.1%",
-          "method": "derived median differential",
-          "detail": "comp=full -> subject=no"
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
         },
         {
           "factor": "Size (per m²)",
@@ -701,9 +771,62 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "full",
+      "price_jd": 93000.0,
       "price_per_m2": 502.7,
       "adjustments_applied": [
-        "Furnishing",
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-281373956",
+      "neighborhood": "Khalda",
+      "area_m2": 187.0,
+      "original_ppm2": 508.0,
+      "time_adjusted_ppm2": 508.0,
+      "adjusted_ppm2": 498.5,
+      "gross_adjustment": 0.0187,
+      "reconciliation_weight": 4.2788,
+      "similarity": 0.943,
+      "listing_date": "2026-05-18",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=187.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/281373956",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "full",
+      "price_jd": 95000.0,
+      "price_per_m2": 508.0,
+      "adjustments_applied": [
+        "Floor level",
         "Size (per m²)"
       ]
     },
@@ -713,17 +836,17 @@
       "area_m2": 168.0,
       "original_ppm2": 654.8,
       "time_adjusted_ppm2": 654.8,
-      "adjusted_ppm2": 601.9,
-      "gross_adjustment": 0.0807,
-      "reconciliation_weight": 3.3254,
-      "similarity": 0.954,
+      "adjusted_ppm2": 643.1,
+      "gross_adjustment": 0.0178,
+      "reconciliation_weight": 4.2692,
+      "similarity": 0.952,
       "listing_date": "2026-05-13",
       "adjustments": [
         {
-          "factor": "Furnishing",
-          "adjustment": "-8.1%",
-          "method": "derived median differential",
-          "detail": "comp=full -> subject=no"
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
         },
         {
           "factor": "Size (per m²)",
@@ -738,23 +861,133 @@
         "capture_date": "2026-07-08"
       },
       "seller_type": "agent",
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "full",
+      "price_jd": 110000.0,
       "price_per_m2": 654.8,
       "adjustments_applied": [
-        "Furnishing",
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq2-280905580",
+      "neighborhood": "Khalda",
+      "area_m2": 190.0,
+      "original_ppm2": 494.7,
+      "time_adjusted_ppm2": 494.7,
+      "adjusted_ppm2": 485.4,
+      "gross_adjustment": 0.0189,
+      "reconciliation_weight": 4.225,
+      "similarity": 0.931,
+      "listing_date": "2026-05-09",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "-0.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=190.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/280905580",
+        "capture_date": "2026-07-08"
+      },
+      "seller_type": "agent",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": null,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 94000.0,
+      "price_per_m2": 494.7,
+      "adjustments_applied": [
+        "Floor level",
+        "Size (per m²)"
+      ]
+    },
+    {
+      "listing_id": "opensooq-278996149",
+      "neighborhood": "Khalda",
+      "area_m2": 150.0,
+      "original_ppm2": 766.7,
+      "time_adjusted_ppm2": 766.7,
+      "adjusted_ppm2": 845.8,
+      "gross_adjustment": 0.1032,
+      "reconciliation_weight": 2.8914,
+      "similarity": 0.887,
+      "listing_date": "2026-03-30",
+      "adjustments": [
+        {
+          "factor": "Floor level",
+          "adjustment": "-1.8%",
+          "method": "derived OLS slope",
+          "detail": "comp=3 -> subject=4"
+        },
+        {
+          "factor": "Building age",
+          "adjustment": "+12.0%",
+          "method": "derived OLS slope",
+          "detail": "comp=7 -> subject=0"
+        },
+        {
+          "factor": "Size (per m²)",
+          "adjustment": "+0.1%",
+          "method": "derived OLS slope",
+          "detail": "comp=150.0 -> subject=175"
+        }
+      ],
+      "source": {
+        "name": "OpenSooq",
+        "url": "https://jo.opensooq.com/en/search/278996149",
+        "capture_date": "2026-07-07"
+      },
+      "seller_type": "private",
+      "bedrooms": 3,
+      "bathrooms": 3,
+      "floor_level": 3,
+      "building_age_years": 7,
+      "view": "unknown",
+      "parking": "unknown",
+      "furnishing": "no",
+      "price_jd": 115000.0,
+      "price_per_m2": 766.7,
+      "adjustments_applied": [
+        "Floor level",
+        "Building age",
         "Size (per m²)"
       ]
     }
   ],
   "risk_factors": [
     {
-      "factor": "Investor ceiling below price",
-      "severity": "medium",
-      "detail": "Income ceiling (638) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+      "factor": "Subject attributes unknown",
+      "severity": "low",
+      "detail": "furnishing not supplied — those premiums could not be applied."
     },
     {
-      "factor": "No cost-approach floor",
-      "severity": "low",
-      "detail": "No construction-cost benchmark for this spec class — the minimum-safe price rests on the comparison band alone."
+      "factor": "Investor ceiling below price",
+      "severity": "medium",
+      "detail": "Income ceiling (502) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers."
+    },
+    {
+      "factor": "Valuation methods diverge",
+      "severity": "medium",
+      "detail": "Comparison, cost and income approaches disagree (PDF: divergence is informative)."
     },
     {
       "factor": "View premium unavailable",
@@ -780,42 +1013,42 @@
   "alternative_scenarios": [
     {
       "name": "Minimum-safe launch",
-      "recommended_price_jd_m2": 501.8,
+      "recommended_price_jd_m2": 473.9,
       "rationale": "Protects the floor and lower confidence band; fastest absorption. Use under liquidity pressure or maturing construction finance (PDF §6)."
     },
     {
       "name": "Recommended launch",
-      "recommended_price_jd_m2": 671.5,
+      "recommended_price_jd_m2": 686.0,
       "rationale": "Reconciled market value; balances absorption speed and captured value. Default: price at comps and negotiate from strength."
     },
     {
       "name": "Premium launch",
-      "recommended_price_jd_m2": 841.2,
-      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.48). Enables the 'raise later, never cut' strategy under strong demand."
+      "recommended_price_jd_m2": 898.0,
+      "rationale": "Top of the evidenced range; leans on the future-signal story (development score 0.528). Enables the 'raise later, never cut' strategy under strong demand."
     }
   ],
-  "narrative": "For a luxury apartment in Khalda (~175 m²), the recommended launch price is 671 JD/m², within a defensible range of 502–841 JD/m² (confidence: H, 0.76; 80% interval 502–841). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~769 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: income ceiling ≈ 638. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.48) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: Income ceiling (638) is below the recommended price — investment buyers may not clear; sale depends on owner-occupiers.",
-  "computed_date": "2026-07-07",
+  "narrative": "For a high apartment in Khalda (~175 m²), the recommended launch price is 686 JD/m², within a defensible range of 474–898 JD/m² (confidence: M, 0.58; 80% interval 474–898). This is anchored on 12 comparable listing(s), each normalised to the subject with market-derived adjustments and calibrated from asking to transaction level; comps needing fewer/smaller adjustments carried more weight. To stay representative of the whole submarket, the comp value was reconciled toward the robust median of all same-type sales (~769 JD/m² asking) by statistical precision, so a dense pool anchors the price level while the comps supply the subject-specific adjustments. Cross-checks: cost floor ≈ 175, income ceiling ≈ 502. Convergence supports the estimate; divergence is captured in the risks. Future signals (development score 0.528) justify holding the launch toward the top of the range and raising — never cutting — later. Key risk: furnishing not supplied — those premiums could not be applied.",
+  "computed_date": "2026-07-10",
   "method_values": {
-    "comparison_asking": 746.1,
-    "comparison_comp_draw": 587.5,
+    "comparison_asking": 762.2,
+    "comparison_comp_draw": 611.1,
     "submarket_anchor_ppm2": 769.2,
-    "comparison": 671.5,
-    "cost_floor": null,
-    "income_ceiling": 637.5,
-    "development_score": 0.48,
+    "comparison": 686.0,
+    "cost_floor": 174.7,
+    "income_ceiling": 502.4,
+    "development_score": 0.528,
     "confidence_components": {
       "data_density": 1.0,
-      "dispersion": 0.31,
-      "recency": 0.961,
-      "method_agreement": 0.913,
+      "dispersion": 0.265,
+      "recency": 0.937,
+      "method_agreement": 0.0,
       "source_quality": 0.6
     },
     "selection_notes": [
       "187 near-duplicate cross-posting(s) collapsed (same beds, area & price/m2 within 1%)",
       "915 same-submarket apartment listings; 375 within 18 months",
       "12 comps selected (ranked by similarity)",
-      "reconciled to submarket robust median 769 JD/m² (n=1102 same-type sales) via inverse-variance weighting (anchor λ=0.97) — guards against an unrepresentative comp shortlist"
+      "reconciled to submarket robust median 769 JD/m² (n=1102 same-type sales) via inverse-variance weighting (anchor λ=0.98) — guards against an unrepresentative comp shortlist"
     ],
     "derived_premiums": [
       {
@@ -825,7 +1058,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Low",
         "sample_size": 46,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Khalda",
         "property_type": "apartment",
         "notes": "baseline=luxury"
@@ -837,7 +1070,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 171,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Khalda",
         "property_type": "apartment",
         "notes": "baseline=no"
@@ -849,7 +1082,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 156,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Khalda",
         "property_type": "apartment",
         "notes": "baseline=no"
@@ -861,7 +1094,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 166,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Khalda",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit; absolute floor_level (total_floors unavailable from portals)"
@@ -873,7 +1106,7 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 41,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Khalda",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit"
@@ -885,11 +1118,55 @@
         "source": "listings (portal asking prices)",
         "confidence": "Medium",
         "sample_size": 1102,
-        "computed_date": "2026-07-07",
+        "computed_date": "2026-07-10",
         "neighborhood": "Khalda",
         "property_type": "apartment",
         "notes": "fraction of median price/m² per unit"
       }
     ]
+  },
+  "attribute_coverage": {
+    "bedrooms": {
+      "fill_rate": 0.979,
+      "n": 1079,
+      "status": "ok"
+    },
+    "bathrooms": {
+      "fill_rate": 0.976,
+      "n": 1076,
+      "status": "ok"
+    },
+    "floor_level": {
+      "fill_rate": 0.151,
+      "n": 166,
+      "status": "not_derivable"
+    },
+    "building_age_years": {
+      "fill_rate": 0.037,
+      "n": 41,
+      "status": "not_derivable"
+    },
+    "view": {
+      "fill_rate": 0.001,
+      "n": 1,
+      "status": "not_derivable"
+    },
+    "parking": {
+      "fill_rate": 0.052,
+      "n": 57,
+      "status": "not_derivable"
+    },
+    "finish_quality": {
+      "fill_rate": 0.042,
+      "n": 46,
+      "status": "not_derivable"
+    }
+  },
+  "provenance": {
+    "data_source_file": "db/jordan_re.sqlite",
+    "listings_row_count": 52647,
+    "listings_snapshot_hash": "730cf18bd5f7b5b9",
+    "engine_git_sha": "4bb708a",
+    "generated_at": "2026-07-10"
   }
 }

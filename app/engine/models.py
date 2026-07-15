@@ -248,6 +248,9 @@ class RecommendationResult:
     # Product-facing decomposition of the overall confidence (0-100 per component + reason).
     # Defaulted so the unpriceable/empty paths need not supply it.
     confidence_components: dict[str, Any] = field(default_factory=dict)
+    # C2 coverage gate: per priced attribute, fill-rate + status over the submarket pool,
+    # so the copilot/UI can say "not derivable here" instead of implying false precision.
+    attribute_coverage: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         # Shape matches docs/db-contract.md §4 exactly: nested `confidence`; scalars map to
@@ -272,4 +275,5 @@ class RecommendationResult:
             "narrative": self.narrative,
             "computed_date": self.computed_date,
             "method_values": self.method_values,
+            "attribute_coverage": self.attribute_coverage,
         }

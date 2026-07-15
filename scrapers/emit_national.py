@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 import subprocess
 from collections import Counter
 from datetime import date
@@ -19,13 +20,13 @@ from app.engine import recommend
 from app.engine.data import load_bundle_from_sqlite
 from app.engine.models import Subject
 
-DB = "db/jordan_national.sqlite"
-LISTINGS_CSV = Path("data/processed/listings_national_20260708.csv")
+DB = "db/jordan_re.sqlite"          # canonical DB (Issue #2: one canonical listing set)
+LISTINGS_CSV = Path("data/processed/listings_national_20260708.csv")  # legacy source, provenance only
 # Pipeline source-of-truth: prepare-data.mjs copies this -> public/engine_output.json.
 OUT = Path("app/engine/sample_output.json")
 OUTPUTS_DIR = Path("app/engine/outputs")            # per-neighborhood files (C1)
 MAP_NAMES = Path("data/processed/map_neighborhoods.txt")
-AS_OF = date(2026, 7, 8)
+AS_OF = date(2026, 7, 10)   # canonical jordan_re.sqlite vintage
 
 # secondary-city anchors — included to demonstrate national reach in the charts
 SECONDARY = ["Irbid", "Zarqa", "Aqaba", "Madaba", "Salt", "Jerash"]
@@ -41,21 +42,20 @@ def _provenance() -> dict:
                                       text=True).strip()
     except Exception:
         sha = "unknown"
-    row_count = 0
-    csv_hash = "unknown"
-    if LISTINGS_CSV.exists():
-        h = hashlib.sha256()
-        with LISTINGS_CSV.open("rb") as fh:
-            for chunk in iter(lambda: fh.read(1 << 20), b""):
-                h.update(chunk)
-        csv_hash = h.hexdigest()[:16]
-        with LISTINGS_CSV.open(encoding="utf-8-sig") as fh:
-            row_count = sum(1 for _ in fh) - 1
+    # Pin to the exact listings snapshot inside the canonical DB (content hash + row
+    # count), so a swapped DB is detectable and outputs are reproducible (review C4).
+    conn = sqlite3.connect(DB)
+    row_count = conn.execute("SELECT COUNT(*) FROM listings").fetchone()[0]
+    h = hashlib.sha256()
+    for row in conn.execute(
+            "SELECT listing_id, price_jd, area_m2 FROM listings ORDER BY listing_id"):
+        h.update(repr(row).encode())
+    conn.close()
+    snapshot_hash = h.hexdigest()[:16]
     return {
         "data_source_file": DB,
-        "listings_source_csv": str(LISTINGS_CSV),
         "listings_row_count": row_count,
-        "listings_snapshot_hash": csv_hash,
+        "listings_snapshot_hash": snapshot_hash,
         "engine_git_sha": sha,
         "generated_at": AS_OF.isoformat(),
     }
