@@ -38,6 +38,13 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 .stat{display:flex;flex-direction:column;align-items:center;gap:4px}
 .stats{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:28px}
 .statlabel{font-size:.85rem;color:var(--muted)}
+.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px;text-align:left}
+@media(max-width:720px){.src-grid{grid-template-columns:1fr}}
+.src-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.src-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.src-card .s-name{font-size:.98rem;font-weight:600}
+.src-card .s-what{font-size:.82rem;color:var(--muted)}
+.src-card .ext{margin-left:auto;color:var(--accent);opacity:.7;font-size:1rem}
 /* icon system — inline SVG, no external requests */
 .ico{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .i-hero{width:clamp(58px,9vw,86px);height:clamp(58px,9vw,86px);color:var(--accent2)}
@@ -220,6 +227,46 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 <div class="fstep"><svg class="ico i-card" style="color:var(--accent2)"><use href="#ico-check"/></svg>Your price<br/><small>with a range</small></div>
 </div>
 <p class="lead" style="margin-top:28px">We start from nearby homes, then use build cost and rent as a floor and a ceiling — and always show a range, not a single risky number.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Where it all comes from</div>
+<h2>Our sources</h2>
+<p class="lead">Every number traces back to a real, named source — most of them official. Nothing is invented. Tap any source to open it.</p>
+<div class="src-grid">
+<a class="src-card" href="https://jo.opensooq.com" target="_blank" rel="noreferrer noopener">
+<svg class="ico i-card"><use href="#ico-home"/></svg>
+<span><span class="s-name">OpenSooq &amp; Jordanian portals</span><br/><span class="s-what">Homes listed for sale — the main price signal</span></span>
+<span class="ext">↗</span>
+</a>
+<a class="src-card" href="https://dosweb.dos.gov.jo" target="_blank" rel="noreferrer noopener">
+<svg class="ico i-card"><use href="#ico-wall"/></svg>
+<span><span class="s-name">Dept. of Statistics (DoS)</span><br/><span class="s-what">Official cost to build per square metre</span></span>
+<span class="ext">↗</span>
+</a>
+<a class="src-card" href="https://www.cbj.gov.jo" target="_blank" rel="noreferrer noopener">
+<svg class="ico i-card"><use href="#ico-bank"/></svg>
+<span><span class="s-name">Central Bank of Jordan (CBJ)</span><br/><span class="s-what">Interest rate, the dinar, inflation</span></span>
+<span class="ext">↗</span>
+</a>
+<a class="src-card" href="https://dls.gov.jo" target="_blank" rel="noreferrer noopener">
+<svg class="ico i-card"><use href="#ico-plot"/></svg>
+<span><span class="s-name">Dept. of Lands &amp; Survey (DLS)</span><br/><span class="s-what">Land prices &amp; recorded transactions</span></span>
+<span class="ext">↗</span>
+</a>
+<a class="src-card" href="https://www.openstreetmap.org" target="_blank" rel="noreferrer noopener">
+<svg class="ico i-card"><use href="#ico-map"/></svg>
+<span><span class="s-name">OpenStreetMap</span><br/><span class="s-what">Nearby places, roads &amp; the map</span></span>
+<span class="ext">↗</span>
+</a>
+<a class="src-card" href="https://www.jordan.gov.jo" target="_blank" rel="noreferrer noopener">
+<svg class="ico i-card"><use href="#ico-news"/></svg>
+<span><span class="s-name">Jordan Government portal</span><br/><span class="s-what">Dated market news — roads, rules, projects</span></span>
+<span class="ext">↗</span>
+</a>
+</div>
 </div>
 </section>
 
