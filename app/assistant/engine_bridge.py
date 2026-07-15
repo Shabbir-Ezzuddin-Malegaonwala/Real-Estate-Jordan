@@ -25,7 +25,7 @@ from functools import lru_cache
 from statistics import median
 from typing import Optional
 
-from .config import DB_PATH, RECO_REPO
+from .config import DB_DSN, DB_PATH, RECO_REPO
 
 # Make `app.engine` importable. This app is standalone; the pricing engine lives
 # in the sibling recommendation repo (RECO_REPO), which we add to sys.path so we
@@ -41,7 +41,11 @@ if str(RECO_REPO) not in sys.path:
 
 from app.engine import recommend as _engine_recommend  # noqa: E402
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2  # noqa: E402
-from app.engine.data import DataBundle, load_bundle_from_sqlite  # noqa: E402
+from app.engine.data import (  # noqa: E402
+    DataBundle,
+    load_bundle_from_postgres,
+    load_bundle_from_sqlite,
+)
 from app.engine.models import Subject  # noqa: E402
 
 
@@ -65,9 +69,19 @@ THIN_DATA_SALE_COUNT = 8
 class Engine:
     """Loads the DataBundle once and answers pricing / catalog / geo queries."""
 
-    def __init__(self, db_path: str = DB_PATH) -> None:
-        self.db_path = db_path
-        self.bundle: DataBundle = load_bundle_from_sqlite(db_path)
+    def __init__(self, bundle: Optional[DataBundle] = None) -> None:
+        # Prefer a bundle handed in by the main API (the shared Postgres bundle —
+        # one load, one DB, no sqlite). Standalone: load from Postgres if
+        # DATABASE_URL is set, else fall back to the local sqlite file.
+        if bundle is not None:
+            self.db_path = "shared-bundle (postgres)"
+            self.bundle = bundle
+        elif DB_DSN:
+            self.db_path = "postgres"
+            self.bundle = load_bundle_from_postgres(DB_DSN)
+        else:
+            self.db_path = DB_PATH
+            self.bundle = load_bundle_from_sqlite(DB_PATH)
         self._areas: dict[str, AreaProfile] = self._build_area_catalog()
 
     # -- catalog -------------------------------------------------------------
@@ -240,7 +254,22 @@ class Engine:
         }
 
 
-@lru_cache(maxsize=1)
+_ENGINE: Optional["Engine"] = None
+
+
+def init_engine_from_bundle(bundle: DataBundle) -> "Engine":
+    """Wire the assistant to REUSE an already-loaded bundle (the main API's shared
+    Postgres bundle). Call once at startup so there's a single in-memory bundle and
+    no second DB load / no sqlite."""
+    global _ENGINE
+    _ENGINE = Engine(bundle=bundle)
+    return _ENGINE
+
+
 def get_engine() -> Engine:
-    """Process-wide singleton — the DataBundle is large, load it once."""
-    return Engine()
+    """Process-wide singleton. Uses the shared bundle if one was injected; else
+    builds its own (Postgres if DATABASE_URL is set, sqlite otherwise)."""
+    global _ENGINE
+    if _ENGINE is None:
+        _ENGINE = Engine()
+    return _ENGINE

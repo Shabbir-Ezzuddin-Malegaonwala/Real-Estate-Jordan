@@ -189,6 +189,10 @@ async def lifespan(app: FastAPI):
     app.state.bundle = bundle
     app.state.coverage = Coverage(bundle)
     app.state.zoning = _zoning_meta()
+    # Let the grounded assistant REUSE this one Postgres bundle (no second load,
+    # no sqlite file) so the whole backend runs off a single database.
+    from app.assistant.engine_bridge import init_engine_from_bundle
+    init_engine_from_bundle(bundle)
     yield
 
 

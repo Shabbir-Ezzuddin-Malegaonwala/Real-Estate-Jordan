@@ -36,9 +36,11 @@ except Exception:  # dotenv is optional; env vars still work without it
 # (app/assistant/config.py -> parents[2]). Override with RECO_REPO if needed.
 RECO_REPO = Path(os.environ.get("RECO_REPO", str(Path(__file__).resolve().parents[2])))
 
-# The ONE canonical database (team no-duplicate-data rule). 52k listings with
-# lat/lng spanning all of Jordan, plus POIs, yields, macro series and building
-# cost. Read-only. Defaults to the canonical enriched DB; override via JORDAN_RE_DB.
+# The ONE canonical database. Primary source is the SAME Neon Postgres the
+# recommendation API uses (DATABASE_URL) — so there is a single database and no
+# large local file to ship when deploying. DB_PATH (sqlite) remains only as a
+# local fallback when DATABASE_URL is not set (offline dev).
+DB_DSN = os.environ.get("DATABASE_URL", "")
 DB_PATH = os.environ.get("JORDAN_RE_DB", str(RECO_REPO / "db" / "jordan_re_new.sqlite"))
 
 # --- Groq (free tier) -------------------------------------------------------
