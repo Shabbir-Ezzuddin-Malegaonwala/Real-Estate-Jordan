@@ -82,7 +82,7 @@ export function AreaSearch({
         className="input"
       />
       <p className="mt-1 text-2xs text-ink-faint">
-        {jd(areas.length)} areas · {jd(coveredCount)} with structured data
+        {jd(areas.length)} areas · {jd(coveredCount)} we can price
       </p>
 
       {open && matches.length > 0 && (
@@ -117,8 +117,8 @@ export function AreaSearch({
                 {a.covered
                   ? a.median_price_per_m2
                     ? `${jd(a.median_price_per_m2)} JD/m²`
-                    : `${jd(a.listing_count ?? 0)} listings`
-                  : "context"}
+                    : `${jd(a.listing_count ?? 0)} homes`
+                  : "no price yet"}
               </span>
             </li>
           ))}

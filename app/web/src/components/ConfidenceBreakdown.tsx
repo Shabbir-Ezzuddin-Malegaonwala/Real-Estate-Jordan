@@ -22,9 +22,9 @@ export function ConfidenceBreakdown({ r }: { r: RecommendationResult }) {
   return (
     <section className="px-4 pt-4" aria-label="Confidence breakdown">
       <div className="mb-2 flex items-center justify-between">
-        <span className="label-eyebrow">Confidence</span>
+        <span className="label-eyebrow">How sure we are</span>
         <span className="text-2xs text-ink-faint">
-          {source === "local" ? "components estimated locally" : "engine-decomposed"}
+          {source === "local" ? "quick estimate" : "based on live data"}
         </span>
       </div>
 
@@ -32,10 +32,10 @@ export function ConfidenceBreakdown({ r }: { r: RecommendationResult }) {
         <div className="flex items-end justify-between">
           <div>
             <div className={`text-2xs uppercase tracking-wide ${labelTone(overallLevel)}`}>
-              {overallLevel} confidence
+              {overallLevel === "High" ? "Very sure" : overallLevel === "Low" ? "Not very sure" : "Fairly sure"}
             </div>
             <div className="mt-0.5 text-2xs text-ink-mute tnum">
-              justified band {jd(r.confidence.range_low)}–{jd(r.confidence.range_high)} JD/m²
+              likely between {jd(r.confidence.range_low)}–{jd(r.confidence.range_high)} JD/m²
             </div>
           </div>
           <div className={`tnum font-mono text-[26px] font-medium leading-none ${labelTone(overallLevel)}`}>

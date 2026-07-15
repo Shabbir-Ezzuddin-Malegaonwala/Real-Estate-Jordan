@@ -15,7 +15,7 @@ export function Stepper({
   return (
     <div className="border-b border-line px-4 py-3">
       <label htmlFor="journey-view" className="label-eyebrow mb-1 block">
-        View
+        Show me
       </label>
       <select
         id="journey-view"

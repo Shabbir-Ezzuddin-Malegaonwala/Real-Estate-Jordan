@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The Math — Explained Simply</title>
+<style>
+:root{--bg:#0a0f1e;--panel:#111827;--card:#141c30;--text:#e6edf7;--muted:#9fb0c9;--accent:#60a5fa;--accent2:#34d399;--accent3:#a78bfa;--warn:#fbbf24;--pink:#f472b6;--border:rgba(255,255,255,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.deck{scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll}
+.slide{scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:56px 24px;text-align:center;position:relative}
+.slide .inner{max-width:860px;width:100%}
+.kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px}
+.step{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:800;font-size:1.2rem;margin-bottom:16px}
+h1{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;line-height:1.08;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-bottom:10px}
+.lead{font-size:clamp(1.05rem,2.4vw,1.35rem);color:var(--muted);max-width:700px;margin:16px auto 0}
+.big{font-size:clamp(2.4rem,7vw,4.5rem);font-weight:800;color:var(--accent2);line-height:1}
+.emoji{display:flex;justify-content:center;margin-bottom:16px;line-height:1}
+.grid{display:grid;gap:16px;margin-top:28px;text-align:left}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.card .ic{margin-bottom:10px}
+.card h3{font-size:1.08rem;margin-bottom:4px}
+.card p{font-size:.95rem;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3);color:var(--accent);border-radius:999px;padding:7px 16px;font-size:.9rem;font-weight:600;margin:5px}
+.note{border-left:4px solid var(--warn);background:rgba(251,191,36,.08);border-radius:0 14px 14px 0;padding:16px 20px;text-align:left;margin-top:24px;color:var(--text)}
+.good{border-left-color:var(--accent2);background:rgba(52,211,153,.08)}
+.tip{border-left-color:var(--accent);background:rgba(96,165,250,.08)}
+.progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:50;transition:width .2s}
+.hint{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:var(--muted);font-size:.8rem;z-index:40;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.count{position:fixed;bottom:16px;right:20px;color:var(--muted);font-size:.8rem;z-index:40}
+.flow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:24px}
+.fstep{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:.95rem;min-width:130px}
+.arrow{color:var(--accent2);font-size:1.4rem}
+.stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stats{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:28px}
+.statlabel{font-size:.85rem;color:var(--muted)}
+.prices{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.pbox{border-radius:14px;padding:18px 22px;min-width:150px;border:1px solid var(--border)}
+.pbox .n{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pbox .v{font-size:1.5rem;font-weight:800;margin-top:6px}
+.pbox.lo{background:rgba(96,165,250,.08)}.pbox.mid{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.4)}.pbox.hi{background:rgba(167,139,250,.08)}
+.nums{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px}
+.chip{border-radius:10px;padding:10px 14px;font-weight:700;font-size:1.05rem;border:1px solid var(--border);background:var(--panel)}
+.chip.bad{color:var(--pink);border-color:rgba(244,114,182,.4);background:rgba(244,114,182,.08);text-decoration:line-through;opacity:.75}
+.chip.mid{color:var(--accent2);border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.12)}
+/* icon system — inline SVG, no external requests */
+.ico{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i-hero{width:clamp(58px,9vw,86px);height:clamp(58px,9vw,86px);color:var(--accent2)}
+.i-card{width:34px;height:34px;color:var(--accent)}
+.i-in{width:18px;height:18px;margin-right:8px;color:currentColor}
+.i-head{width:.85em;height:.85em;margin-left:.15em;vertical-align:-.06em;color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="ico-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></symbol>
+<symbol id="ico-wall" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9.3h18M3 14.6h18M8.5 4v5.3M15.5 4v5.3M8.5 14.6V20M15.5 14.6V20M12 9.3v5.3"/></symbol>
+<symbol id="ico-bank" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="m12 3 9 5H3l9-5Z"/><path d="M3 8h18"/><path d="M5 21V11M9.5 21V11M14.5 21V11M19 21V11"/></symbol>
+<symbol id="ico-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-magnify" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8.5 11h5M11 8.5v5" stroke-opacity=".55"/></symbol>
+<symbol id="ico-ruler" viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="10" rx="1.5" transform="rotate(-45 12 12)"/><path d="M8 7.5l1.5 1.5M11 10.5l1.5 1.5M14 13.5l1.5 1.5"/></symbol>
+<symbol id="ico-divide" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.4" fill="currentColor" stroke="none"/><path d="M5 12h14"/></symbol>
+<symbol id="ico-funnel" viewBox="0 0 24 24"><path d="M3 5h18l-7 8.5V20l-4 2v-8.5L3 5Z"/></symbol>
+<symbol id="ico-median" viewBox="0 0 24 24"><path d="M4 20V9M9 20V5M14 20v-8M20 20V7"/><path d="M2 15h20" stroke="var(--accent2)" stroke-dasharray="2 2.5"/></symbol>
+<symbol id="ico-sliders" viewBox="0 0 24 24"><path d="M5 21v-7M5 10V3M12 21v-9M12 8V3M19 21v-5M19 12V3"/><path d="M2 14h6M9 8h6M16 16h6"/></symbol>
+<symbol id="ico-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10"/><path d="M5 7h14"/><path d="M5 7 2 13a3 3 0 0 0 6 0L5 7Z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0l-3-6Z"/></symbol>
+<symbol id="ico-floor" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V8h12v12"/><path d="M6 12h12M6 16h12M12 8v12"/></symbol>
+<symbol id="ico-ceiling" viewBox="0 0 24 24"><path d="M4 4h16"/><path d="M12 6v12"/><path d="M12 6 8 10M12 6l4 4"/><path d="M6 20h12" stroke-opacity=".4"/></symbol>
+<symbol id="ico-gauge" viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-5"/><circle cx="12" cy="18" r="1.4" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-histogram" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="4" y="14" width="3" height="6"/><rect x="8.5" y="9" width="3" height="11"/><rect x="13" y="6" width="3" height="14"/><rect x="17.5" y="12" width="3" height="8"/></symbol>
+<symbol id="ico-percent" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></symbol>
+<symbol id="ico-range" viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M4 8v8M20 8v8"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-shield" viewBox="0 0 24 24"><path d="M12 3 5 5.8v5.2c0 4 2.9 7.2 7 8.4 4.1-1.2 7-4.4 7-8.4V5.8L12 3Z"/><path d="m9 11.5 2 2 4-4"/></symbol>
+<symbol id="ico-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></symbol>
+<symbol id="ico-map" viewBox="0 0 24 24"><path d="m9 4-6 2.4v13.2l6-2.4 6 2.4 6-2.4V4l-6 2.4L9 4Z"/><path d="M9 4v13.2M15 6.4v13.2"/></symbol>
+<symbol id="ico-hash" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></symbol>
+</svg>
+
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Jordan Real Estate · for builders</div>
+<h1>The math — explained simply</h1>
+<p class="lead">No formulas to memorise. Just a plain-English tour of how the tool turns nearby homes into a price you can trust.</p>
+<div class="hint">scroll down ↓</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-target"/></svg></div>
+<h2>The big idea</h2>
+<p class="lead">We price your home the way a good <strong>appraiser</strong> does — by looking at similar homes nearby and what they're going for.</p>
+<div class="note good"><strong>No magic, no AI guessing.</strong> Every number comes from real listings you can see. If we can't back it up with real homes, we won't make it up.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">The whole recipe in one glance</div>
+<h2>Five simple steps</h2>
+<p class="lead">That's it. The rest of this deck just walks through each one.</p>
+<div class="flow">
+<div class="pill"><svg class="ico i-in"><use href="#ico-magnify"/></svg>Find similar homes</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-divide"/></svg>Compare fairly</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-funnel"/></svg>Drop the weird ones</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-scale"/></svg>Floor &amp; ceiling</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-range"/></svg>Give a range</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">1</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-magnify"/></svg></div>
+<h2>Find comparable homes</h2>
+<p class="lead">We look for homes that are <strong>like yours</strong>: same area, similar size, similar number of bedrooms, and listed recently.</p>
+<div class="note tip">Builders call these <strong>"comparables"</strong> — or just "comps". A 3-bed apartment in Abdoun is only fairly compared to other 3-beds in Abdoun, not to a villa across the city.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">2</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-divide"/></svg></div>
+<h2>Price per square metre</h2>
+<p class="lead">A big home costs more than a small one — that tells us nothing. So we divide the price by the size to compare apples to apples.</p>
+<div class="nums">
+<div class="chip">200,000 JD ÷ 150 m² <span style="color:var(--accent2)">→ 1,333/m²</span></div>
+<div class="chip">280,000 JD ÷ 200 m² <span style="color:var(--accent2)">→ 1,400/m²</span></div>
+</div>
+<p class="lead" style="margin-top:20px">Now we can line homes up side by side. Everything from here on is measured <strong>per square metre</strong>.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">3</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-median"/></svg></div>
+<h2>Take the middle, not the average</h2>
+<p class="lead">We line up every comp's price per m² and pick the one <strong>right in the middle</strong>. That's the median.</p>
+<div class="nums">
+<div class="chip">820</div><div class="chip">910</div><div class="chip mid">964</div><div class="chip">1,020</div><div class="chip">1,110</div>
+</div>
+<div class="note">Why the middle and not the average? One super-expensive penthouse would drag an average way up. The middle value shrugs it off — it's <strong>steady</strong>.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">4</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-funnel"/></svg></div>
+<h2>Throw out the crazy listings</h2>
+<p class="lead">Real data is messy. Someone lists a whole building as <strong>"1 m²"</strong>, or fat-fingers an extra zero on the price.</p>
+<div class="nums">
+<div class="chip bad">42/m²</div><div class="chip">910</div><div class="chip">964</div><div class="chip">1,020</div><div class="chip bad">120,000/m²</div>
+</div>
+<div class="note good">Before we do anything, we <strong>trim the outliers</strong> — the crazy-high and crazy-low ones. We keep the sensible middle band, so one broken listing can never ruin your price.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">5</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-sliders"/></svg></div>
+<h2>Nudge each comp to match yours</h2>
+<p class="lead">No two homes are identical. A comp on a higher floor, or with a nicer finish, is worth a little more — so we adjust it up or down to be <strong>"like yours"</strong>.</p>
+<div class="note">Every nudge is small and comes from the market itself — there's no hard-coded "a view is worth +8%". And we only adjust where we actually have the data.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-shield"/></svg></div>
+<div class="kicker">The golden rule</div>
+<h2>When in doubt, we don't guess</h2>
+<p class="lead">If we don't know a home's floor or finish, we simply don't adjust for it — and if the whole area is too thin, we say <strong>"not enough data"</strong>.</p>
+<div class="note good">A missing detail is never treated as a made-up number. Honest gaps beat confident guesses.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-wall"/></svg></div>
+<div class="kicker">The safety net below</div>
+<h2>The cost floor</h2>
+<p class="lead">Using <strong>government build-cost data</strong>, we know roughly what it costs to build one square metre. You should never sell below that — you'd lose money.</p>
+<div class="note good"><strong>This sets the lowest safe price.</strong> If nearby homes ever dip under the cost to build, the floor quietly lifts your number back up to safe ground.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-bank"/></svg></div>
+<div class="kicker">The ceiling above</div>
+<h2>The income ceiling</h2>
+<p class="lead">Some buyers are investors. They'll only pay a price the <strong>rent</strong> can justify. Using area rents, we work out the most a rent-focused buyer would sensibly pay.</p>
+<div class="note good"><strong>This helps set the top price.</strong> Rent divided by the yield investors expect gives a fair ceiling — push above it and the investors walk away.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Floor below, ceiling above</div>
+<h2>Two guard rails</h2>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-floor"/></svg></div><h3>Cost floor</h3><p>From government build costs. The lowest price that still makes you money. Holds the bottom up.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-ceiling"/></svg></div><h3>Income ceiling</h3><p>From area rents. The most an investor will pay. Caps the top.</p></div>
+</div>
+<p class="lead" style="margin-top:22px">The nearby homes give the real price. The floor and ceiling keep it <strong>honest at both ends</strong>.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-range"/></svg></div>
+<div class="kicker">The answer — for Abdoun</div>
+<h2>A band, not one number</h2>
+<div class="prices">
+<div class="pbox lo"><div class="n">Lowest safe</div><div class="v">627</div><div class="n">don't go below</div></div>
+<div class="pbox mid"><div class="n">Best to ask</div><div class="v">964</div><div class="n">what we suggest</div></div>
+<div class="pbox hi"><div class="n">Highest</div><div class="v">1,301</div><div class="n">the most you can ask</div></div>
+</div>
+<p class="lead" style="margin-top:24px">A single number pretends to be perfect. A <strong>range</strong> is honest: it shows exactly how much room you really have (all per m²).</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-gauge"/></svg></div>
+<div class="kicker">How much to trust it</div>
+<h2>Very sure, fairly sure, or not sure</h2>
+<p class="lead">Every price comes with a confidence badge. It's based on two simple things:</p>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-hash"/></svg></div><h3>How many comps we found</h3><p>More similar homes → more sure.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-target"/></svg></div><h3>How alike they are</h3><p>Prices that agree → more sure.</p></div>
+</div>
+<div class="note"><strong>Less sure = wider band.</strong> When comps are few or scattered, we widen the range on purpose — never a fake tight number.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-percent"/></svg></div>
+<div class="kicker">Bonus: "where to build"</div>
+<h2>Ranking areas fairly</h2>
+<p class="lead">To score which area is a good bet, we don't compare raw prices — one broken <strong>120,000/m²</strong> row would break the scale.</p>
+<div class="note good">Instead we ask <strong>"where does this area rank against all the others?"</strong> (its percentile). The best area is 100, the worst is 0, and one crazy outlier can't distort anyone.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Start to finish</div>
+<h2>How a price is made</h2>
+<div class="flow">
+<div class="fstep"><svg class="ico i-card"><use href="#ico-magnify"/></svg>Similar homes<br/><small>the comps</small></div>
+<div class="arrow">→</div>
+<div class="fstep"><svg class="ico i-card"><use href="#ico-funnel"/></svg>Clean &amp; middle<br/><small>trim, take median</small></div>
+<div class="arrow">→</div>
+<div class="fstep"><svg class="ico i-card"><use href="#ico-scale"/></svg>Floor &amp; ceiling<br/><small>cost &amp; rent</small></div>
+<div class="arrow">→</div>
+<div class="fstep"><svg class="ico i-card" style="color:var(--accent2)"><use href="#ico-check"/></svg>Your band<br/><small>with confidence</small></div>
+</div>
+<p class="lead" style="margin-top:28px">Real homes in, cleaned up, checked against cost and rent, and handed to you as an honest range.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-check"/></svg></div>
+<h1>That's how the price is made.</h1>
+<p class="lead">Similar homes nearby, cleaned of the crazy ones, kept above the cost to build and below what rent allows — and always shown as a range you can trust.</p>
+<div class="pill" style="margin-top:20px">No magic. Just honest math. →</div>
+</div>
+</section>
+
+</div>
+<div class="count" id="count"></div>
+<script>
+const deck=document.getElementById('deck'),bar=document.getElementById('bar'),count=document.getElementById('count');
+const slides=document.querySelectorAll('.slide');
+function upd(){const t=deck.scrollTop,h=deck.scrollHeight-deck.clientHeight;bar.style.width=(h>0?(t/h*100):0)+'%';const i=Math.round(t/deck.clientHeight)+1;count.textContent=i+' / '+slides.length;}
+deck.addEventListener('scroll',upd);upd();
+document.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();deck.scrollBy({top:deck.clientHeight,behavior:'smooth'})}if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();deck.scrollBy({top:-deck.clientHeight,behavior:'smooth'})}});
+</script>
+</body>
+</html>

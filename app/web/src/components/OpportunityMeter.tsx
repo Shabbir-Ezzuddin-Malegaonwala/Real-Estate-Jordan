@@ -2,10 +2,10 @@ import type { OpportunityScore } from "../types";
 import { levelFromScore } from "../lib/intel";
 
 const COMPONENT_LABELS: Record<string, string> = {
-  price_level: "Price headroom",
-  price_growth: "Price growth",
-  demand_density: "Sale demand",
-  supply_pressure: "Low competition",
+  price_level: "How pricey the area is",
+  price_growth: "Are prices going up",
+  demand_density: "How busy the area is",
+  supply_pressure: "How few sellers you compete with",
 };
 
 const BAR: Record<string, string> = { High: "bg-pos", Medium: "bg-warn", Low: "bg-neg" };
@@ -17,7 +17,7 @@ export function OpportunityMeter({ opp }: { opp: OpportunityScore }) {
   const entries = Object.entries(opp.components) as [keyof typeof opp.components, number | null][];
 
   const sourceLabel =
-    opp.source === "local" ? "locally computed" : opp.source === "heatmap" ? "area heatmap" : "engine-scored";
+    opp.source === "local" ? "quick estimate" : opp.source === "heatmap" ? "area map" : "based on live data";
 
   return (
     <div className={`card p-3 ${opp.low_data ? "opacity-90" : ""}`}>
@@ -25,19 +25,19 @@ export function OpportunityMeter({ opp }: { opp: OpportunityScore }) {
         <ScoreRing score={opp.score} level={opp.low_data ? "Low" : level} />
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-2xs uppercase tracking-wide text-ink-mute">Opportunity score</span>
+            <span className="text-2xs uppercase tracking-wide text-ink-mute">How good to build here</span>
             {opp.low_data && (
               <span className="rounded-[2px] border border-warn/40 bg-warn/10 px-1.5 py-[1px] text-2xs font-medium uppercase tracking-wide text-warn">
-                Low data · n={opp.listing_count ?? 0}
+                Little data · {opp.listing_count ?? 0} homes
               </span>
             )}
           </div>
           <div className={`text-[13px] font-semibold ${opp.low_data ? "text-ink-dim" : tone(level)}`}>
-            {opp.low_data ? "Too thin to rank" : `${level} · where to build`}
+            {opp.low_data ? "Not enough data yet" : level === "High" ? "A great place to build" : level === "Low" ? "A weaker place to build" : "An okay place to build"}
           </div>
           <div className="mt-0.5 text-2xs text-ink-faint">
             {sourceLabel}
-            {opp.covered ? "" : " · context area"}
+            {opp.covered ? "" : " · we don't price this area yet"}
             {opp.governorate ? ` · ${opp.governorate}` : ""}
           </div>
         </div>
@@ -59,7 +59,7 @@ export function OpportunityMeter({ opp }: { opp: OpportunityScore }) {
                   <span className="text-2xs text-ink-faint">n/a</span>
                 </div>
                 <p className="mt-0.5 pl-[104px] text-2xs leading-snug text-ink-faint">
-                  {reason ?? "Not enough dated sales to measure yet."}
+                  {reason ?? "Not enough recent sales to tell yet."}
                 </p>
               </div>
             );

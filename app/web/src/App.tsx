@@ -29,6 +29,7 @@ import { Stepper } from "./components/Stepper";
 import { SubjectForm } from "./components/SubjectForm";
 import { StepContent } from "./components/steps/StepContent";
 import { OpportunityLegend } from "./components/OpportunityLegend";
+import { ChatWidget } from "./components/chat/ChatWidget";
 import { useTheme } from "./lib/theme";
 
 type ApiStatus = "checking" | "online" | "offline";
@@ -45,6 +46,7 @@ const DEFAULT_LAYERS: LayerState = {
 // sync with scrapers/emit_national.py so the precomputed brief and the form agree.
 const DEFAULT_SUBJECT: SubjectInput = {
   neighborhood: "",
+  property_type: "apartment",
   area_m2: 175,
   bedrooms: 3,
   floor_level: 4,
@@ -267,6 +269,9 @@ export default function App() {
   if (!entered) return <Landing onEnter={onEnter} theme={theme} onToggleTheme={toggleTheme} />;
   if (error) return <Splash title="Failed to load" detail={error} tone="error" />;
   if (!geo || !bundle) return <Splash title="Loading Amman intelligence…" detail="Reading map layers and engine output." />;
+  // The backend can be a cold serverless function — show a clear "waking up" screen
+  // while checkHealth() warms it, so users wait instead of hitting a not-ready API.
+  if (apiStatus === "checking") return <Warming onSkip={() => setApiStatus("offline")} />;
 
   const selected = selectedArea?.name ?? null;
 
@@ -357,6 +362,9 @@ export default function App() {
       </aside>
 
       {helpOpen && <HelpPanel onClose={() => setHelpOpen(false)} />}
+
+      {/* Grounded assistant — floating button (bottom-right) opens a docked chat drawer. */}
+      <ChatWidget />
     </div>
   );
 }
@@ -386,6 +394,38 @@ function Splash({ title, detail, tone }: { title: string; detail: string; tone?:
     <div className="flex h-full w-full flex-col items-center justify-center bg-base px-6 text-center">
       <div className={`text-[14px] font-semibold ${tone === "error" ? "text-neg" : "text-ink"}`}>{title}</div>
       <p className="mt-1.5 max-w-[380px] text-2xs leading-relaxed text-ink-mute">{detail}</p>
+    </div>
+  );
+}
+
+// Cold-start buffer: shown while checkHealth() warms a sleeping serverless backend.
+// A "continue without waiting" escape appears after a few seconds so nobody is stuck.
+function Warming({ onSkip }: { onSkip: () => void }) {
+  const [showSkip, setShowSkip] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setShowSkip(true), 6000);
+    return () => window.clearTimeout(t);
+  }, []);
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center bg-base px-6 text-center">
+      <svg className="h-9 w-9 animate-spin text-accent" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+      <div className="mt-4 text-[14px] font-semibold text-ink">Waking up the live engine…</div>
+      <p className="mt-1.5 max-w-[360px] text-2xs leading-relaxed text-ink-mute">
+        The server sleeps when idle, so the first load takes a few seconds while it starts up and
+        reads the market data. This usually only happens once.
+      </p>
+      {showSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="mt-4 rounded-[3px] border border-line bg-panel px-3 py-1.5 text-2xs text-ink-dim transition-colors hover:border-cyan-dim hover:text-ink"
+        >
+          Continue without waiting
+        </button>
+      )}
     </div>
   );
 }

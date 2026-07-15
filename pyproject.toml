@@ -1,0 +1,36 @@
+# Vercel's Python builder uses `uv`, which requires a PEP 621 [project] table with
+# the dependencies listed here. Deliberately lean: the pricing engine is pure
+# Python (no numpy/pandas), and only the LangChain packages actually imported are
+# listed — no langchain / langchain-community meta-packages — to stay under the
+# serverless function size limit.
+[project]
+name = "real-estate-jordan"
+version = "1.0.0"
+description = "Jordan real-estate pricing platform + grounded assistant (unified FastAPI backend)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.115.12",
+    "uvicorn[standard]==0.34.3",
+    "pydantic==2.11.4",
+    "python-dotenv>=1.0",
+    "psycopg[binary]>=3.2",
+    "langchain-core==0.3.69",
+    "langchain-groq==0.2.5",
+    "langgraph==0.2.70",
+    "langgraph-prebuilt==0.1.8",
+    "langgraph-checkpoint==2.0.12",
+    "groq>=0.11",
+    "numexpr==2.14.1",
+    "geopy==2.5.0",
+    "ddgs>=9.0",
+]
+
+# This is an application, not an installable package — don't have uv try to build
+# the repo root as a wheel (there's no single top-level package to build).
+[tool.uv]
+package = false
+
+# Where Vercel's FastAPI support finds the ASGI app. The whole backend
+# (recommendation API + the assistant's /chat router) is served from here.
+[tool.vercel]
+entrypoint = "app.api.main:app"

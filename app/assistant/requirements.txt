@@ -1,0 +1,26 @@
+# Jordan Real-Estate Assistant — backend dependencies.
+# Pinned to a consistent langchain 0.3 / langgraph 0.2 line where
+# langgraph.prebuilt.create_react_agent is stable. All free-tier by default.
+
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+pydantic==2.11.4
+sse-starlette==2.2.1
+
+# LLM: Groq free tier via LangChain.
+langchain==0.3.26
+langchain-core==0.3.69
+langchain-community==0.3.24
+langchain-groq==0.2.5
+langgraph==0.2.70
+langgraph-checkpoint==2.0.12
+langgraph-prebuilt==0.1.8
+groq>=0.11
+
+# Tools (all no-key / free by default).
+numexpr==2.14.1          # calculate — safe arithmetic
+geopy==2.5.0             # geocode_address — OpenStreetMap / Nominatim
+ddgs>=9.0                # web_search — DuckDuckGo (no key)
+
+# Optional higher-quality web search (only used if TAVILY_API_KEY is set):
+# langchain-tavily

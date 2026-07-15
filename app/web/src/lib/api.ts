@@ -2,7 +2,11 @@
 // is overridable via VITE_API_BASE; it defaults to the local backend. Every call
 // is time-bounded so an absent/slow API degrades to the offline fallback rather
 // than hanging the UI.
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
+export const API_BASE =
+  import.meta.env.VITE_API_BASE ??
+  (import.meta.env.PROD
+    ? "http://localhost:8000"
+    : "http://localhost:8000");
 
 export interface NeighborhoodMeta {
   name: string;
@@ -16,6 +20,9 @@ export interface NeighborhoodMeta {
 // the rest sharpen the estimate when known.
 export interface SubjectInput {
   neighborhood: string;
+  // apartment | villa are residential; commercial (offices/shops) prices higher.
+  // Drives which comparables the engine uses. Defaults to apartment.
+  property_type?: "apartment" | "villa" | "commercial" | "land";
   area_m2: number;
   floor_level?: number;
   total_floors?: number;
@@ -32,17 +39,29 @@ function timeout(ms: number): AbortSignal {
   return AbortSignal.timeout(ms);
 }
 
+// The backend can be a cold serverless function that needs several seconds to
+// wake up (it loads the dataset from Neon on first hit). A single short probe
+// would always drop us to "offline", so we retry with backoff and a generous
+// per-attempt timeout — this warms the function and connects automatically
+// instead of the user refreshing the page repeatedly.
 export async function checkHealth(): Promise<boolean> {
-  try {
-    const res = await fetch(`${API_BASE}/health`, { signal: timeout(2500) });
-    return res.ok;
-  } catch {
-    return false;
+  const delaysMs = [0, 1500, 3000, 5000, 5000]; // 5 attempts spanning a cold start
+  for (let i = 0; i < delaysMs.length; i++) {
+    if (delaysMs[i]) await new Promise((r) => setTimeout(r, delaysMs[i]));
+    try {
+      const res = await fetch(`${API_BASE}/health`, { signal: timeout(15000) });
+      if (res.ok) return true;
+    } catch {
+      // timeout / network error — the function is likely still warming; retry.
+    }
   }
+  return false;
 }
 
 export async function fetchNeighborhoods(): Promise<NeighborhoodMeta[]> {
-  const res = await fetch(`${API_BASE}/neighborhoods`, { signal: timeout(4000) });
+  // Longer timeout: this runs right after checkHealth on first load, when the
+  // function may still be finishing its warm-up.
+  const res = await fetch(`${API_BASE}/neighborhoods`, { signal: timeout(15000) });
   if (!res.ok) throw new Error(`/neighborhoods → ${res.status}`);
   return (await res.json()) as NeighborhoodMeta[];
 }

@@ -19,37 +19,37 @@ export function Landing({
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
       </div>
 
-      <div className="label-eyebrow">Jordan Real Estate Intelligence · Builder</div>
+      <div className="label-eyebrow">Jordan Real Estate · for builders</div>
       <h1 className="mt-2 max-w-[620px] text-[27px] font-semibold leading-tight tracking-tight text-ink">
-        Decide where to build, and what to launch at.
+        Find where to build, and what price to sell at.
       </h1>
       <p className="mt-2 max-w-[500px] text-[13px] leading-relaxed text-ink-mute">
-        One evidence base, one builder journey — opportunity, economics, pricing, monitoring.
-        Every number is traceable to a source; where a signal is missing, we say so.
+        One simple tool, four steps — where to build, the land price, your sell price, and market
+        news. Every number comes from real data, and when we don't know, we say so.
       </p>
 
       <div className="mt-8 grid w-full max-w-[720px] gap-3 sm:grid-cols-2">
         <EntryCard
           icon="◎"
-          title="Explore Opportunities"
-          sub="I want to discover where to build"
-          blurb="Open the 290-area opportunity map — ranked, evidence-backed, honest about thin data."
+          title="Find a good area"
+          sub="I want to know where to build"
+          blurb="Open the map of areas — ranked best to worst, using real data, honest when data is thin."
           cta="Open the map"
           onClick={() => onEnter("explore")}
         />
         <EntryCard
           icon="▣"
-          title="Evaluate My Land"
-          sub="I already own land"
-          blurb="Search your area and jump straight to economics and launch pricing."
+          title="I already have land"
+          sub="Tell me what to sell at"
+          blurb="Search your area and go straight to the land price and your sell price."
           cta="Find my area"
           onClick={() => onEnter("evaluate")}
         />
       </div>
 
       <p className="mt-8 max-w-[520px] text-2xs leading-relaxed text-ink-faint">
-        Decision-support, not a formal valuation. Prices are computed from calibrated portal listings
-        + official indices; missing signals show an honest awaiting state, never a fabricated number.
+        This is a guide to help you decide, not an official valuation. Prices come from real listings
+        and official records. When data is missing, we show an honest "no data yet" — never a guess.
       </p>
     </div>
   );

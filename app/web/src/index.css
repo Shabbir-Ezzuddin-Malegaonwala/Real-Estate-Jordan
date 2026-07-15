@@ -107,6 +107,17 @@
   .input:focus {
     @apply border-cyan-dim;
   }
+  /* Chat markdown wrapper — the renderer adds per-element utility classes; this
+     just sets sensible spacing/color defaults for the assistant's answers. */
+  .prose-chat > * + * {
+    @apply mt-1.5;
+  }
+  .prose-chat a {
+    @apply text-cyan underline;
+  }
+  .prose-chat code {
+    @apply rounded bg-surface px-1 text-cyan;
+  }
 }
 
 /* MapLibre popup + control theming — driven by the palette variables so they

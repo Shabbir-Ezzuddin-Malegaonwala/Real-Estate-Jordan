@@ -4,6 +4,13 @@ import type { SubjectInput } from "../lib/api";
 const VIEW = ["unknown", "none", "city", "garden", "mountain", "panoramic"];
 const PARKING = ["unknown", "none", "open", "covered"];
 const FINISH = ["unknown", "basic", "standard", "high", "luxury"];
+// Residential (apartment/villa) vs commercial — commercial prices higher, and the
+// engine uses only same-type comparables, so this materially changes the price.
+const PROPERTY_TYPE: [string, string][] = [
+  ["apartment", "Apartment · residential"],
+  ["villa", "Villa · residential"],
+  ["commercial", "Commercial · offices & shops"],
+];
 
 // The subject property the builder is pricing. Editing any field recomputes
 // (debounced upstream); "Analyze" forces an immediate recompute.
@@ -39,11 +46,11 @@ export function SubjectForm({
       }}
     >
       <div className="mb-2 flex items-center justify-between">
-        <span className="label-eyebrow">Subject property</span>
-        {computing && <span className="text-2xs text-cyan">computing…</span>}
+        <span className="label-eyebrow">The home you're pricing</span>
+        {computing && <span className="text-2xs text-cyan">working…</span>}
       </div>
 
-      <Field id="f-nbhd" label="Neighbourhood">
+      <Field id="f-nbhd" label="Area">
         <select
           id="f-nbhd"
           value={subject.neighborhood}
@@ -58,6 +65,23 @@ export function SubjectForm({
         </select>
       </Field>
 
+      <div className="mt-2">
+        <Field id="f-type" label="Property type">
+          <select
+            id="f-type"
+            value={subject.property_type ?? "apartment"}
+            onChange={str("property_type")}
+            className="input"
+          >
+            {PROPERTY_TYPE.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
       <div className="mt-2 grid grid-cols-2 gap-2">
         <Field id="f-area" label="Size (m²)">
           <input
@@ -71,7 +95,7 @@ export function SubjectForm({
             className="input tnum"
           />
         </Field>
-        <Field id="f-floor" label="Floor level">
+        <Field id="f-floor" label="Floor">
           <input
             id="f-floor"
             type="number"
@@ -95,7 +119,7 @@ export function SubjectForm({
             className="input tnum"
           />
         </Field>
-        <Field id="f-age" label="Building age (yr)">
+        <Field id="f-age" label="Age (years)">
           <input
             id="f-age"
             type="number"
@@ -145,7 +169,7 @@ export function SubjectForm({
             disabled={computing || !subject.neighborhood || !subject.area_m2}
             className="h-[30px] w-full rounded-[3px] border border-accent/60 bg-accent/[0.12] text-[12px] font-medium text-accent transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {computing ? "Analyzing…" : "Analyze"}
+            {computing ? "Working…" : "Get price"}
           </button>
         </div>
       </div>

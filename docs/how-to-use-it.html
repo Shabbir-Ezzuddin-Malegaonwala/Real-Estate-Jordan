@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>How To Use It — Simply</title>
+<style>
+:root{--bg:#0a0f1e;--panel:#111827;--card:#141c30;--text:#e6edf7;--muted:#9fb0c9;--accent:#60a5fa;--accent2:#34d399;--accent3:#a78bfa;--warn:#fbbf24;--pink:#f472b6;--border:rgba(255,255,255,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.deck{scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll}
+.slide{scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:56px 24px;text-align:center;position:relative}
+.slide .inner{max-width:860px;width:100%}
+.kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px}
+.step{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:800;font-size:1.2rem;margin-bottom:16px}
+h1{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;line-height:1.08;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-bottom:10px}
+.lead{font-size:clamp(1.05rem,2.4vw,1.35rem);color:var(--muted);max-width:700px;margin:16px auto 0}
+.grid{display:grid;gap:16px;margin-top:28px;text-align:left}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.card .ic{margin-bottom:10px}
+.card h3{font-size:1.08rem;margin-bottom:4px}
+.card p{font-size:.95rem;color:var(--muted)}
+.emoji{display:flex;justify-content:center;margin-bottom:16px;line-height:1}
+.note{border-left:4px solid var(--accent2);background:rgba(52,211,153,.08);border-radius:0 14px 14px 0;padding:16px 20px;text-align:left;margin-top:24px;color:var(--text)}
+.tip{border-left-color:var(--accent);background:rgba(96,165,250,.08)}
+.prices{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.pbox{border-radius:14px;padding:18px 22px;min-width:150px;border:1px solid var(--border)}
+.pbox .n{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pbox .v{font-size:1.5rem;font-weight:800;margin-top:6px}
+.pbox.lo{background:rgba(96,165,250,.08)}.pbox.mid{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.4)}.pbox.hi{background:rgba(167,139,250,.08)}
+.progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:50;transition:width .2s}
+.hint{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:var(--muted);font-size:.8rem;z-index:40;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.count{position:fixed;bottom:16px;right:20px;color:var(--muted);font-size:.8rem;z-index:40}
+.bars .row{display:flex;align-items:center;gap:12px;margin:10px 0;text-align:left}
+.bars .lab{width:200px;font-size:.95rem;color:var(--text)}
+.bars .track{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.bars .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+/* icon system — inline SVG, no external requests */
+.ico{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i-hero{width:clamp(58px,9vw,86px);height:clamp(58px,9vw,86px);color:var(--accent2)}
+.i-card{width:34px;height:34px;color:var(--accent)}
+.i-head{width:.85em;height:.85em;margin-left:.15em;vertical-align:-.06em;color:var(--accent2)}
+.i-txt{width:1.05em;height:1.05em;margin-right:.3em;vertical-align:-.16em;color:currentColor}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="ico-pin" viewBox="0 0 24 24"><path d="M12 21s6.5-5.8 6.5-10.5a6.5 6.5 0 0 0-13 0C5.5 15.2 12 21 12 21Z"/><circle cx="12" cy="10.5" r="2.4"/></symbol>
+<symbol id="ico-plot" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 12h16M12 4v16" stroke-opacity=".5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-tag" viewBox="0 0 24 24"><path d="M11.6 2.6A2 2 0 0 0 10.2 2H4a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.2-6.2a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7" cy="7" r="1.5"/></symbol>
+<symbol id="ico-news" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h5M7 12h5M7 16h3"/><rect x="14" y="8" width="3" height="4" rx=".5" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-hash" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></symbol>
+<symbol id="ico-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-bank" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="m12 3 9 5H3l9-5Z"/><path d="M3 8h18"/><path d="M5 21V11M9.5 21V11M14.5 21V11M19 21V11"/></symbol>
+<symbol id="ico-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="ico-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></symbol>
+<symbol id="ico-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.6 5.6L3 18v3h3l6.1-6.1a4 4 0 0 0 5.6-5.6l-2.9 2.9-2-2 2.9-2.9Z"/></symbol>
+<symbol id="ico-sliders" viewBox="0 0 24 24"><path d="M5 21v-7M5 10V3M12 21v-9M12 8V3M19 21v-5M19 12V3"/><path d="M2 14h6M9 8h6M16 16h6"/></symbol>
+<symbol id="ico-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10"/><path d="M5 7h14"/><path d="M5 7 2 13a3 3 0 0 0 6 0L5 7Z"/><path d="M19 7l-3 6a3 3 0 0 0 6 0l-3-6Z"/></symbol>
+<symbol id="ico-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2Z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+<symbol id="ico-barchart" viewBox="0 0 24 24"><path d="M3 21h18"/><rect x="5" y="11" width="3.5" height="7"/><rect x="10.25" y="7" width="3.5" height="11"/><rect x="15.5" y="14" width="3.5" height="4"/></symbol>
+<symbol id="ico-trend-up" viewBox="0 0 24 24"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></symbol>
+<symbol id="ico-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></symbol>
+<symbol id="ico-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.7 6 3.7 9s-1.2 6.5-3.7 9c-2.5-2.5-3.7-6-3.7-9s1.2-6.5 3.7-9Z"/></symbol>
+<symbol id="ico-shield" viewBox="0 0 24 24"><path d="M12 3 5 5.8v5.2c0 4 2.9 7.2 7 8.4 4.1-1.2 7-4.4 7-8.4V5.8L12 3Z"/><path d="m9 11.5 2 2 4-4"/></symbol>
+<symbol id="ico-expand" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></symbol>
+<symbol id="ico-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></symbol>
+</svg>
+
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Jordan Real Estate · for builders</div>
+<h1>How to use it</h1>
+<p class="lead">A simple walk-through of every screen — what it shows you, and how to use it. No experience needed.</p>
+<div class="hint">scroll down ↓</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">The whole tool in one picture</div>
+<h2>Four simple questions</h2>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-pin"/></svg></div><h3>Where to build</h3><p>Which area is a good bet?</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-plot"/></svg></div><h3>Land price</h3><p>What can I pay for the land?</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-tag"/></svg></div><h3>Sell price</h3><p>What price should I sell at?</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-news"/></svg></div><h3>Market news</h3><p>What changed recently?</p></div>
+</div>
+<p class="lead" style="margin-top:22px">You switch between them with the <strong>"Show me"</strong> menu on the left.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">1</div>
+<h2>Pick your area</h2>
+<p class="lead">Type an area name in the <strong>search box</strong> (like "Abdoun"), or click a spot on the <strong>map</strong>.</p>
+<div class="note tip">The map is coloured — brighter areas are better places to build. Faded areas mean we don't have enough data there yet.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">2</div>
+<h2>Tell us about the home</h2>
+<p class="lead">In <strong>"The home you're pricing,"</strong> fill in the basics — area, size, bedrooms, floor, finish quality — then press <strong>"Get price."</strong></p>
+<div class="note tip">Only fill what you know. The more you tell us, the more exact the price. Leaving something blank is fine.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-pin"/></svg></div>
+<div class="kicker">The screen: Where to build</div>
+<h2>Is this area any good?</h2>
+<p class="lead">You get one big score out of 100, and four simple bars that explain it:</p>
+<div class="bars">
+<div class="row"><span class="lab">How pricey the area is</span><div class="track"><div class="fill" style="width:88%"></div></div></div>
+<div class="row"><span class="lab">Are prices going up</span><div class="track"><div class="fill" style="width:55%"></div></div></div>
+<div class="row"><span class="lab">How busy the area is</span><div class="track"><div class="fill" style="width:74%"></div></div></div>
+<div class="row"><span class="lab">How few sellers you compete with</span><div class="track"><div class="fill" style="width:30%"></div></div></div>
+</div>
+<div class="note">Longer bar = better. A high score means a strong place to build. Every bar is compared against all other areas.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-plot"/></svg></div>
+<div class="kicker">The screen: Land price</div>
+<h2>What can I pay for the land?</h2>
+<p class="lead">Enter how much you can build, the cost to build, and the profit you want. The tool shows the <strong>most you should pay for the land.</strong></p>
+<div class="note">It works backwards: money from selling, minus building, fees, loan, and your profit — whatever is left is the land budget. Pay more, and you eat into your profit.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-tag"/></svg></div>
+<div class="kicker">The screen: Sell price — the main answer</div>
+<h2>Three prices, not one</h2>
+<div class="prices">
+<div class="pbox lo"><div class="n">Lowest safe</div><div class="v">627</div><div class="n">don't go below</div></div>
+<div class="pbox mid"><div class="n">Best price</div><div class="v">964</div><div class="n">what we suggest</div></div>
+<div class="pbox hi"><div class="n">Highest</div><div class="v">1,301</div><div class="n">the most you can ask</div></div>
+</div>
+<p class="lead" style="margin-top:24px">We never give one risky number. You get a <strong>safe floor</strong>, a <strong>suggested price</strong>, and a <strong>stretch ceiling</strong> (all per square metre).</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Sell price · how sure we are</div>
+<h2>Can I trust this number?</h2>
+<p class="lead">A simple badge — <strong>Very sure, Fairly sure, or Not sure</strong> — plus bars showing why:</p>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-hash"/></svg></div><h3>How many nearby homes we found</h3><p>More homes = more trust.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-target"/></svg></div><h3>How alike those homes are</h3><p>Similar prices = more trust.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-bank"/></svg></div><h3>Backed by official records</h3><p>Checked against government data.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-clock"/></svg></div><h3>How recent the info is</h3><p>Fresher data = more trust.</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Sell price · the proof</div>
+<h2>The homes this price is based on <svg class="ico i-head"><use href="#ico-home"/></svg></h2>
+<p class="lead">A list of real homes for sale nearby that we used. Tap any one to open the actual listing.</p>
+<div class="note tip">This is the honesty part — you can see exactly which homes led to your price. Nothing is hidden or made up.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Sell price · play with it</div>
+<h2>Try changes &amp; compare <svg class="ico i-head"><use href="#ico-wrench"/></svg></h2>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-sliders"/></svg></div><h3>Try changes (What-if)</h3><p>Move the sliders — more floors, fancier finish, higher building cost — and watch the price change instantly.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-scale"/></svg></div><h3>Compare options</h3><p>See a few ready-made options side by side (build taller, fancier finish, costs up) versus your price now.</p></div>
+</div>
+<div class="note">Great for answering "what if I build differently?" before you commit.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-chat"/></svg></div>
+<div class="kicker">Sell price · the summary</div>
+<h2>In simple words</h2>
+<p class="lead">At the bottom, a short plain-English paragraph sums up the whole thing — the price, the range, how many homes it's based on, and one thing to watch. If you read nothing else, read this.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-news"/></svg></div>
+<div class="kicker">The screen: Market news</div>
+<h2>What's changed? — the graphs</h2>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-barchart"/></svg></div><h3>Price spread</h3><p>Where most home prices land in this area.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-trend-up"/></svg></div><h3>Price by year</h3><p>How prices moved over the years.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-trophy"/></svg></div><h3>Rank vs Jordan</h3><p>How pricey this area is vs everywhere else.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-globe"/></svg></div><h3>Where the data comes from</h3><p>Which websites the homes came from.</p></div>
+</div>
+<div class="note tip">Press <strong><svg class="ico i-txt"><use href="#ico-expand"/></svg>Expand</strong> for a full-screen view with extra graphs comparing many areas — the best places to build, priciest areas, and a "best bets" chart.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Two things to always remember</div>
+<h2>The honest rules</h2>
+<div class="grid g2">
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-shield"/></svg></div><h3>We never guess</h3><p>If there isn't enough data, you'll see "no data yet" — not a made-up price. (That's why some small areas, like 2nd Circle, show nothing.)</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-trend-up"/></svg></div><h3>Prices only go up</h3><p>This tool helps you hold or raise your price with confidence — never panic-cut it.</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-check"/></svg></div>
+<h1>That's the whole tool.</h1>
+<p class="lead">Pick an area → describe the home → get a price you can trust, with the proof behind it. Simple.</p>
+</div>
+</section>
+
+</div>
+<div class="count" id="count"></div>
+<script>
+const deck=document.getElementById('deck'),bar=document.getElementById('bar'),count=document.getElementById('count');
+const slides=document.querySelectorAll('.slide');
+function upd(){const t=deck.scrollTop,h=deck.scrollHeight-deck.clientHeight;bar.style.width=(h>0?(t/h*100):0)+'%';const i=Math.round(t/deck.clientHeight)+1;count.textContent=i+' / '+slides.length;}
+deck.addEventListener('scroll',upd);upd();
+document.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();deck.scrollBy({top:deck.clientHeight,behavior:'smooth'})}if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();deck.scrollBy({top:-deck.clientHeight,behavior:'smooth'})}});
+</script>
+</body>
+</html>

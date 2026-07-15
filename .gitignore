@@ -33,6 +33,8 @@ data/raw/osm/*.json.cache
 .env
 .env.*
 **/.env
+!.env.example
+!**/.env.example
 .claude/settings.local.json
 
 # ── Tooling temp ─────────────────────────────────────────────
@@ -73,3 +75,4 @@ data/raw/osm/jordan/
 # national-rebuild artifacts (regenerable)
 db/jordan_national.sqlite
 data/processed/listings_national_20260708.csv
+db/jordan_re_new.sqlite

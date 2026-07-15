@@ -1,0 +1,27 @@
+# Backend deps for the unified FastAPI app (recommendation engine + grounded
+# assistant). Deliberately lean: the pricing engine is pure Python (no numpy/
+# pandas), and only the LangChain packages actually imported are listed — no
+# langchain / langchain-community meta-packages — to stay well under host size
+# limits. Used by Vercel (pip install -r requirements.txt), Railway, and local.
+
+# --- Web / API ---
+fastapi==0.115.12
+uvicorn[standard]==0.34.3          # for Railway / local (Vercel provides its own server)
+pydantic==2.11.4
+python-dotenv>=1.0
+
+# --- Database (Neon Postgres, the one canonical DB) ---
+psycopg[binary]>=3.2
+
+# --- LLM assistant (Groq via LangChain / LangGraph) — only what's imported ---
+langchain-core==0.3.69
+langchain-groq==0.2.5
+langgraph==0.2.70
+langgraph-prebuilt==0.1.8
+langgraph-checkpoint==2.0.12
+groq>=0.11
+
+# --- Grounded tools ---
+numexpr==2.14.1                    # calculate
+geopy==2.5.0                       # geocode_address (Nominatim)
+ddgs>=9.0                          # web_search (DuckDuckGo)
