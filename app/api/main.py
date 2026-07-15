@@ -201,6 +201,9 @@ app = FastAPI(title="Jordan Real Estate Intelligence API", version="1.0", lifesp
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_ALLOWED_ORIGINS,
+    # Allow the frontend when hosted on Vercel (any *.vercel.app preview/prod URL),
+    # in addition to the localhost origins above.
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )

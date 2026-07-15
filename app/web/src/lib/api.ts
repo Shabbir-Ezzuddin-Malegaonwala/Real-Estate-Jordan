@@ -2,7 +2,11 @@
 // is overridable via VITE_API_BASE; it defaults to the local backend. Every call
 // is time-bounded so an absent/slow API degrades to the offline fallback rather
 // than hanging the UI.
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
+export const API_BASE =
+  import.meta.env.VITE_API_BASE ??
+  (import.meta.env.PROD
+    ? "https://real-estate-jordan-v2-4if8.vercel.app"
+    : "http://localhost:8000");
 
 export interface NeighborhoodMeta {
   name: string;
