@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from app.api import llm, valuation
-from app.engine import builder, monitoring, opportunity, recommend, scenario
+from app.engine import builder, market_intelligence, monitoring, opportunity, recommend, scenario
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
 from app.engine.data import DataBundle, load_bundle_from_sqlite
 from app.engine.models import Subject
@@ -478,6 +478,19 @@ def _ask_facts(area: Optional[str]) -> dict[str, Any]:
     finally:
         c.close()
     return facts
+
+
+@app.get("/market-intelligence")
+def get_market_intelligence(days: int = Query(30, ge=1, le=365)):
+    """What changed in the market (new listings, price moves, active areas, competitors,
+    news) over the window — from the pipeline's change events + sourced tables."""
+    return market_intelligence.market_overview(_DB_PATH, days=days)
+
+
+@app.get("/market-intelligence/brief")
+def get_market_brief():
+    """The weekly management market-intelligence brief — plain language, every figure sourced."""
+    return market_intelligence.weekly_brief(_DB_PATH)
 
 
 @app.post("/ask")

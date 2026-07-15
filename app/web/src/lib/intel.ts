@@ -124,6 +124,56 @@ export async function askAssistant(question: string, area: string | null, langua
   return tryPost<AskResult>("/ask", { question, area: area ?? undefined, language }, 45000);
 }
 
+// --- Market intelligence (GET /market-intelligence[/brief]) ------------------
+
+export interface MarketNews {
+  event_date: string | null;
+  category: string;
+  title_en: string;
+  summary_en: string;
+  area_en: string | null;
+  impact: string | null;
+  source_name: string | null;
+  source_url: string | null;
+  confidence: string | null;
+}
+
+export interface CompetitorProject {
+  project: string;
+  developer: string | null;
+  area: string | null;
+  status: string | null;
+  price_jd_per_m2: number | null;
+  payment_plan: string | null;
+  source_url: string | null;
+}
+
+export interface MarketIntel {
+  totals: {
+    window_days: number; new_listings: number; price_increases: number; price_drops: number;
+    delisted: number; total_events: number; avg_increase_pct: number | null; avg_drop_pct: number | null;
+  };
+  active_areas: { area: string; changes: number; new: number; up: number; down: number }[];
+  competitors: CompetitorProject[];
+  news: MarketNews[];
+  last_update?: { source_key?: string; finished_at?: string; status?: string } | null;
+}
+
+export interface MarketBrief {
+  week_ending: string;
+  headline: string;
+  brief: string;
+  top_areas: { area: string; changes: number }[];
+}
+
+export async function fetchMarketIntelligence(days = 30): Promise<MarketIntel | null> {
+  return tryGet<MarketIntel>(`/market-intelligence?days=${days}`, 8000);
+}
+
+export async function fetchMarketBrief(): Promise<MarketBrief | null> {
+  return tryGet<MarketBrief>("/market-intelligence/brief", 8000);
+}
+
 // --- Decomposed confidence --------------------------------------------------
 
 export const COMPONENT_ORDER = [
