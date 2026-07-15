@@ -1,0 +1,5 @@
+# Vercel's FastAPI framework support uses this to locate the ASGI app. The whole
+# backend (recommendation API + the grounded assistant's /chat, mounted as a
+# router) is served from app/api/main.py.
+[tool.vercel]
+entrypoint = "app.api.main:app"
