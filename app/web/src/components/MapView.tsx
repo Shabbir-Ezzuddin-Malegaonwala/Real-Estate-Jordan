@@ -225,6 +225,7 @@ export function MapView({
       const pal = mapPalette(themeRef.current);
       installLayers(map, geo, pal, themeRef.current);
       addNbhdMarkers(map, geo, pal, markersRef);
+      updateLabelVisibility(map, markersRef);
       readyRef.current = true;
       applySelection(map, selectedRef.current, bundleRef.current);
       applyVisibility(map, layersRef.current, geo, pal);
@@ -232,6 +233,7 @@ export function MapView({
       void applyPoi(map);
     };
     map.on("load", initLayers);
+    map.on("zoom", () => updateLabelVisibility(map, markersRef));
     const fallback = window.setTimeout(() => {
       if (!readyRef.current && map.isStyleLoaded()) initLayers();
     }, 1500);
@@ -435,29 +437,28 @@ function installLayers(map: maplibregl.Map, geo: Geo, pal: MapPalette, theme: Th
 function addOpportunityLayer(map: maplibregl.Map) {
   if (map.getSource("opp")) return;
   map.addSource("opp", { type: "geojson", data: EMPTY });
-  // Each area filled with its own distinct colour so separation is obvious.
+  // Transparent fill — kept ONLY so clicking inside an area selects it. No colour
+  // (colours washed out the place names); the border lines below define the areas,
+  // Google-Maps style, and the basemap's own city/town labels show through.
   map.addLayer(
     {
       id: "opp-fill",
       type: "fill",
       source: "opp",
-      paint: {
-        "fill-color": ["get", "__fill"],
-        "fill-opacity": ["case", ["==", ["get", "__lown"], 1], 0.28, 0.45],
-      },
+      paint: { "fill-color": "#000000", "fill-opacity": 0.001 },
     },
     "poi",
   );
-  // Crisp border lines between areas (the separation the user asked for).
+  // Crisp border lines between areas — the separation, no fill.
   map.addLayer(
     {
       id: "opp-border",
       type: "line",
       source: "opp",
       paint: {
-        "line-color": "rgba(60,72,88,0.55)",
+        "line-color": "rgba(70,82,98,0.5)",
         "line-width": ["interpolate", ["linear"], ["zoom"], 7, 0.4, 11, 0.9, 15, 1.6],
-        "line-opacity": 0.7,
+        "line-opacity": 0.75,
       },
     },
     "poi",
@@ -563,8 +564,20 @@ function addNbhdMarkers(
     const el = document.createElement("div");
     el.textContent = f.properties.neighborhood;
     el.style.cssText = css;
+    el.dataset.kind = (f.properties as { kind?: string }).kind ?? "amman_submarket";
     new maplibregl.Marker({ element: el }).setLngLat(polygonCentroid(f.geometry.coordinates)).addTo(map);
     markersRef.current.push(el);
+  }
+}
+
+// Show area labels only where they don't collide into mush: city labels from a
+// regional zoom, dense Amman submarket labels only once zoomed in. Below that,
+// the basemap's own clean city/town labels carry the wide view (Google-Maps style).
+function updateLabelVisibility(map: maplibregl.Map, markersRef: { current: HTMLElement[] }) {
+  const z = map.getZoom();
+  for (const el of markersRef.current) {
+    const isCity = el.dataset.kind === "city";
+    el.style.display = (isCity ? z >= 8.5 : z >= 11) ? "" : "none";
   }
 }
 

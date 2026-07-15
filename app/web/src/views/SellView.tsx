@@ -88,7 +88,7 @@ export function SellView() {
               onChange={(e) => (mode === "flat" ? setFlatArea : setTotalArea)(Number(e.target.value) || 0)} />
           </div>
           <div>
-            <label className={label} htmlFor="v-finish">Finish</label>
+            <label className={label} htmlFor="v-finish">Finishing quality</label>
             <select id="v-finish" className={field} value={finish} onChange={(e) => setFinish(e.target.value as Finish)}>
               <option value="basic">Basic</option>
               <option value="standard">Standard</option>

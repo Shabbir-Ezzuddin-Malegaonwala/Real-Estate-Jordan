@@ -53,7 +53,7 @@ export function SubjectBar() {
         className="flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left"
       >
         <span className="min-w-0">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-stitch-muted">Unit priced</span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-stitch-muted">Apartment we're pricing</span>
           <span className="mt-0.5 block truncate text-[13px] font-semibold text-stitch-ink">{summary(applied)}</span>
         </span>
         <span className="flex flex-none items-center gap-2">
@@ -68,6 +68,9 @@ export function SubjectBar() {
 
       {open && (
         <div className="border-t border-stitch-soft px-4 py-3">
+          <p className="mb-2 text-[12px] leading-relaxed text-stitch-muted">
+            These are the details of one apartment (the type you'd build and sell). Change them and the price updates for that apartment.
+          </p>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelText} htmlFor="subj-size">Size (m²)</label>
@@ -107,7 +110,7 @@ export function SubjectBar() {
               />
             </div>
             <div>
-              <label className={labelText} htmlFor="subj-finish">Finish</label>
+              <label className={labelText} htmlFor="subj-finish">Finishing quality</label>
               <select
                 id="subj-finish"
                 value={draft.finish_quality}

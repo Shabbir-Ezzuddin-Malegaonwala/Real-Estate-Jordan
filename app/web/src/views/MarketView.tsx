@@ -132,7 +132,7 @@ export function MarketView({ bundle, focus }: { bundle: AreaBundle; focus: Focus
         <div className="text-base font-bold leading-snug">{brief?.headline ?? market.status}</div>
         {intel && (
           <div className="mt-0.5 text-[13px] text-white/90">
-            {intel.totals.total_events} changes in {intel.totals.window_days} days · {intel.totals.new_listings} new · {intel.competitors.length} competitors tracked
+            Last {intel.totals.window_days} days: {intel.totals.new_listings} new properties advertised · {intel.totals.price_increases + intel.totals.price_drops} price changes · {intel.competitors.length} competitor projects tracked
           </div>
         )}
       </div>

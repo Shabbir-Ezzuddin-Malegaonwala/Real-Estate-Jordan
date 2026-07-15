@@ -101,11 +101,12 @@ export function ViewRouter() {
       return null;
   }
 
-  // The subject bar sits above every area-scoped view — the price/cost/market
-  // numbers below are all FOR the unit it describes, so it belongs with them.
+  // The subject bar (the apartment being priced) only belongs on Pricing and
+  // Cost & Profit — Market/Location aren't about a specific apartment.
+  const showSubject = ["price", "comps", "trend", "land", "margin", "build", "scenarios", "buildability"].includes(view);
   return (
     <div className="flex flex-col gap-3">
-      <SubjectBar />
+      {showSubject && <SubjectBar />}
       <ViewHeader {...meta} />
       {body}
     </div>

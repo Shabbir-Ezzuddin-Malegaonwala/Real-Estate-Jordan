@@ -95,7 +95,7 @@ def weekly_brief(db_path: str) -> dict:
     else:
         lines.append(
             f"This week the market monitor recorded {t['total_events']} changes across the tracked areas: "
-            f"{t['new_listings']} new listings, {t['price_increases']} price increases"
+            f"{t['new_listings']} newly-advertised property listings, {t['price_increases']} price increases"
             + (f" (avg +{t['avg_increase_pct']}%)" if t['avg_increase_pct'] else "")
             + f", and {t['price_drops']} price drops"
             + (f" (avg {t['avg_drop_pct']}%)" if t['avg_drop_pct'] else "")
