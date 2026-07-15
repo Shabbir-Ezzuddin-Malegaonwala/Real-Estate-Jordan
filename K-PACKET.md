@@ -2,7 +2,7 @@
 
 > **How to use this file:** If you are the researcher — read Sections 1–4, then execute Section 5. If you are an AI assistant (Claude / ChatGPT / Gemini / Perplexity) that this file was given to — this document contains the complete project context and your user's exact assignments. Help your user complete the assignments in Section 5, following every rule in Section 4 strictly. Do not redesign the schemas, do not add columns, do not change the scope.
 
----
+--- 
 
 ## 1. The Scenario (read this first — it puts us on the same page)
 
