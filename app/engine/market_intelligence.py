@@ -16,6 +16,42 @@ def _conn(db_path):
     return c
 
 
+def _series_signal(cur, indicator: str, label: str) -> dict | None:
+    """Latest value of a macro time-series + its % change vs ~a year earlier."""
+    rows = cur.execute(
+        "SELECT period, value FROM macro_series WHERE indicator=? AND value IS NOT NULL "
+        "AND value != 'NULL' ORDER BY period", (indicator,)).fetchall()
+    vals = []
+    for p, v in rows:
+        try:
+            vals.append((p, float(v)))
+        except (TypeError, ValueError):
+            continue
+    if len(vals) < 2:
+        return None
+    latest = vals[-1]
+    prior = vals[-5] if len(vals) >= 5 else vals[0]  # ~4 quarters back
+    change = round(100 * (latest[1] - prior[1]) / prior[1], 1) if prior[1] else None
+    return {"label": label, "value": round(latest[1], 1), "period": latest[0],
+            "change_pct": change, "note": "vs a year ago"}
+
+
+def key_signals(db_path: str) -> list[dict]:
+    """A few glanceable market gauges (real, sourced) with up/down — the 'ticker'."""
+    c = _conn(db_path); cur = c.cursor()
+    out = []
+    for ind, lbl in [
+        ("Real estate price index - General", "Property prices"),
+        ("Real estate price index - Buildings - Apartment", "Apartment prices"),
+        ("Real estate price index - Lands - Land", "Land prices"),
+    ]:
+        s = _series_signal(cur, ind, lbl)
+        if s:
+            out.append(s)
+    c.close()
+    return out
+
+
 def market_overview(db_path: str, days: int = 30) -> dict:
     """What changed in the market over the last `days`: new listings, price moves, active areas,
     competitor activity — all from real change events + sourced competitor data."""
@@ -81,7 +117,8 @@ def market_overview(db_path: str, days: int = 30) -> dict:
 
     c.close()
     return {"totals": totals, "active_areas": active_areas, "recent_events": recent,
-            "competitors": competitors, "news": news, "last_update": freshness}
+            "competitors": competitors, "news": news, "last_update": freshness,
+            "key_signals": key_signals(db_path)}
 
 
 def weekly_brief(db_path: str) -> dict:

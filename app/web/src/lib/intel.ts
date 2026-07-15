@@ -151,6 +151,14 @@ export interface CompetitorProject {
   source_url: string | null;
 }
 
+export interface KeySignal {
+  label: string;
+  value: number;
+  change_pct: number | null;
+  note?: string;
+  period?: string;
+}
+
 export interface MarketIntel {
   totals: {
     window_days: number; new_listings: number; price_increases: number; price_drops: number;
@@ -159,6 +167,7 @@ export interface MarketIntel {
   active_areas: { area: string; changes: number; new: number; up: number; down: number }[];
   competitors: CompetitorProject[];
   news: MarketNews[];
+  key_signals?: KeySignal[];
   last_update?: { source_key?: string; finished_at?: string; status?: string } | null;
 }
 

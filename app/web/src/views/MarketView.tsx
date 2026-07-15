@@ -122,6 +122,29 @@ export function MarketView({ bundle, focus }: { bundle: AreaBundle; focus: Focus
     </Card>
   );
 
+  const signalsRow: ReactNode = intel && intel.key_signals && intel.key_signals.length > 0 ? (
+    <div key="signals" className="grid grid-cols-3 gap-2">
+      {intel.key_signals.map((s, i) => {
+        const chg = s.change_pct ?? 0;
+        const flat = Math.abs(chg) < 0.3;
+        const up = chg > 0;
+        const color = flat ? "#8a94a5" : up ? "#2f9e6f" : "#c9736f";
+        const arrow = flat ? "→" : up ? "▲" : "▼";
+        return (
+          <div key={i} className="rounded-xl border border-stitch-soft bg-white px-3 py-2.5">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-stitch-muted">{s.label}</div>
+            <div className="mt-0.5 text-lg font-extrabold text-stitch-ink">{s.value.toLocaleString()}</div>
+            {s.change_pct != null && (
+              <div className="text-[11.5px] font-bold" style={{ color }}>
+                {arrow} {up && !flat ? "+" : ""}{chg}% <span className="font-normal text-stitch-muted">{s.note}</span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  ) : null;
+
   const ordered = focus === "news"
     ? [briefCard, newsCard, competitorsCard, trendCard]
     : [competitorsCard, briefCard, newsCard, trendCard];
@@ -136,6 +159,7 @@ export function MarketView({ bundle, focus }: { bundle: AreaBundle; focus: Focus
           </div>
         )}
       </div>
+      {signalsRow}
       {ordered}
     </div>
   );
