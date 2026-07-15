@@ -73,50 +73,81 @@ _ENV_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split("
 _ALLOWED_ORIGINS = _DEFAULT_ORIGINS + _ENV_ORIGINS
 
 
+# A neighborhood is priceable when it carries enough plausible sale comps for the
+# comparable engine to derive an honest number (the engine reaches full data-coverage
+# weight at 8 comps AFTER outlier filtering, so ~15 raw sales is a safe floor). The
+# districts table stays as a curated always-covered set with authoritative centroids.
+COVERAGE_MIN_SALES = 15
+
+
 class Coverage:
-    """Runtime view of the covered submarkets, derived from the loaded bundle."""
+    """Runtime view of the priceable submarkets, derived from the loaded bundle.
+
+    Coverage is data-driven: every neighborhood with >= COVERAGE_MIN_SALES plausible
+    sale comps is exposed (centroid from the districts table when curated, else the
+    median of that area's listing coordinates), plus the curated districts regardless.
+    This is what lets the platform price hundreds of real Jordanian areas, not a
+    hand-picked handful."""
 
     def __init__(self, bundle: DataBundle) -> None:
         self.bundle = bundle
         districts = _load_districts()
         self.centroids = {name.strip().lower(): (lat, lng)
-                          for name, lat, lng in districts}
+                          for name, lat, lng in districts
+                          if lat is not None and lng is not None}
+        district_names = {name.strip().lower(): name for name, _, _ in districts}
         self.canonical: dict[str, str] = {}
         self.stats: list[dict] = []
-        # Coverage is the set of TARGET submarkets defined by the districts table
-        # (the product's supported neighbourhoods), restricted to those that
-        # actually have sale listings. Listings outside these targets are loaded
-        # for comp density / future expansion but are NOT exposed as coverage.
-        sales_keys = {l.neighborhood.strip().lower()
-                      for l in bundle.sales() if l.neighborhood}
-        for name, _lat, _lng in districts:
-            key = name.strip().lower()
-            if key in sales_keys:
-                self.canonical[key] = name
-                self.stats.append(self._profile(name))
-        # Every neighborhood present in the corpus (for area-intelligence endpoints that also
-        # serve non-covered submarkets like Aqaba), lower-cased key -> display name.
         self.all_names: dict[str, str] = {}
+
+        # Single pass over the corpus: per-neighborhood totals, plausible-sale prices,
+        # and coordinates (for deriving a centroid where the districts table has none).
+        total_count: dict[str, int] = {}
+        sale_ppm2: dict[str, list[float]] = {}
+        coords: dict[str, list[tuple[float, float]]] = {}
+        display: dict[str, str] = {}
         for l in bundle.listings:
             n = (l.neighborhood or "").strip()
-            if n and n.lower() != "unknown":
-                self.all_names.setdefault(n.lower(), n)
+            if not n or n.lower() == "unknown":
+                continue
+            key = n.lower()
+            display.setdefault(key, n)
+            self.all_names.setdefault(key, n)
+            total_count[key] = total_count.get(key, 0) + 1
+        for l in bundle.sales():
+            n = (l.neighborhood or "").strip()
+            if not n or n.lower() == "unknown":
+                continue
+            key = n.lower()
+            if l.price_per_m2 and l.price_per_m2 >= MIN_PLAUSIBLE_SALE_PPM2:
+                sale_ppm2.setdefault(key, []).append(l.price_per_m2)
+            if l.lat is not None and l.lng is not None:
+                coords.setdefault(key, []).append((l.lat, l.lng))
 
-    def _profile(self, name: str) -> dict:
-        key = name.strip().lower()
-        sales = [l.price_per_m2 for l in self.bundle.sales()
-                 if l.neighborhood.strip().lower() == key
-                 and l.price_per_m2 and l.price_per_m2 >= MIN_PLAUSIBLE_SALE_PPM2]
-        lat, lng = self.centroids.get(key, (None, None))
-        return {
-            "name": name,
-            "centroid_lat": lat,
-            "centroid_lng": lng,
-            "listing_count": sum(1 for l in self.bundle.listings
-                                 if l.neighborhood.strip().lower() == key),
-            "sale_listing_count": len(sales),
-            "median_price_per_m2": round(median(sales), 1) if sales else None,
-        }
+        for key, ppm2 in sale_ppm2.items():
+            is_curated = key in district_names
+            if len(ppm2) < COVERAGE_MIN_SALES and not is_curated:
+                continue
+            name = district_names.get(key) or display.get(key, key)
+            centroid = self.centroids.get(key)
+            if centroid is None and coords.get(key):
+                centroid = (round(median([c[0] for c in coords[key]]), 6),
+                            round(median([c[1] for c in coords[key]]), 6))
+                # Expose the derived centroid to every consumer of cov.centroids
+                # (/areas, /opportunity, /area-monitoring), not just /neighborhoods.
+                self.centroids[key] = centroid
+            lat, lng = centroid if centroid else (None, None)
+            self.canonical[key] = name
+            self.stats.append({
+                "name": name,
+                "centroid_lat": lat,
+                "centroid_lng": lng,
+                "listing_count": total_count.get(key, 0),
+                "sale_listing_count": len(ppm2),
+                "median_price_per_m2": round(median(ppm2), 1) if ppm2 else None,
+            })
+        # Most-liquid areas first — stable, useful ordering for the area list/dropdown.
+        self.stats.sort(key=lambda s: s["sale_listing_count"], reverse=True)
 
     def names(self) -> list[str]:
         return [s["name"] for s in self.stats]

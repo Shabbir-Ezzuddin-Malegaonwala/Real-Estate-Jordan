@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { dataSource as mockSource } from "../lib/dataSource";
+import { useEffect, useRef, useState } from "react";
+import { dataSource, initDataSource } from "../lib/dataSource";
+import type { AreaListItem } from "../lib/contract";
 import { useApp } from "../lib/store";
 
 // Placeholder identity until Phase 6 auth lands — same shape the real account
@@ -10,7 +11,19 @@ const ACCOUNT_INITIAL = "M";
 
 export function TopBar() {
   const { state, setArea, setView, toggleNav, toggleInfo, setPendingAsk } = useApp();
-  const areas = useMemo(() => mockSource.listAreas(), []);
+  // The real area list is primed asynchronously (initDataSource), so read it once
+  // init resolves — a plain mount-time read would freeze the offline mock list and
+  // make every real area (e.g. "Marj Al Hamam") look "not in our data".
+  const [areas, setAreas] = useState<AreaListItem[]>(() => dataSource.listAreas());
+  useEffect(() => {
+    let alive = true;
+    initDataSource().then(() => {
+      if (alive) setAreas(dataSource.listAreas());
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
