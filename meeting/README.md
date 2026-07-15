@@ -19,6 +19,11 @@ Everything for the client meeting in one place.
 - **Do NOT** claim everything is built, **do NOT** reveal the recurring pipeline is done, **do NOT** boast about speed.
 - Deploy to Vercel before the demo.
 
+## Deploy (for the demo)
+- Deployment guide: `docs/DEPLOY.md`. Frontend → Vercel (root `app/web`, set
+  `VITE_API_BASE`); backend → Railway/Render (has the 129 MB DB, set
+  `ALLOWED_ORIGINS` to the Vercel URL + the API keys). Code is already deploy-ready.
+
 ## Still to add (after the platform work is finished)
 - A polished client-facing report/deck.
 - Timed mock-run notes (who presents which section, script).
