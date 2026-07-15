@@ -29,6 +29,7 @@ import { Stepper } from "./components/Stepper";
 import { SubjectForm } from "./components/SubjectForm";
 import { StepContent } from "./components/steps/StepContent";
 import { OpportunityLegend } from "./components/OpportunityLegend";
+import { ChatWidget } from "./components/chat/ChatWidget";
 import { useTheme } from "./lib/theme";
 
 type ApiStatus = "checking" | "online" | "offline";
@@ -357,6 +358,9 @@ export default function App() {
       </aside>
 
       {helpOpen && <HelpPanel onClose={() => setHelpOpen(false)} />}
+
+      {/* Grounded assistant — floating button (bottom-right) opens a docked chat drawer. */}
+      <ChatWidget />
     </div>
   );
 }

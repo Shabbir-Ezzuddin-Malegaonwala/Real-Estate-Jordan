@@ -1,6 +1,6 @@
 """FastAPI app exposing the Decision Engine for on-demand launch-price recommendations.
 
-Startup loads the SQLite bundle once into memory; each /recommend builds an engine
+Startup loads the Postgres bundle once into memory; each /recommend builds an engine
 Subject from the request and returns engine.recommend(...) verbatim. All pricing math
 stays in app.engine — this module only validates input and serialises output.
 """
@@ -19,18 +19,40 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+import psycopg
+from dotenv import load_dotenv
+from psycopg.rows import dict_row
+
 from app.engine import builder, monitoring, opportunity, recommend, scenario
 from app.engine.config import MIN_PLAUSIBLE_SALE_PPM2
-from app.engine.data import DataBundle, load_bundle_from_sqlite
+from app.engine.data import DataBundle, load_bundle_from_postgres
 from app.engine.models import Subject
 from app.engine.opportunity import OPPORTUNITY_WEIGHTS, READINESS_WEIGHTS
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-# Production DB is the consolidated ENRICHED build (jordan_re_new.sqlite): ~52.6k listings PLUS
-# real cost benchmarks + DoS building cost (cost-approach floor), competing projects, evidence
-# items (future signals), a price index, area yields, land prices and market intelligence — all
-# empty in the old national build. Override with JORDAN_RE_DB.
-_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_re_new.sqlite"))
+# Production DB is the Neon Postgres instance holding the consolidated ENRICHED build
+# (migrated from jordan_re_new.sqlite): ~52.6k listings PLUS real cost benchmarks + DoS
+# building cost (cost-approach floor), competing projects, evidence items (future signals),
+# a price index, area yields, land prices and market intelligence.
+#
+# The connection string is read from the DATABASE_URL environment variable — never hardcoded.
+# Local dev: put it in a gitignored .env at the repo root (see .env.example). Deploy: set the
+# env var in the platform's secret store.
+load_dotenv(_REPO_ROOT / ".env")
+_DB_DSN = os.environ.get("DATABASE_URL")
+if not _DB_DSN:
+    raise RuntimeError(
+        "DATABASE_URL is not set. Copy .env.example to .env and fill in the Neon connection "
+        "string, or export DATABASE_URL in the environment.")
+
+
+def _safe_dsn(dsn: str) -> str:
+    """Host/database only — never expose the password (e.g. in /health)."""
+    try:
+        info = psycopg.conninfo.conninfo_to_dict(dsn)
+        return f"{info.get('host', '?')}/{info.get('dbname', '?')}"
+    except Exception:
+        return "postgres"
 
 # The engine's human text uses typographic/math symbols (JD/m², →, ×, ≤, ≈, en/em-dash). Those are
 # valid UTF-8 on the wire, but a consumer that decodes the body as latin-1 (no charset was declared)
@@ -133,48 +155,37 @@ def _is_amman(cov: "Coverage", canonical: str) -> bool:
 
 
 def _load_districts() -> list[tuple[str, Optional[float], Optional[float]]]:
-    import sqlite3
-
-    conn = sqlite3.connect(_DB_PATH)
-    try:
+    with psycopg.connect(_DB_DSN) as conn:
         rows = conn.execute(
             "SELECT name, centroid_lat, centroid_lng FROM districts").fetchall()
-    finally:
-        conn.close()
     return [(r[0], r[1], r[2]) for r in rows]
 
 
 def _zoning_meta() -> dict:
     """Zoning plot counts + source by kind: official ASEZ (Aqaba) vs OSM land-use proxy (rest)."""
-    import sqlite3
-
-    conn = sqlite3.connect(_DB_PATH)
-    try:
-        if not conn.execute(
-                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='zoning_plots'"
-        ).fetchone():
+    with psycopg.connect(_DB_DSN, row_factory=dict_row) as conn:
+        if conn.execute(
+                "SELECT to_regclass('public.zoning_plots') AS r").fetchone()["r"] is None:
             return {}
 
         def by_kind(like: str, official: bool):
             op = "LIKE" if official else "NOT LIKE"
-            rows = conn.execute(
+            row = conn.execute(
                 f"SELECT count(*) n, min(source_name) sn, min(source_url) su, "
-                f"min(capture_date) cd FROM zoning_plots WHERE source_name {op} ?",
+                f"min(capture_date) cd FROM zoning_plots WHERE source_name {op} %s",
                 (like,)).fetchone()
-            if not rows or not rows[0]:
+            if not row or not row["n"]:
                 return None
-            return {"plot_count": rows[0], "kind": "asez" if official else "osm",
-                    "source": {"name": rows[1], "url": rows[2],
-                               "capture_date": rows[3] or "unknown"}}
+            return {"plot_count": row["n"], "kind": "asez" if official else "osm",
+                    "source": {"name": row["sn"], "url": row["su"],
+                               "capture_date": row["cd"] or "unknown"}}
 
         return {"asez": by_kind("%ASEZ%", True), "osm": by_kind("%ASEZ%", False)}
-    finally:
-        conn.close()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    bundle = load_bundle_from_sqlite(_DB_PATH)
+    bundle = load_bundle_from_postgres(_DB_DSN)
     app.state.bundle = bundle
     app.state.coverage = Coverage(bundle)
     app.state.zoning = _zoning_meta()
@@ -189,6 +200,14 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
+# Grounded assistant: mount its /chat (SSE) endpoint on THIS app so one server on
+# one port serves both recommendation and the assistant. The assistant loads its
+# own read-only bundle lazily on first /chat (see app/assistant/engine_bridge.py);
+# chat memory is in-process only (no DB persistence).
+from app.assistant.server import router as assistant_router  # noqa: E402
+
+app.include_router(assistant_router)
 
 
 class RecommendRequest(BaseModel):
@@ -225,7 +244,7 @@ def _subject_from(req: RecommendRequest, neighborhood: str) -> Subject:
 def health():
     cov: Coverage = app.state.coverage
     return {"status": "ok", "listings": len(app.state.bundle.listings),
-            "neighborhoods": cov.names(), "db_path": _DB_PATH}
+            "neighborhoods": cov.names(), "db_path": _safe_dsn(_DB_DSN)}
 
 
 @app.get("/neighborhoods")

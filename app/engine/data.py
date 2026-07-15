@@ -245,6 +245,9 @@ def load_bundle_from_sqlite(db_path: str, as_of: Optional[date] = None) -> DataB
 
     Missing/empty tables (cost_benchmarks, projects, evidence_items still being collected)
     degrade to empty lists — the engine handles their absence and surfaces it as a caveat.
+
+    Retained for the pilot/reference DB (db/jordan_re.sqlite) used by emit_sample.py and the
+    pipeline tests. Production (the API) reads Postgres via load_bundle_from_postgres().
     """
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -255,7 +258,7 @@ def load_bundle_from_sqlite(db_path: str, as_of: Optional[date] = None) -> DataB
             cost_benchmarks=[_cost_from(dict(r)) for r in _table(conn, "cost_benchmarks")],
             evidence_items=[_evidence_from(dict(r)) for r in _table(conn, "evidence_items")],
             projects=[_project_from(dict(r)) for r in _table(conn, "projects")],
-            price_index=_index_from_sqlite(conn),
+            price_index=_build_index([dict(r) for r in _table(conn, "macro_series")]),
             geocontext=[_geocontext_from(dict(r))
                         for r in _table(conn, "neighborhood_geocontext")],
             construction_cost=_construction_cost_from_sqlite(conn),
@@ -264,6 +267,71 @@ def load_bundle_from_sqlite(db_path: str, as_of: Optional[date] = None) -> DataB
         return bundle
     finally:
         conn.close()
+
+
+def load_bundle_from_postgres(dsn: str, as_of: Optional[date] = None) -> DataBundle:
+    """Build a DataBundle from the live Postgres DB (Neon). Same table contract as the
+    SQLite loader; the whole read model is pulled into memory once at API startup.
+
+    Missing/empty tables degrade to empty lists — the engine surfaces their absence as a caveat.
+    """
+    import psycopg
+    from psycopg.rows import dict_row
+
+    with psycopg.connect(dsn, row_factory=dict_row) as conn:
+        listings = [Listing.from_row(r) for r in _pg_table(conn, "listings")]
+        return DataBundle(
+            listings=listings,
+            cost_benchmarks=[_cost_from(r) for r in _pg_table(conn, "cost_benchmarks")],
+            evidence_items=[_evidence_from(r) for r in _pg_table(conn, "evidence_items")],
+            projects=[_project_from(r) for r in _pg_table(conn, "projects")],
+            price_index=_build_index(_pg_table(conn, "macro_series")),
+            geocontext=[_geocontext_from(r)
+                        for r in _pg_table(conn, "neighborhood_geocontext")],
+            construction_cost=_construction_cost_from_postgres(conn),
+            as_of=as_of or date.today(),
+        )
+
+
+def _pg_table(conn, name: str) -> list[dict]:
+    """All rows of a Postgres table as dicts, or [] if the table does not exist."""
+    reg = conn.execute("SELECT to_regclass(%s) AS r", (f"public.{name}",)).fetchone()
+    if not reg or reg["r"] is None:
+        return []
+    return conn.execute(f'SELECT * FROM "{name}"').fetchall()
+
+
+def _construction_cost_from_postgres(conn) -> Optional[ConstructionCost]:
+    """Recent-12-quarter mean of DoS new-build filed cost/m2, by licensing authority (Postgres)."""
+    reg = conn.execute("SELECT to_regclass('public.dos_building_cost') AS r").fetchone()
+    if not reg or reg["r"] is None:
+        return None
+
+    def recent_mean(authority: str):
+        rows = conn.execute(
+            "SELECT year, quarter, cost_jd_per_m2, source_name, source_url, capture_date "
+            "FROM dos_building_cost WHERE authority=%s AND license_type='new' "
+            "AND building_type='all' AND cost_jd_per_m2 IS NOT NULL "
+            "ORDER BY year DESC, quarter DESC LIMIT 12", (authority,)).fetchall()
+        vals = [r["cost_jd_per_m2"] for r in rows]
+        if not vals:
+            return None, None, None
+        return sum(vals) / len(vals), f"{rows[0]['year']}-{rows[0]['quarter']}", rows[0]
+
+    amman, amman_period, a_row = recent_mean("Greater Amman Municipality")
+    kingdom, kingdom_period, k_row = recent_mean("Kingdom")
+    if amman is None and kingdom is None:
+        return None
+    ref = a_row or k_row
+    return ConstructionCost(
+        amman_jd_m2=round(amman, 1) if amman is not None else None,
+        kingdom_jd_m2=round(kingdom, 1) if kingdom is not None else None,
+        quarters=12, latest_period=amman_period or kingdom_period,
+        source_name=ref["source_name"], source_url=ref["source_url"],
+        capture_date=ref["capture_date"],
+        caveat="DoS filed-licence administrative estimate - a conservative construction-cost FLOOR "
+               "that understates full turnkey build; residual land value derived from it is an "
+               "UPPER bound.")
 
 
 def _construction_cost_from_sqlite(conn: sqlite3.Connection) -> Optional[ConstructionCost]:
@@ -308,12 +376,13 @@ def _table(conn: sqlite3.Connection, name: str) -> list[sqlite3.Row]:
     return conn.execute(f"SELECT * FROM {name}").fetchall()
 
 
-def _index_from_sqlite(conn: sqlite3.Connection) -> PriceIndex:
+def _build_index(rows: list[dict]) -> PriceIndex:
+    """Build the CBJ price index from macro_series rows (dicts). Driver-agnostic:
+    works for both the SQLite and Postgres loaders."""
     idx = PriceIndex()
-    rows = _table(conn, "macro_series")
     for indicator, canonical in ((_CBJ_APARTMENT, _CANONICAL_INDEX),
                                  (_CBJ_RESIDENTIAL, _CANONICAL_INDEX)):
-        series = {r["period"].strip(): _num(r["value"])
+        series = {str(r["period"]).strip(): _num(r["value"])
                   for r in rows if r["indicator"] == indicator and _num(r["value"]) is not None}
         if series and canonical not in idx.series:
             idx.series[canonical] = series

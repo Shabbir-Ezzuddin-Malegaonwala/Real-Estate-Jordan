@@ -17,15 +17,15 @@ h1{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;line-height:1.08;background:
 h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-bottom:10px}
 .lead{font-size:clamp(1.05rem,2.4vw,1.35rem);color:var(--muted);max-width:680px;margin:16px auto 0}
 .big{font-size:clamp(2.4rem,7vw,4.5rem);font-weight:800;color:var(--accent2);line-height:1}
-.emoji{font-size:clamp(2.6rem,8vw,4.2rem);margin-bottom:14px;line-height:1}
+.emoji{display:flex;justify-content:center;margin-bottom:16px;line-height:1}
 .grid{display:grid;gap:16px;margin-top:28px;text-align:left}
 .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
 @media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-.card .ic{font-size:1.9rem;margin-bottom:8px}
+.card .ic{margin-bottom:10px}
 .card h3{font-size:1.1rem;margin-bottom:4px}
 .card p{font-size:.95rem;color:var(--muted)}
-.pill{display:inline-block;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3);color:var(--accent);border-radius:999px;padding:7px 16px;font-size:.9rem;font-weight:600;margin:5px}
+.pill{display:inline-flex;align-items:center;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3);color:var(--accent);border-radius:999px;padding:7px 16px;font-size:.9rem;font-weight:600;margin:5px}
 .note{border-left:4px solid var(--warn);background:rgba(251,191,36,.08);border-radius:0 14px 14px 0;padding:16px 20px;text-align:left;margin-top:24px;color:var(--text)}
 .good{border-left-color:var(--accent2);background:rgba(52,211,153,.08)}
 .progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:50;transition:width .2s}
@@ -33,14 +33,41 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 .count{position:fixed;bottom:16px;right:20px;color:var(--muted);font-size:.8rem;z-index:40}
 .flow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:24px}
-.fstep{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:.95rem;min-width:130px}
+.fstep{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:.95rem;min-width:130px}
 .arrow{color:var(--accent2);font-size:1.4rem}
 .stat{display:flex;flex-direction:column;align-items:center;gap:4px}
 .stats{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:28px}
 .statlabel{font-size:.85rem;color:var(--muted)}
+/* icon system — inline SVG, no external requests */
+.ico{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.i-hero{width:clamp(58px,9vw,86px);height:clamp(58px,9vw,86px);color:var(--accent2)}
+.i-card{width:34px;height:34px;color:var(--accent)}
+.i-in{width:18px;height:18px;margin-right:8px;color:currentColor}
+.i-head{width:.85em;height:.85em;margin-left:.15em;vertical-align:-.06em;color:var(--accent2)}
 </style>
 </head>
 <body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="ico-lightbulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5C17.7 10.2 18 9 18 8a6 6 0 1 0-12 0c0 1 .2 2.2 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></symbol>
+<symbol id="ico-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M9 21v-6h6v6"/></symbol>
+<symbol id="ico-wall" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9.3h18M3 14.6h18M8.5 4v5.3M15.5 4v5.3M8.5 14.6V20M15.5 14.6V20M12 9.3v5.3"/></symbol>
+<symbol id="ico-plot" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 12h16M12 4v16" stroke-opacity=".5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-bank" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="m12 3 9 5H3l9-5Z"/><path d="M3 8h18"/><path d="M5 21V11M9.5 21V11M14.5 21V11M19 21V11"/></symbol>
+<symbol id="ico-buildings" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4v18"/><path d="M12 21V10l7 3v8"/><path d="M8 8h.01M8 11h.01M8 14h.01M15.5 13h.01M15.5 16h.01"/></symbol>
+<symbol id="ico-news" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h5M7 12h5M7 16h3"/><rect x="14" y="8" width="3" height="4" rx=".5" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-map" viewBox="0 0 24 24"><path d="m9 4-6 2.4v13.2l6-2.4 6 2.4 6-2.4V4l-6 2.4L9 4Z"/><path d="M9 4v13.2M15 6.4v13.2"/></symbol>
+<symbol id="ico-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></symbol>
+<symbol id="ico-money" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></symbol>
+<symbol id="ico-bed" viewBox="0 0 24 24"><path d="M2 5v14"/><path d="M2 9h16a3 3 0 0 1 3 3v7"/><path d="M2 17h19"/><path d="M6 9V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/></symbol>
+<symbol id="ico-pin" viewBox="0 0 24 24"><path d="M12 21s6.5-5.8 6.5-10.5a6.5 6.5 0 0 0-13 0C5.5 15.2 12 21 12 21Z"/><circle cx="12" cy="10.5" r="2.4"/></symbol>
+<symbol id="ico-tag" viewBox="0 0 24 24"><path d="M11.6 2.6A2 2 0 0 0 10.2 2H4a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.2-6.2a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7" cy="7" r="1.5"/></symbol>
+<symbol id="ico-trend-down" viewBox="0 0 24 24"><path d="M22 17 13.5 8.5 8.5 13.5 2 7"/><path d="M16 17h6v-6"/></symbol>
+<symbol id="ico-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2.5v3.5M16 2.5v3.5"/></symbol>
+<symbol id="ico-shield" viewBox="0 0 24 24"><path d="M12 3 5 5.8v5.2c0 4 2.9 7.2 7 8.4 4.1-1.2 7-4.4 7-8.4V5.8L12 3Z"/><path d="m9 11.5 2 2 4-4"/></symbol>
+<symbol id="ico-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></symbol>
+</svg>
+
 <div class="progress" id="bar"></div>
 <div class="deck" id="deck">
 
@@ -55,7 +82,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🤔</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-lightbulb"/></svg></div>
 <h2>First, the problem</h2>
 <p class="lead">A builder needs to know one thing: <strong>what price should I sell my homes at?</strong></p>
 <div class="note">In Jordan, nobody publishes what homes actually <strong>sold</strong> for. So we can't just look up the answer. We have to work it out from lots of clues — that's what all this data is for.</div>
@@ -68,19 +95,19 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 <h2>We collect 6 kinds of information</h2>
 <p class="lead">Think of it like clues a detective gathers. No single clue gives the answer — together they do.</p>
 <div class="flow">
-<div class="pill">🏠 Homes for sale</div>
-<div class="pill">🧱 Cost to build</div>
-<div class="pill">🟩 Land prices</div>
-<div class="pill">🏦 Rent income</div>
-<div class="pill">🏗️ Other projects</div>
-<div class="pill">📰 Market news</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-home"/></svg>Homes for sale</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-wall"/></svg>Cost to build</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-plot"/></svg>Land prices</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-bank"/></svg>Rent income</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-buildings"/></svg>Other projects</div>
+<div class="pill"><svg class="ico i-in"><use href="#ico-news"/></svg>Market news</div>
 </div>
 </div>
 </section>
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🏠</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-home"/></svg></div>
 <div class="kicker">Clue #1 — the main one</div>
 <h2>Homes for sale</h2>
 <div class="stats">
@@ -97,9 +124,9 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 <div class="kicker">Clue #1 — what we know about each home</div>
 <h2>Every home is different</h2>
 <div class="grid g3">
-<div class="card"><div class="ic">💰</div><h3>Price &amp; size</h3><p>We have these for almost every home — the basics.</p></div>
-<div class="card"><div class="ic">🛏️</div><h3>Bedrooms</h3><p>Known for most homes.</p></div>
-<div class="card"><div class="ic">📍</div><h3>Location on map</h3><p>Only about half have an exact spot.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-money"/></svg></div><h3>Price &amp; size</h3><p>We have these for almost every home — the basics.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-bed"/></svg></div><h3>Bedrooms</h3><p>Known for most homes.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-pin"/></svg></div><h3>Location on map</h3><p>Only about half have an exact spot.</p></div>
 </div>
 <div class="note">Being honest: some details (like the floor number or how old the building is) are often missing. So we lean on the things we <em>do</em> know — price, size, and location — and we say when we're less sure.</div>
 </div>
@@ -107,7 +134,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🧱</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-wall"/></svg></div>
 <div class="kicker">Clue #2</div>
 <h2>How much it costs to build</h2>
 <p class="lead">This comes from the <strong>government</strong> (the Department of Statistics). It tells us the cost of building one square metre.</p>
@@ -117,7 +144,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🟩</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-plot"/></svg></div>
 <div class="kicker">Clue #3</div>
 <h2>Land prices</h2>
 <p class="lead">What land actually costs in different areas.</p>
@@ -127,7 +154,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🏦</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-bank"/></svg></div>
 <div class="kicker">Clue #4</div>
 <h2>How much rent brings in</h2>
 <p class="lead">For each area, how much money a home earns from renting it out.</p>
@@ -137,7 +164,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🏗️</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-buildings"/></svg></div>
 <div class="kicker">Clue #5</div>
 <h2>Other projects nearby</h2>
 <p class="lead">Other new buildings being sold in the area, and their prices.</p>
@@ -147,7 +174,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">📰</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-news"/></svg></div>
 <div class="kicker">Clue #6</div>
 <h2>Market news</h2>
 <p class="lead">Recent, dated news — interest rates, new roads and metro lines, government rules, buying activity.</p>
@@ -158,7 +185,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 <section class="slide">
 <div class="inner">
 <div class="kicker">Plus, for the map</div>
-<h2>Places &amp; roads nearby 🗺️</h2>
+<h2>Places &amp; roads nearby <svg class="ico i-head"><use href="#ico-map"/></svg></h2>
 <div class="stats">
 <div class="stat"><span class="big">86,000</span><span class="statlabel">nearby places (schools, malls, clinics…)</span></div>
 </div>
@@ -171,10 +198,10 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 <div class="kicker">Being honest</div>
 <h2>What this data <em>can't</em> do</h2>
 <div class="grid g2">
-<div class="card"><div class="ic">🏷️</div><h3>Asking, not sold</h3><p>We know what sellers ask, not the final handshake price. We adjust for this.</p></div>
-<div class="card"><div class="ic">📉</div><h3>Thin in small areas</h3><p>Big areas have lots of homes; small ones have very few. We only price where we have enough.</p></div>
-<div class="card"><div class="ic">📅</div><h3>Gaps in time</h3><p>Home dates cluster in a few periods, so "price over time" is rough, not perfect.</p></div>
-<div class="card"><div class="ic">🙅</div><h3>Never a guess</h3><p>When we don't have enough, we say "no data yet" — we never make up a number.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-tag"/></svg></div><h3>Asking, not sold</h3><p>We know what sellers ask, not the final handshake price. We adjust for this.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-trend-down"/></svg></div><h3>Thin in small areas</h3><p>Big areas have lots of homes; small ones have very few. We only price where we have enough.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-calendar"/></svg></div><h3>Gaps in time</h3><p>Home dates cluster in a few periods, so "price over time" is rough, not perfect.</p></div>
+<div class="card"><div class="ic"><svg class="ico i-card"><use href="#ico-shield"/></svg></div><h3>Never a guess</h3><p>When we don't have enough, we say "no data yet" — we never make up a number.</p></div>
 </div>
 </div>
 </section>
@@ -184,13 +211,13 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 <div class="kicker">Putting it together</div>
 <h2>How the clues become a price</h2>
 <div class="flow">
-<div class="fstep">🏠 Homes nearby<br/><small>the main price</small></div>
+<div class="fstep"><svg class="ico i-card"><use href="#ico-home"/></svg>Homes nearby<br/><small>the main price</small></div>
 <div class="arrow">→</div>
-<div class="fstep">🧱 Build cost<br/><small>lowest safe price</small></div>
+<div class="fstep"><svg class="ico i-card"><use href="#ico-wall"/></svg>Build cost<br/><small>lowest safe price</small></div>
 <div class="arrow">→</div>
-<div class="fstep">🏦 Rent<br/><small>top price</small></div>
+<div class="fstep"><svg class="ico i-card"><use href="#ico-bank"/></svg>Rent<br/><small>top price</small></div>
 <div class="arrow">→</div>
-<div class="fstep">✅ Your price<br/><small>with a range</small></div>
+<div class="fstep"><svg class="ico i-card" style="color:var(--accent2)"><use href="#ico-check"/></svg>Your price<br/><small>with a range</small></div>
 </div>
 <p class="lead" style="margin-top:28px">We start from nearby homes, then use build cost and rent as a floor and a ceiling — and always show a range, not a single risky number.</p>
 </div>
@@ -198,7 +225,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-
 
 <section class="slide">
 <div class="inner">
-<div class="emoji">🎯</div>
+<div class="emoji"><svg class="ico i-hero"><use href="#ico-target"/></svg></div>
 <h1>That's the data.</h1>
 <p class="lead">Real homes, government costs, land prices, rents, competitors, and market news — gathered honestly, and used only where there's enough to trust.</p>
 <div class="pill" style="margin-top:20px">Next: how to use each feature →</div>
