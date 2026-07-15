@@ -26,9 +26,11 @@ from app.engine.models import Subject
 from app.engine.opportunity import OPPORTUNITY_WEIGHTS, READINESS_WEIGHTS
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-# Production DB is the national build (56,854 listings). The 854-row jordan_re.sqlite
-# is the enriched PILOT, kept for reference only — see db/README.md. Override with JORDAN_RE_DB.
-_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_national.sqlite"))
+# Production DB is the consolidated ENRICHED build (jordan_re_new.sqlite): ~52.6k listings PLUS
+# real cost benchmarks + DoS building cost (cost-approach floor), competing projects, evidence
+# items (future signals), a price index, area yields, land prices and market intelligence — all
+# empty in the old national build. Override with JORDAN_RE_DB.
+_DB_PATH = os.environ.get("JORDAN_RE_DB", str(_REPO_ROOT / "db" / "jordan_re_new.sqlite"))
 
 # The engine's human text uses typographic/math symbols (JD/m², →, ×, ≤, ≈, en/em-dash). Those are
 # valid UTF-8 on the wire, but a consumer that decodes the body as latin-1 (no charset was declared)

@@ -52,29 +52,29 @@ export function ResidualLandValue({
   return (
     <section className="px-4 pt-5" aria-label="Residual land value">
       <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="text-[13px] font-semibold text-ink">Residual Land Value</h3>
+        <h3 className="text-[13px] font-semibold text-ink">Most you should pay for the land</h3>
         <span className="text-2xs text-ink-mute">
-          {out.source === "local" ? "computed locally" : "engine"}
+          {out.source === "local" ? "quick estimate" : "live"}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <NumField id="rlv-area" label="Buildable area (m²)" value={inp.buildable_area_m2} onChange={num("buildable_area_m2")} />
-        <NumField id="rlv-cost" label="Build cost (JD/m²)" value={inp.construction_cost_per_m2} onChange={num("construction_cost_per_m2")} />
-        <NumField id="rlv-fin" label="Finance (%)" value={inp.finance_pct} onChange={num("finance_pct")} step={0.5} />
+        <NumField id="rlv-area" label="How much you can build (m²)" value={inp.buildable_area_m2} onChange={num("buildable_area_m2")} />
+        <NumField id="rlv-cost" label="Cost to build (JD/m²)" value={inp.construction_cost_per_m2} onChange={num("construction_cost_per_m2")} />
+        <NumField id="rlv-fin" label="Loan cost (%)" value={inp.finance_pct} onChange={num("finance_pct")} step={0.5} />
         <NumField id="rlv-fees" label="Fees (%)" value={inp.fees_pct} onChange={num("fees_pct")} step={0.5} />
-        <NumField id="rlv-profit" label="Target profit (%)" value={inp.profit_pct} onChange={num("profit_pct")} step={1} />
-        <NumField id="rlv-gdv" label="GDV (JD/m²)" value={Math.round(out.gdv_per_m2)} readOnly hint="= recommended launch" />
+        <NumField id="rlv-profit" label="Profit you want (%)" value={inp.profit_pct} onChange={num("profit_pct")} step={1} />
+        <NumField id="rlv-gdv" label="Sale price (JD/m²)" value={Math.round(out.gdv_per_m2)} readOnly hint="= your best price" />
       </div>
 
       <div className={`mt-3 rounded-[3px] border p-3 ${viable ? "border-accent/60 bg-accent/[0.07]" : "border-neg/50 bg-neg/[0.06]"}`}>
         <div className="flex items-end justify-between">
           <div>
             <div className={`text-2xs uppercase tracking-wide ${viable ? "text-accent" : "text-neg"}`}>
-              Max defensible land price
+              Most you should pay for the land
             </div>
             <div className="mt-0.5 text-2xs text-ink-mute tnum">
-              {viable ? `${jd(out.max_land_value_per_m2)} JD per buildable m²` : "negative — project not viable at these inputs"}
+              {viable ? `${jd(out.max_land_value_per_m2)} JD for each m² you can build` : "This deal loses money at these numbers"}
             </div>
           </div>
           <div className={`tnum font-mono text-[24px] font-medium leading-none ${viable ? "text-accent" : "text-neg"}`}>
@@ -84,16 +84,16 @@ export function ResidualLandValue({
       </div>
 
       <div className="card mt-2 divide-y divide-line-soft">
-        <Row label="Gross development value (GDV)" value={out.gdv} tone="pos" />
-        <Row label="− Construction cost" value={-out.construction_cost} />
-        <Row label="− Finance cost" value={-out.finance_cost} />
+        <Row label="Total money from selling" value={out.gdv} tone="pos" />
+        <Row label="− Cost to build" value={-out.construction_cost} />
+        <Row label="− Loan cost" value={-out.finance_cost} />
         <Row label="− Fees" value={-out.fees} />
-        <Row label="− Developer profit" value={-out.developer_profit} />
-        <Row label="= Residual land value" value={out.max_land_value} tone={viable ? "accent" : "neg"} bold />
+        <Row label="− Your profit" value={-out.developer_profit} />
+        <Row label="= Most to pay for land" value={out.max_land_value} tone={viable ? "accent" : "neg"} bold />
       </div>
       <p className="mt-1.5 text-2xs leading-relaxed text-ink-faint">
-        Deterministic residual method. Land above this figure erodes the target margin — the
-        builder's ceiling for what to pay, not a market land quote.
+        Pay more than this for the land and it eats into the profit you wanted. This is your
+        ceiling — not what the land is being sold for.
       </p>
     </section>
   );

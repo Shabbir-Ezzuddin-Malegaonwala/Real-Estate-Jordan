@@ -17,10 +17,10 @@ export interface JourneyStep {
 }
 
 export const STEPS: JourneyStep[] = [
-  { key: "opportunity", n: 1, label: "Opportunity", question: "Where should I build?" },
-  { key: "economics", n: 2, label: "Economics", question: "What can I pay for the land?" },
-  { key: "pricing", n: 3, label: "Pricing", question: "What's the launch price?" },
-  { key: "monitoring", n: 4, label: "Monitoring", question: "What changed?" },
+  { key: "opportunity", n: 1, label: "Where to build", question: "Which area is best to build in?" },
+  { key: "economics", n: 2, label: "Land price", question: "What can I pay for the land?" },
+  { key: "pricing", n: 3, label: "Sell price", question: "What price should I sell at?" },
+  { key: "monitoring", n: 4, label: "Market news", question: "What's changed recently?" },
 ];
 
 export const STEP_INDEX: Record<StepKey, number> = Object.fromEntries(

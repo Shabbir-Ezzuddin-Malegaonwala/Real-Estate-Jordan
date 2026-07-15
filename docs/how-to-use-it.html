@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>How To Use It — Simply</title>
+<style>
+:root{--bg:#0a0f1e;--panel:#111827;--card:#141c30;--text:#e6edf7;--muted:#9fb0c9;--accent:#60a5fa;--accent2:#34d399;--accent3:#a78bfa;--warn:#fbbf24;--pink:#f472b6;--border:rgba(255,255,255,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.deck{scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll}
+.slide{scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:56px 24px;text-align:center;position:relative}
+.slide .inner{max-width:860px;width:100%}
+.kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px}
+.step{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:800;font-size:1.2rem;margin-bottom:16px}
+h1{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;line-height:1.08;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-bottom:10px}
+.lead{font-size:clamp(1.05rem,2.4vw,1.35rem);color:var(--muted);max-width:700px;margin:16px auto 0}
+.grid{display:grid;gap:16px;margin-top:28px;text-align:left}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.card .ic{font-size:1.9rem;margin-bottom:8px}
+.card h3{font-size:1.08rem;margin-bottom:4px}
+.card p{font-size:.95rem;color:var(--muted)}
+.emoji{font-size:clamp(2.6rem,8vw,4.2rem);margin-bottom:14px;line-height:1}
+.note{border-left:4px solid var(--accent2);background:rgba(52,211,153,.08);border-radius:0 14px 14px 0;padding:16px 20px;text-align:left;margin-top:24px;color:var(--text)}
+.tip{border-left-color:var(--accent);background:rgba(96,165,250,.08)}
+.prices{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.pbox{border-radius:14px;padding:18px 22px;min-width:150px;border:1px solid var(--border)}
+.pbox .n{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pbox .v{font-size:1.5rem;font-weight:800;margin-top:6px}
+.pbox.lo{background:rgba(96,165,250,.08)}.pbox.mid{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.4)}.pbox.hi{background:rgba(167,139,250,.08)}
+.progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:50;transition:width .2s}
+.hint{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:var(--muted);font-size:.8rem;z-index:40;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.count{position:fixed;bottom:16px;right:20px;color:var(--muted);font-size:.8rem;z-index:40}
+.bars .row{display:flex;align-items:center;gap:12px;margin:10px 0;text-align:left}
+.bars .lab{width:200px;font-size:.95rem;color:var(--text)}
+.bars .track{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.bars .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+</style>
+</head>
+<body>
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Jordan Real Estate · for builders</div>
+<h1>How to use it</h1>
+<p class="lead">A simple walk-through of every screen — what it shows you, and how to use it. No experience needed.</p>
+<div class="hint">scroll down ↓</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">The whole tool in one picture</div>
+<h2>Four simple questions</h2>
+<div class="grid g2">
+<div class="card"><div class="ic">📍</div><h3>Where to build</h3><p>Which area is a good bet?</p></div>
+<div class="card"><div class="ic">🟩</div><h3>Land price</h3><p>What can I pay for the land?</p></div>
+<div class="card"><div class="ic">🏷️</div><h3>Sell price</h3><p>What price should I sell at?</p></div>
+<div class="card"><div class="ic">📰</div><h3>Market news</h3><p>What changed recently?</p></div>
+</div>
+<p class="lead" style="margin-top:22px">You switch between them with the <strong>"Show me"</strong> menu on the left.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">1</div>
+<h2>Pick your area</h2>
+<p class="lead">Type an area name in the <strong>search box</strong> (like "Abdoun"), or click a spot on the <strong>map</strong>.</p>
+<div class="note tip">The map is coloured — brighter areas are better places to build. Faded areas mean we don't have enough data there yet.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="step">2</div>
+<h2>Tell us about the home</h2>
+<p class="lead">In <strong>"The home you're pricing,"</strong> fill in the basics — area, size, bedrooms, floor, finish quality — then press <strong>"Get price."</strong></p>
+<div class="note tip">Only fill what you know. The more you tell us, the more exact the price. Leaving something blank is fine.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">📍</div>
+<div class="kicker">The screen: Where to build</div>
+<h2>Is this area any good?</h2>
+<p class="lead">You get one big score out of 100, and four simple bars that explain it:</p>
+<div class="bars">
+<div class="row"><span class="lab">How pricey the area is</span><div class="track"><div class="fill" style="width:88%"></div></div></div>
+<div class="row"><span class="lab">Are prices going up</span><div class="track"><div class="fill" style="width:55%"></div></div></div>
+<div class="row"><span class="lab">How busy the area is</span><div class="track"><div class="fill" style="width:74%"></div></div></div>
+<div class="row"><span class="lab">How few sellers you compete with</span><div class="track"><div class="fill" style="width:30%"></div></div></div>
+</div>
+<div class="note">Longer bar = better. A high score means a strong place to build. Every bar is compared against all other areas.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🟩</div>
+<div class="kicker">The screen: Land price</div>
+<h2>What can I pay for the land?</h2>
+<p class="lead">Enter how much you can build, the cost to build, and the profit you want. The tool shows the <strong>most you should pay for the land.</strong></p>
+<div class="note">It works backwards: money from selling, minus building, fees, loan, and your profit — whatever is left is the land budget. Pay more, and you eat into your profit.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🏷️</div>
+<div class="kicker">The screen: Sell price — the main answer</div>
+<h2>Three prices, not one</h2>
+<div class="prices">
+<div class="pbox lo"><div class="n">Lowest safe</div><div class="v">627</div><div class="n">don't go below</div></div>
+<div class="pbox mid"><div class="n">Best price</div><div class="v">964</div><div class="n">what we suggest</div></div>
+<div class="pbox hi"><div class="n">Highest</div><div class="v">1,301</div><div class="n">the most you can ask</div></div>
+</div>
+<p class="lead" style="margin-top:24px">We never give one risky number. You get a <strong>safe floor</strong>, a <strong>suggested price</strong>, and a <strong>stretch ceiling</strong> (all per square metre).</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Sell price · how sure we are</div>
+<h2>Can I trust this number?</h2>
+<p class="lead">A simple badge — <strong>Very sure, Fairly sure, or Not sure</strong> — plus bars showing why:</p>
+<div class="grid g2">
+<div class="card"><div class="ic">🔢</div><h3>How many nearby homes we found</h3><p>More homes = more trust.</p></div>
+<div class="card"><div class="ic">🎯</div><h3>How alike those homes are</h3><p>Similar prices = more trust.</p></div>
+<div class="card"><div class="ic">🏛️</div><h3>Backed by official records</h3><p>Checked against government data.</p></div>
+<div class="card"><div class="ic">🕒</div><h3>How recent the info is</h3><p>Fresher data = more trust.</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Sell price · the proof</div>
+<h2>The homes this price is based on 🏠</h2>
+<p class="lead">A list of real homes for sale nearby that we used. Tap any one to open the actual listing.</p>
+<div class="note tip">This is the honesty part — you can see exactly which homes led to your price. Nothing is hidden or made up.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Sell price · play with it</div>
+<h2>Try changes &amp; compare 🔧</h2>
+<div class="grid g2">
+<div class="card"><div class="ic">🎚️</div><h3>Try changes (What-if)</h3><p>Move the sliders — more floors, fancier finish, higher building cost — and watch the price change instantly.</p></div>
+<div class="card"><div class="ic">⚖️</div><h3>Compare options</h3><p>See a few ready-made options side by side (build taller, fancier finish, costs up) versus your price now.</p></div>
+</div>
+<div class="note">Great for answering "what if I build differently?" before you commit.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">💬</div>
+<div class="kicker">Sell price · the summary</div>
+<h2>In simple words</h2>
+<p class="lead">At the bottom, a short plain-English paragraph sums up the whole thing — the price, the range, how many homes it's based on, and one thing to watch. If you read nothing else, read this.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">📰</div>
+<div class="kicker">The screen: Market news</div>
+<h2>What's changed? — the graphs</h2>
+<div class="grid g2">
+<div class="card"><div class="ic">📊</div><h3>Price spread</h3><p>Where most home prices land in this area.</p></div>
+<div class="card"><div class="ic">📈</div><h3>Price by year</h3><p>How prices moved over the years.</p></div>
+<div class="card"><div class="ic">🏆</div><h3>Rank vs Jordan</h3><p>How pricey this area is vs everywhere else.</p></div>
+<div class="card"><div class="ic">🌐</div><h3>Where the data comes from</h3><p>Which websites the homes came from.</p></div>
+</div>
+<div class="note tip">Press <strong>"⛶ Expand"</strong> for a full-screen view with extra graphs comparing many areas — the best places to build, priciest areas, and a "best bets" chart.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Two things to always remember</div>
+<h2>The honest rules</h2>
+<div class="grid g2">
+<div class="card"><div class="ic">🙅</div><h3>We never guess</h3><p>If there isn't enough data, you'll see "no data yet" — not a made-up price. (That's why some small areas, like 2nd Circle, show nothing.)</p></div>
+<div class="card"><div class="ic">📈</div><h3>Prices only go up</h3><p>This tool helps you hold or raise your price with confidence — never panic-cut it.</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">✅</div>
+<h1>That's the whole tool.</h1>
+<p class="lead">Pick an area → describe the home → get a price you can trust, with the proof behind it. Simple.</p>
+</div>
+</section>
+
+</div>
+<div class="count" id="count"></div>
+<script>
+const deck=document.getElementById('deck'),bar=document.getElementById('bar'),count=document.getElementById('count');
+const slides=document.querySelectorAll('.slide');
+function upd(){const t=deck.scrollTop,h=deck.scrollHeight-deck.clientHeight;bar.style.width=(h>0?(t/h*100):0)+'%';const i=Math.round(t/deck.clientHeight)+1;count.textContent=i+' / '+slides.length;}
+deck.addEventListener('scroll',upd);upd();
+document.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();deck.scrollBy({top:deck.clientHeight,behavior:'smooth'})}if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();deck.scrollBy({top:-deck.clientHeight,behavior:'smooth'})}});
+</script>
+</body>
+</html>

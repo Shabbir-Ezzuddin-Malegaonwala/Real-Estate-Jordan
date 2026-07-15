@@ -39,11 +39,11 @@ export function SubjectForm({
       }}
     >
       <div className="mb-2 flex items-center justify-between">
-        <span className="label-eyebrow">Subject property</span>
-        {computing && <span className="text-2xs text-cyan">computing…</span>}
+        <span className="label-eyebrow">The home you're pricing</span>
+        {computing && <span className="text-2xs text-cyan">working…</span>}
       </div>
 
-      <Field id="f-nbhd" label="Neighbourhood">
+      <Field id="f-nbhd" label="Area">
         <select
           id="f-nbhd"
           value={subject.neighborhood}
@@ -71,7 +71,7 @@ export function SubjectForm({
             className="input tnum"
           />
         </Field>
-        <Field id="f-floor" label="Floor level">
+        <Field id="f-floor" label="Floor">
           <input
             id="f-floor"
             type="number"
@@ -95,7 +95,7 @@ export function SubjectForm({
             className="input tnum"
           />
         </Field>
-        <Field id="f-age" label="Building age (yr)">
+        <Field id="f-age" label="Age (years)">
           <input
             id="f-age"
             type="number"
@@ -145,7 +145,7 @@ export function SubjectForm({
             disabled={computing || !subject.neighborhood || !subject.area_m2}
             className="h-[30px] w-full rounded-[3px] border border-accent/60 bg-accent/[0.12] text-[12px] font-medium text-accent transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {computing ? "Analyzing…" : "Analyze"}
+            {computing ? "Working…" : "Get price"}
           </button>
         </div>
       </div>

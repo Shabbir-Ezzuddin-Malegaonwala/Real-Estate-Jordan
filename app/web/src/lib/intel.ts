@@ -77,11 +77,11 @@ export const COMPONENT_ORDER = [
 ] as const;
 
 export const COMPONENT_LABELS: Record<string, string> = {
-  data_coverage: "Data coverage",
-  comp_quality: "Comparable quality",
-  gov_evidence: "Official evidence",
+  data_coverage: "How many nearby homes we found",
+  comp_quality: "How alike those homes are",
+  gov_evidence: "Backed by official records",
   future_signals: "Future signals",
-  market_freshness: "Market freshness",
+  market_freshness: "How recent the info is",
 };
 
 // Returns the 5 decomposed bars. Uses the engine's own components when present;
@@ -111,7 +111,7 @@ export function confidenceComponents(r: RecommendationResult): {
       key: "data_coverage",
       label: COMPONENT_LABELS.data_coverage,
       score: clamp(Math.min(100, comps * 4)),
-      reason: `${comps} comparables weighed for this submarket`,
+      reason: `We used ${comps} similar homes nearby`,
     },
     {
       key: "comp_quality",
@@ -119,8 +119,8 @@ export function confidenceComponents(r: RecommendationResult): {
       score: clamp(100 - bandWidth * 90),
       reason:
         bandWidth > 0.5
-          ? "wide evidenced band — comps disperse"
-          : "tight band — comparable prices agree",
+          ? "Their prices are quite spread out"
+          : "Their prices are close together",
     },
     {
       key: "gov_evidence",
@@ -128,8 +128,8 @@ export function confidenceComponents(r: RecommendationResult): {
       score: clamp(govCount > 0 ? 40 + govCount * 20 : 25),
       reason:
         govCount > 0
-          ? `${govCount} official/index cross-check${govCount > 1 ? "s" : ""} applied`
-          : "asking-price portals only — official cross-checks pending",
+          ? `Checked against ${govCount} official record${govCount > 1 ? "s" : ""}`
+          : "Based on listing websites only for now",
     },
     {
       key: "future_signals",
@@ -144,7 +144,7 @@ export function confidenceComponents(r: RecommendationResult): {
       key: "market_freshness",
       label: COMPONENT_LABELS.market_freshness,
       score: clamp(r.as_of ? 70 : 50),
-      reason: r.as_of ? `computed ${r.as_of}` : "recency of underlying listings",
+      reason: r.as_of ? `Based on recent info (${r.as_of})` : "Based on recent listings",
     },
   ];
   return { components, source: "local" };

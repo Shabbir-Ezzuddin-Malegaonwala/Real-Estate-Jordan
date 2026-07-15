@@ -316,41 +316,30 @@ def _scenarios(min_safe, recommended, premium, dev_score, conf) -> list[dict]:
 
 def _narrative(subject, recommended, min_safe, premium, conf, comps,
                method_values, dev_score, risks) -> str:
+    """Plain-language summary — written so someone new to real estate understands it."""
+    sure = {"H": "very sure", "M": "fairly sure", "L": "not very sure"}.get(conf.label, "fairly sure")
     lines = []
     lines.append(
-        f"For a {subject.finish_quality if subject.finish_quality != 'unknown' else ''} "
-        f"{subject.property_type} in {subject.neighborhood}"
-        + (f" (~{subject.area_m2:.0f} m²)" if subject.area_m2 else "")
-        + f", the recommended launch price is {recommended:.0f} JD/m², within a defensible "
-        f"range of {min_safe:.0f}–{premium:.0f} JD/m² (confidence: {conf.label}, "
-        f"{conf.numeric:.2f}; 80% interval {conf.interval_low_ppm2:.0f}–{conf.interval_high_ppm2:.0f})."
+        f"To sell a {subject.property_type} in {subject.neighborhood}"
+        + (f" of about {subject.area_m2:.0f} m2" if subject.area_m2 else "")
+        + f", we suggest asking around {recommended:.0f} JD for each square metre. "
+        f"A safe range is {min_safe:.0f} to {premium:.0f}. We are {sure} about this."
     )
     lines.append(
-        f"This is anchored on {len(comps)} comparable listing(s), each normalised to the "
-        f"subject with market-derived adjustments and calibrated from asking to transaction "
-        f"level; comps needing fewer/smaller adjustments carried more weight."
+        f"We worked this out from {len(comps)} similar home(s) for sale nearby. We adjusted "
+        "each one to be like yours, and trusted the closest matches the most."
     )
-    anchor_ppm2 = method_values.get("submarket_anchor_ppm2")
-    if anchor_ppm2:
-        lines.append(
-            f"To stay representative of the whole submarket, the comp value was reconciled "
-            f"toward the robust median of all same-type sales (~{anchor_ppm2:.0f} JD/m² asking) "
-            f"by statistical precision, so a dense pool anchors the price level while the comps "
-            f"supply the subject-specific adjustments."
-        )
-    floor, ceil = method_values.get("cost_floor"), method_values.get("income_ceiling")
-    cross = []
+    floor = method_values.get("cost_floor")
+    ceil = method_values.get("income_ceiling")
     if floor:
-        cross.append(f"cost floor ≈ {floor:.0f}")
+        lines.append(
+            f"It costs about {floor:.0f} to build one square metre here, so selling below that "
+            "would lose money.")
     if ceil:
-        cross.append(f"income ceiling ≈ {ceil:.0f}")
-    if cross:
-        lines.append("Cross-checks: " + ", ".join(cross) +
-                     ". Convergence supports the estimate; divergence is captured in the risks.")
-    if dev_score > 0:
-        lines.append(f"Future signals (development score {dev_score}) justify holding the "
-                     "launch toward the top of the range and raising — never cutting — later.")
-    lines.append(f"Key risk: {risks[0]['detail']}")
+        lines.append(
+            f"Going by local rents, an investor would pay up to about {ceil:.0f} per square metre.")
+    if risks:
+        lines.append(f"One thing to watch: {risks[0]['detail']}")
     return " ".join(lines)
 
 

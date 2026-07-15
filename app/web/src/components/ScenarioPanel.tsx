@@ -40,18 +40,18 @@ export function ScenarioPanel({ r }: { r: RecommendationResult }) {
   return (
     <section className="px-4 pt-5" aria-label="Scenario simulation">
       <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="text-[13px] font-semibold text-ink">Scenario — What-if</h3>
-        <span className="text-2xs text-ink-mute">{res.source === "local" ? "modelled locally" : "engine"}</span>
+        <h3 className="text-[13px] font-semibold text-ink">Try changes (What-if)</h3>
+        <span className="text-2xs text-ink-mute">{res.source === "local" ? "quick estimate" : "live"}</span>
       </div>
 
       <div className="card space-y-2.5 p-3">
-        <Slider id="sc-floors" label="Tower floors" value={ov.floors ?? 0} min={4} max={40} step={1}
+        <Slider id="sc-floors" label="How many floors" value={ov.floors ?? 0} min={4} max={40} step={1}
           onChange={(v) => setOv((p) => ({ ...p, floors: v, target_floor: Math.min(p.target_floor ?? v, v) }))} />
-        <Slider id="sc-target" label="Target floor (view)" value={ov.target_floor ?? 0} min={1} max={ov.floors ?? 40} step={1}
+        <Slider id="sc-target" label="Which floor to sell" value={ov.target_floor ?? 0} min={1} max={ov.floors ?? 40} step={1}
           onChange={(v) => setOv((p) => ({ ...p, target_floor: v }))} />
         <div className="grid grid-cols-2 gap-2">
           <label htmlFor="sc-finish" className="block">
-            <span className="mb-0.5 block text-2xs text-ink-mute">Finish tier</span>
+            <span className="mb-0.5 block text-2xs text-ink-mute">Finish quality</span>
             <select id="sc-finish" value={ov.finish} onChange={(e) => setOv((p) => ({ ...p, finish: e.target.value }))} className="input">
               {FINISH.map((f) => <option key={f} value={f}>{f}</option>)}
             </select>
@@ -60,20 +60,20 @@ export function ScenarioPanel({ r }: { r: RecommendationResult }) {
             <input type="checkbox" checked={!!ov.apply_height_view_premium}
               onChange={(e) => setOv((p) => ({ ...p, apply_height_view_premium: e.target.checked }))}
               className="h-3.5 w-3.5 accent-[rgb(var(--c-accent))]" />
-            <span className="text-2xs text-ink-dim">Apply city-view premium</span>
+            <span className="text-2xs text-ink-dim">Add city-view bonus</span>
           </label>
         </div>
-        <Slider id="sc-cost" label="Construction cost change" value={ov.construction_cost_delta_pct ?? 0} min={-20} max={40} step={5} suffix="%"
+        <Slider id="sc-cost" label="Building cost change" value={ov.construction_cost_delta_pct ?? 0} min={-20} max={40} step={5} suffix="%"
           onChange={(v) => setOv((p) => ({ ...p, construction_cost_delta_pct: v }))} />
-        <Slider id="sc-metro" label="Metro delay (years)" value={ov.metro_delay_years ?? 0} min={0} max={5} step={1}
+        <Slider id="sc-metro" label="Metro delayed (years)" value={ov.metro_delay_years ?? 0} min={0} max={5} step={1}
           onChange={(v) => setOv((p) => ({ ...p, metro_delay_years: v }))} />
-        <Slider id="sc-launch" label="Launch delay (months)" value={ov.launch_delay_months ?? 0} min={0} max={24} step={3}
+        <Slider id="sc-launch" label="Selling delayed (months)" value={ov.launch_delay_months ?? 0} min={0} max={24} step={3}
           onChange={(v) => setOv((p) => ({ ...p, launch_delay_months: v }))} />
       </div>
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <BandCard label="Base" band={res.base.recommended_jd_m2} sub={`${jd(res.base.min_safe_jd_m2)}–${jd(res.base.premium_jd_m2)}`} />
-        <BandCard label="Scenario" band={res.scenario.recommended_jd_m2}
+        <BandCard label="Now" band={res.base.recommended_jd_m2} sub={`${jd(res.base.min_safe_jd_m2)}–${jd(res.base.premium_jd_m2)}`} />
+        <BandCard label="After changes" band={res.scenario.recommended_jd_m2}
           sub={`${jd(res.scenario.min_safe_jd_m2)}–${jd(res.scenario.premium_jd_m2)}`} primary delta={net} />
       </div>
 

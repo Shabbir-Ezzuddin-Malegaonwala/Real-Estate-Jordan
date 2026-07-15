@@ -55,21 +55,21 @@ export function StepContent({
         return (
           <>
             <section className="px-4 pt-4">
-              <div className="mb-2 label-eyebrow">Where to build · opportunity</div>
-              {opportunity ? <OpportunityMeter opp={opportunity} /> : <Awaiting note="No opportunity score for this area yet." />}
+              <div className="mb-2 label-eyebrow">How good is this area to build in?</div>
+              {opportunity ? <OpportunityMeter opp={opportunity} /> : <Awaiting note="We can't rate this area yet." />}
             </section>
             <NearbyAmenities amenities={amenities} />
           </>
         );
       case "economics":
-        if (!area) return <StepPrompt label="Economics" hint="Pick an area to compute the max defensible land price." />;
+        if (!area) return <StepPrompt label="Land price" hint="Pick an area to see the most you can pay for the land." />;
         return covered && result ? (
           <ResidualLandValue neighborhood={result.neighborhood} recommendedJdM2={result.recommended_jd_m2} />
         ) : (
           <NoStructuredData area={area} />
         );
       case "pricing":
-        if (!area) return <StepPrompt label="Pricing" hint="Pick an area to see the evidence-backed launch band." />;
+        if (!area) return <StepPrompt label="Sell price" hint="Pick an area to see the price to sell at." />;
         return covered && result ? (
           <div className={`transition-opacity ${computing ? "opacity-50" : "opacity-100"}`}>
             <PriceBands r={result} />
@@ -101,7 +101,7 @@ function PlainWords({ narrative }: { narrative: string }) {
   if (!narrative) return null;
   return (
     <section className="px-4 pb-6 pt-5" aria-label="Plain-language summary">
-      <h3 className="mb-2 text-[13px] font-semibold text-ink">In plain words</h3>
+      <h3 className="mb-2 text-[13px] font-semibold text-ink">In simple words</h3>
       <p className="card p-3 text-[12px] leading-relaxed text-ink-dim">{narrative}</p>
     </section>
   );
@@ -112,8 +112,8 @@ function OpportunityPrompt() {
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
       <div className="text-[13px] font-medium text-ink-dim">Where should you build?</div>
       <p className="mt-1 max-w-[260px] text-2xs leading-relaxed text-ink-mute">
-        The map is coloured by opportunity score. Click the strongest area, or search above, to open
-        its decision readiness.
+        The map shows which areas are best to build in. Click a bright area, or search above, to
+        see it.
       </p>
     </div>
   );
@@ -131,7 +131,7 @@ function StepPrompt({ label, hint }: { label: string; hint: string }) {
 function Awaiting({ note }: { note: string }) {
   return (
     <div className="card border-dashed p-3">
-      <div className="text-2xs font-medium uppercase tracking-wide text-ink-mute">Awaiting data</div>
+      <div className="text-2xs font-medium uppercase tracking-wide text-ink-mute">No data yet</div>
       <p className="mt-1 text-2xs leading-relaxed text-ink-dim">{note}</p>
     </div>
   );

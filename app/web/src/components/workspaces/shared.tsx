@@ -31,23 +31,22 @@ export function NoStructuredData({ area }: { area: AreaEntry }) {
     <section className="px-4 pt-4" aria-label="No structured data">
       <div className="card border-dashed p-3">
         <div className="text-2xs font-medium uppercase tracking-wide text-ink-mute">
-          No structured pricing yet
+          No price for this area yet
         </div>
         <p className="mt-1 text-2xs leading-relaxed text-ink-dim">
-          {area.name} is shown for context. The decision engine has not been run here — so we show
-          no launch price rather than a fabricated one. Coverage expands as enough comparable
-          listings are collected.
+          We don't have enough home sales in {area.name} to give a price you can trust — so we show
+          nothing instead of guessing. This will fill in as we collect more homes here.
         </p>
         {(area.listing_count || area.median_price_per_m2) && (
           <div className="mt-2 flex flex-wrap gap-2 text-2xs">
             {area.listing_count != null && (
               <span className="rounded-[2px] border border-line bg-raised px-1.5 py-[1px] tnum text-ink-mute">
-                {jd(area.listing_count)} listings seen
+                {jd(area.listing_count)} homes found
               </span>
             )}
             {area.median_price_per_m2 != null && area.median_price_per_m2 > 0 && (
               <span className="rounded-[2px] border border-line bg-raised px-1.5 py-[1px] tnum text-ink-mute">
-                ~{jd(area.median_price_per_m2)} JD/m² asking median (uncalibrated)
+                ~{jd(area.median_price_per_m2)} JD/m² typical asking (rough)
               </span>
             )}
           </div>

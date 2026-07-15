@@ -7,15 +7,15 @@ import { jd, pct } from "../lib/format";
 // Calls POST /scenario/compare when live; deterministic local model until then.
 const PRESETS: { label: string; overrides: ScenarioOverrides }[] = [
   {
-    label: "Height play",
+    label: "Build taller",
     overrides: { floors: 30, target_floor: 27, apply_height_view_premium: true, finish: "standard" },
   },
   {
-    label: "Premium finish",
+    label: "Fancier finish",
     overrides: { floors: 20, target_floor: 15, apply_height_view_premium: true, finish: "luxury" },
   },
   {
-    label: "Cost +20%",
+    label: "Building costs +20%",
     overrides: { floors: 20, target_floor: 15, construction_cost_delta_pct: 20 },
   },
 ];
@@ -38,23 +38,23 @@ export function ScenarioCompare({ r }: { r: RecommendationResult }) {
   return (
     <section className="px-4 pt-5" aria-label="Scenario comparison">
       <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="text-[13px] font-semibold text-ink">Compare scenarios</h3>
-        <span className="text-2xs text-ink-mute">{cmp.source === "local" ? "modelled locally" : "engine"}</span>
+        <h3 className="text-[13px] font-semibold text-ink">Compare options</h3>
+        <span className="text-2xs text-ink-mute">{cmp.source === "local" ? "quick estimate" : "live"}</span>
       </div>
 
       <div className="card overflow-x-auto">
         <table className="w-full text-[12px]">
           <thead>
             <tr className="border-b border-line-soft text-2xs uppercase tracking-wide text-ink-mute">
-              <th className="px-2.5 py-2 text-left font-medium">Scenario</th>
-              <th className="px-2.5 py-2 text-right font-medium">Recommended</th>
+              <th className="px-2.5 py-2 text-left font-medium">Option</th>
+              <th className="px-2.5 py-2 text-right font-medium">Best price</th>
               <th className="px-2.5 py-2 text-right font-medium">Range</th>
-              <th className="px-2.5 py-2 text-right font-medium">vs base</th>
+              <th className="px-2.5 py-2 text-right font-medium">vs now</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line-soft">
             <tr>
-              <td className="px-2.5 py-2 text-ink-dim">Base</td>
+              <td className="px-2.5 py-2 text-ink-dim">Now</td>
               <td className="tnum px-2.5 py-2 text-right text-ink">{jd(cmp.base.recommended_jd_m2)}</td>
               <td className="tnum px-2.5 py-2 text-right text-ink-mute">
                 {jd(cmp.base.min_safe_jd_m2)}–{jd(cmp.base.premium_jd_m2)}
@@ -77,7 +77,7 @@ export function ScenarioCompare({ r }: { r: RecommendationResult }) {
         </table>
       </div>
       <p className="mt-1.5 text-2xs leading-relaxed text-ink-faint">
-        Builder premiums (height→city-view, finish) are stated assumptions, not listing-derived.
+        The bonus for taller floors and fancier finish is our best guess, not from real sales.
       </p>
     </section>
   );

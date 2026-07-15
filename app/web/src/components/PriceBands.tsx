@@ -5,9 +5,9 @@ import { ConfidenceBadge } from "./ConfidenceBadge";
 // Three-tier launch band — never a naked point estimate (MASTER-PLAN §6).
 export function PriceBands({ r }: { r: RecommendationResult }) {
   const tiers = [
-    { key: "min", label: "Minimum Safe", value: r.min_safe_jd_m2, hint: "downside-protected floor" },
-    { key: "rec", label: "Recommended", value: r.recommended_jd_m2, hint: "evidenced launch target", primary: true },
-    { key: "prm", label: "Premium", value: r.premium_jd_m2, hint: "achievable ceiling" },
+    { key: "min", label: "Lowest safe price", value: r.min_safe_jd_m2, hint: "Don't sell below this" },
+    { key: "rec", label: "Best price to ask", value: r.recommended_jd_m2, hint: "What we suggest you sell at", primary: true },
+    { key: "prm", label: "Highest price", value: r.premium_jd_m2, hint: "The most you can ask for" },
   ];
 
   const span = r.premium_jd_m2 - r.min_safe_jd_m2 || 1;
@@ -16,7 +16,7 @@ export function PriceBands({ r }: { r: RecommendationResult }) {
   return (
     <section className="px-4 pt-4" aria-label="Recommended launch price band">
       <div className="mb-2 flex items-center justify-between">
-        <span className="label-eyebrow">Launch price band · {r.unit}</span>
+        <span className="label-eyebrow">Price per square metre ({r.unit})</span>
         <ConfidenceBadge confidence={r.confidence} compact />
       </div>
 
@@ -54,7 +54,7 @@ export function PriceBands({ r }: { r: RecommendationResult }) {
       </div>
       <div className="mt-1 flex justify-between text-2xs tnum text-ink-mute">
         <span>{jd(r.min_safe_jd_m2)}</span>
-        <span className="text-ink-dim">comp base {jd(r.base_value_jd_m2)}</span>
+        <span className="text-ink-dim">typical nearby {jd(r.base_value_jd_m2)}</span>
         <span>{jd(r.premium_jd_m2)}</span>
       </div>
     </section>

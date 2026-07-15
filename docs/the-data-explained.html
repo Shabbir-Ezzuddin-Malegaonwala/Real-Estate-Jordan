@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The Data — Explained Simply</title>
+<style>
+:root{--bg:#0a0f1e;--panel:#111827;--card:#141c30;--text:#e6edf7;--muted:#9fb0c9;--accent:#60a5fa;--accent2:#34d399;--accent3:#a78bfa;--warn:#fbbf24;--pink:#f472b6;--border:rgba(255,255,255,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.deck{scroll-snap-type:y mandatory;height:100vh;overflow-y:scroll}
+.slide{scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:56px 24px;text-align:center;position:relative}
+.slide .inner{max-width:840px;width:100%}
+.kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px}
+h1{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;line-height:1.08;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:clamp(1.6rem,4.5vw,2.6rem);font-weight:800;line-height:1.12;margin-bottom:10px}
+.lead{font-size:clamp(1.05rem,2.4vw,1.35rem);color:var(--muted);max-width:680px;margin:16px auto 0}
+.big{font-size:clamp(2.4rem,7vw,4.5rem);font-weight:800;color:var(--accent2);line-height:1}
+.emoji{font-size:clamp(2.6rem,8vw,4.2rem);margin-bottom:14px;line-height:1}
+.grid{display:grid;gap:16px;margin-top:28px;text-align:left}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:720px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.card .ic{font-size:1.9rem;margin-bottom:8px}
+.card h3{font-size:1.1rem;margin-bottom:4px}
+.card p{font-size:.95rem;color:var(--muted)}
+.pill{display:inline-block;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3);color:var(--accent);border-radius:999px;padding:7px 16px;font-size:.9rem;font-weight:600;margin:5px}
+.note{border-left:4px solid var(--warn);background:rgba(251,191,36,.08);border-radius:0 14px 14px 0;padding:16px 20px;text-align:left;margin-top:24px;color:var(--text)}
+.good{border-left-color:var(--accent2);background:rgba(52,211,153,.08)}
+.progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:50;transition:width .2s}
+.hint{position:fixed;bottom:18px;left:0;right:0;text-align:center;color:var(--muted);font-size:.8rem;z-index:40;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.count{position:fixed;bottom:16px;right:20px;color:var(--muted);font-size:.8rem;z-index:40}
+.flow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:24px}
+.fstep{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:.95rem;min-width:130px}
+.arrow{color:var(--accent2);font-size:1.4rem}
+.stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stats{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:28px}
+.statlabel{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="progress" id="bar"></div>
+<div class="deck" id="deck">
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Jordan Real Estate · for builders</div>
+<h1>Where do the prices come from?</h1>
+<p class="lead">A simple, no-jargon tour of all the information we collect to help you decide where to build and what price to sell at.</p>
+<div class="hint">scroll down ↓</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🤔</div>
+<h2>First, the problem</h2>
+<p class="lead">A builder needs to know one thing: <strong>what price should I sell my homes at?</strong></p>
+<div class="note">In Jordan, nobody publishes what homes actually <strong>sold</strong> for. So we can't just look up the answer. We have to work it out from lots of clues — that's what all this data is for.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">The big picture</div>
+<h2>We collect 6 kinds of information</h2>
+<p class="lead">Think of it like clues a detective gathers. No single clue gives the answer — together they do.</p>
+<div class="flow">
+<div class="pill">🏠 Homes for sale</div>
+<div class="pill">🧱 Cost to build</div>
+<div class="pill">🟩 Land prices</div>
+<div class="pill">🏦 Rent income</div>
+<div class="pill">🏗️ Other projects</div>
+<div class="pill">📰 Market news</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🏠</div>
+<div class="kicker">Clue #1 — the main one</div>
+<h2>Homes for sale</h2>
+<div class="stats">
+<div class="stat"><span class="big">52,000</span><span class="statlabel">homes we collected</span></div>
+<div class="stat"><span class="big">6</span><span class="statlabel">websites (Bayut, OpenSooq…)</span></div>
+</div>
+<p class="lead">We gather real homes listed for sale on popular websites. This is the biggest clue — the prices of homes near yours tell us what yours is worth.</p>
+<div class="note"><strong>Important:</strong> these are <strong>asking</strong> prices (what sellers <em>want</em>), not final sale prices. Sellers usually get a bit less — so we lower the number a little to be realistic.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Clue #1 — what we know about each home</div>
+<h2>Every home is different</h2>
+<div class="grid g3">
+<div class="card"><div class="ic">💰</div><h3>Price &amp; size</h3><p>We have these for almost every home — the basics.</p></div>
+<div class="card"><div class="ic">🛏️</div><h3>Bedrooms</h3><p>Known for most homes.</p></div>
+<div class="card"><div class="ic">📍</div><h3>Location on map</h3><p>Only about half have an exact spot.</p></div>
+</div>
+<div class="note">Being honest: some details (like the floor number or how old the building is) are often missing. So we lean on the things we <em>do</em> know — price, size, and location — and we say when we're less sure.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🧱</div>
+<div class="kicker">Clue #2</div>
+<h2>How much it costs to build</h2>
+<p class="lead">This comes from the <strong>government</strong> (the Department of Statistics). It tells us the cost of building one square metre.</p>
+<div class="note good"><strong>Why it matters:</strong> you should never sell for <em>less</em> than it costs to build — you'd lose money. So this sets the <strong>lowest safe price</strong>.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🟩</div>
+<div class="kicker">Clue #3</div>
+<h2>Land prices</h2>
+<p class="lead">What land actually costs in different areas.</p>
+<div class="note good"><strong>Why it matters:</strong> it helps answer <em>"how much can I pay for the land and still make a profit?"</em></div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🏦</div>
+<div class="kicker">Clue #4</div>
+<h2>How much rent brings in</h2>
+<p class="lead">For each area, how much money a home earns from renting it out.</p>
+<div class="note good"><strong>Why it matters:</strong> some buyers are investors — they'll only pay a price that gives them good rent. This helps set the <strong>top price</strong>.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🏗️</div>
+<div class="kicker">Clue #5</div>
+<h2>Other projects nearby</h2>
+<p class="lead">Other new buildings being sold in the area, and their prices.</p>
+<div class="note good"><strong>Why it matters:</strong> these are your <strong>competition</strong>. If ten towers are selling next door, that changes your price.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">📰</div>
+<div class="kicker">Clue #6</div>
+<h2>Market news</h2>
+<p class="lead">Recent, dated news — interest rates, new roads and metro lines, government rules, buying activity.</p>
+<div class="note good"><strong>Why it matters:</strong> the world changes. A new metro line or a rule change can push prices up. This is the "what changed?" signal.</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Plus, for the map</div>
+<h2>Places &amp; roads nearby 🗺️</h2>
+<div class="stats">
+<div class="stat"><span class="big">86,000</span><span class="statlabel">nearby places (schools, malls, clinics…)</span></div>
+</div>
+<p class="lead">We also collected tens of thousands of nearby places and roads. Homes near good schools, malls and transport are usually worth more.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Being honest</div>
+<h2>What this data <em>can't</em> do</h2>
+<div class="grid g2">
+<div class="card"><div class="ic">🏷️</div><h3>Asking, not sold</h3><p>We know what sellers ask, not the final handshake price. We adjust for this.</p></div>
+<div class="card"><div class="ic">📉</div><h3>Thin in small areas</h3><p>Big areas have lots of homes; small ones have very few. We only price where we have enough.</p></div>
+<div class="card"><div class="ic">📅</div><h3>Gaps in time</h3><p>Home dates cluster in a few periods, so "price over time" is rough, not perfect.</p></div>
+<div class="card"><div class="ic">🙅</div><h3>Never a guess</h3><p>When we don't have enough, we say "no data yet" — we never make up a number.</p></div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="kicker">Putting it together</div>
+<h2>How the clues become a price</h2>
+<div class="flow">
+<div class="fstep">🏠 Homes nearby<br/><small>the main price</small></div>
+<div class="arrow">→</div>
+<div class="fstep">🧱 Build cost<br/><small>lowest safe price</small></div>
+<div class="arrow">→</div>
+<div class="fstep">🏦 Rent<br/><small>top price</small></div>
+<div class="arrow">→</div>
+<div class="fstep">✅ Your price<br/><small>with a range</small></div>
+</div>
+<p class="lead" style="margin-top:28px">We start from nearby homes, then use build cost and rent as a floor and a ceiling — and always show a range, not a single risky number.</p>
+</div>
+</section>
+
+<section class="slide">
+<div class="inner">
+<div class="emoji">🎯</div>
+<h1>That's the data.</h1>
+<p class="lead">Real homes, government costs, land prices, rents, competitors, and market news — gathered honestly, and used only where there's enough to trust.</p>
+<div class="pill" style="margin-top:20px">Next: how to use each feature →</div>
+</div>
+</section>
+
+</div>
+<div class="count" id="count"></div>
+<script>
+const deck=document.getElementById('deck'),bar=document.getElementById('bar'),count=document.getElementById('count');
+const slides=document.querySelectorAll('.slide');
+function upd(){const t=deck.scrollTop,h=deck.scrollHeight-deck.clientHeight;bar.style.width=(h>0?(t/h*100):0)+'%';const i=Math.round(t/deck.clientHeight)+1;count.textContent=i+' / '+slides.length;}
+deck.addEventListener('scroll',upd);upd();
+document.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){e.preventDefault();deck.scrollBy({top:deck.clientHeight,behavior:'smooth'})}if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();deck.scrollBy({top:-deck.clientHeight,behavior:'smooth'})}});
+</script>
+</body>
+</html>

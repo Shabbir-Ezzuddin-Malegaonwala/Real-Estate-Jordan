@@ -7,12 +7,11 @@ export function Comparables({ items }: { items: Comparable[] }) {
     <section className="px-4 pt-5" aria-label="Comparable listings">
       <div className="mb-2">
         <div className="flex items-baseline justify-between">
-          <h3 className="text-[13px] font-semibold text-ink">The listings this price is based on</h3>
+          <h3 className="text-[13px] font-semibold text-ink">The homes this price is based on</h3>
           <span className="text-2xs text-ink-mute">{items.length} nearby</span>
         </div>
         <p className="mt-0.5 text-2xs leading-relaxed text-ink-mute">
-          Real apartments listed nearby. Each one is a piece of evidence — click any to open the
-          actual listing.
+          Real homes for sale nearby. We use these to work out your price — tap any one to open it.
         </p>
       </div>
 
@@ -28,7 +27,7 @@ export function Comparables({ items }: { items: Comparable[] }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="tnum font-mono text-[14px] text-ink">{jd(c.price_per_m2)}</span>
-                <span className="text-2xs text-ink-mute">JD/m² adj.</span>
+                <span className="text-2xs text-ink-mute">JD/m²</span>
               </div>
               <SimilarityMeter value={c.similarity} />
             </div>
@@ -63,15 +62,15 @@ function ReconciliationBody({ c }: { c: Comparable }) {
       )}
 
       <div className="mt-1.5 flex items-center gap-1.5 text-2xs text-ink-mute">
-        <span title="its own listed price">
+        <span title="its asking price">
           <span className="tnum text-ink-dim">{jd(c.original_ppm2 ?? c.price_per_m2)}</span>
         </span>
         <span className="text-ink-faint">→</span>
-        <span title="adjusted to match your unit">
+        <span title="changed to match your home">
           <span className="tnum text-ink">{jd(c.adjusted_ppm2 ?? c.price_per_m2)}</span>
         </span>
         {c.gross_adjustment != null && (
-          <span className="text-ink-faint">· adjusted {(c.gross_adjustment * 100).toFixed(0)}%</span>
+          <span className="text-ink-faint">· changed {(c.gross_adjustment * 100).toFixed(0)}%</span>
         )}
       </div>
 
@@ -152,7 +151,7 @@ function Cell({ label, value }: { label: string; value: string }) {
 
 function SimilarityMeter({ value }: { value: number }) {
   return (
-    <span className="inline-flex items-center gap-1.5" title={`Similarity ${(value * 100).toFixed(0)}%`}>
+    <span className="inline-flex items-center gap-1.5" title={`How alike: ${(value * 100).toFixed(0)}%`}>
       <span className="h-1 w-12 overflow-hidden rounded-full bg-raised">
         <span className="block h-full bg-cyan-dim" style={{ width: `${value * 100}%` }} />
       </span>
